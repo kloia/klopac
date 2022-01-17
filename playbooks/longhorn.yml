@@ -1,0 +1,5 @@
+- hosts: localhost
+  roles:
+    -  ../roles/longhorn-installation
+  vars_files:
+    - ../vars/general-config.yml

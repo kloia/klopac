@@ -1,0 +1,7 @@
+- name: Add longhorn helm repo
+  shell: helm repo add longhorn https://charts.longhorn.io
+
+- name: Install longhorn
+  shell: helm upgrade longhorn longhorn/longhorn --install -f ../roles/longhorn-installation/files/values.yaml  --namespace longhorn-system --create-namespace
+  environment:
+    KUBECONFIG: "{{ kubeconfigPath }}"

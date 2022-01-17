@@ -1,0 +1,2 @@
+TARGET_DISK: '' # ex. sdc
+REMOTE_USER: "ubuntu"

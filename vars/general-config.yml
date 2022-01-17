@@ -1,0 +1,4 @@
+---
+
+# Kubeconfig file of the cluster that operations will run
+kubeconfigPath: "../kubeconfig"

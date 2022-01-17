@@ -1,0 +1,35 @@
+- name: Install lvm2 dependency
+  package:
+    name: lvm2
+    state: present
+
+- name: task for creating volume group
+  lvg:
+    vg: vgdata
+    pvs: /dev/{{ TARGET_DISK }}
+    force: yes
+
+- name: task for creating logical volume
+  lvol:
+    vg: vgdata
+    lv:  lv_data
+    size: 100%FREE
+    force: yes
+
+- name: Create directory /var/lib/longhorn if does not exist
+  file:
+    path: /var/lib/longhorn
+    state: directory
+    mode: '0755'
+
+- name: format the xfs filesystem
+  filesystem:
+    fstype: ext4
+    dev: /dev/vgdata/lv_data
+
+- name: mount the lv on /var/lib/longhorn
+  mount:
+    path: /var/lib/longhorn
+    src: /dev/vgdata/lv_data
+    fstype: ext4
+    state: mounted

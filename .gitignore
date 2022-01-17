@@ -1,0 +1,6 @@
+tls.crt
+tls.key
+ca.crt
+id_rsa
+vagrant/.vagrant/*
+roles/rancher-installation/.DS_Store

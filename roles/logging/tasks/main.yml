@@ -1,0 +1,7 @@
+- name: Add bitnami helm repo
+  shell: helm repo add bitnami https://charts.bitnami.com/bitnami
+
+- name: Install fluentd
+  shell: helm upgrade --install -f ../roles/logging/files/values.yaml fluentd bitnami/fluentd --namespace fluentd --create-namespace
+  environment:
+    KUBECONFIG: "{{ kubeconfigPath }}" 
