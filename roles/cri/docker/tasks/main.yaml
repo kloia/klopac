@@ -1,0 +1,3 @@
+- name: Install Docker if not exist
+  include: install.yaml
+  #when: ansible_facts['docker_installed'] == '0'

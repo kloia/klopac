@@ -1,0 +1,82 @@
+- name: Add the br_netfilter module
+  modprobe:
+    name: br_netfilter
+    state: present
+
+
+- name: enable bridge
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+  
+- name:  enable bridge
+  sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+
+- name: Install dependencies
+  apt:
+    pkg:
+    - apt-transport-https 
+    - ca-certificates 
+    - curl 
+    - gnupg 
+    - lsb-release
+    update_cache: yes
+
+- name: docker gpg
+  shell:  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  args: 
+    creates: /usr/share/keyrings/docker-archive-keyring.gpg
+
+- name: Add docker keyring
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: install docker
+  apt:
+    pkg:
+    - docker-ce 
+    - docker-ce-cli 
+    - containerd.io
+    update_cache: yes
+
+- name: Enable docker
+  service:
+    name: docker
+    enabled: yes
+
+- name: Stop service docker
+  ansible.builtin.service:
+    name: docker
+    state: stopped
+
+- name: docker use systemd 
+  shell: |
+    cat <<EOF | sudo tee /etc/docker/daemon.json
+    {
+      "exec-opts": ["native.cgroupdriver=systemd"],
+      "log-driver": "json-file",
+      "log-opts": {
+        "max-size": "100m"
+      },
+      "storage-driver": "overlay2"
+    }
+    EOF
+
+- name: systemctl daemon reload
+  shell: systemctl daemon-reload
+
+- name: Start service docker
+  ansible.builtin.service:
+    name: docker
+    state: started
