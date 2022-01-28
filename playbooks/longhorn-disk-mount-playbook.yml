@@ -1,8 +1,0 @@
-- hosts: longhorn
-  remote_user: "{{ REMOTE_USER }}"
-  become: yes
-  roles:
-    - ../roles/longhorn-disk-mount
-  vars_files:
-    - ../vars/general-config.yml
-    - ../vars/longhorn-disk-mount-config.yml

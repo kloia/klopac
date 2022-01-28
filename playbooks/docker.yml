@@ -1,3 +1,0 @@
-- hosts: docker_hosts
-  roles:
-    - name: ../roles/cri/docker
