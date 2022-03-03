@@ -1,2 +1,2 @@
 
-docker build ./Docker/runner/klopac/ -t runner
+docker build -f ./Docker/runner/klopac/Dockerfile . -t runner

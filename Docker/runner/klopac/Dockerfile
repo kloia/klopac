@@ -1,7 +1,8 @@
 FROM golang:1.17-alpine as build
 WORKDIR /app
-COPY ./entrypoint/ .
-RUN CGO_ENABLED=0 go build ./cmd/main.go
+COPY . .
+RUN cd entrypoint && \
+    CGO_ENABLED=0 go build ./cmd/main.go
 
 
 FROM ubuntu:20.04
@@ -36,7 +37,7 @@ sudo mv /root/.pulumi /app/; sudo chown -R platform:platform /app/.pulumi; echo 
 
 WORKDIR /app
 
-COPY --from=build /app/main /usr/local/bin/entrypoint
+COPY --from=build /app/entrypoint/main /usr/local/bin/entrypoint
 RUN chmod +x /usr/local/bin/entrypoint
 
 COPY . .
