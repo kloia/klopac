@@ -1,6 +1,6 @@
 package option
 
-import "awesomeProject/pkg/flag"
+import "entrypoint/pkg/flag"
 
 type optionService struct {
 	flag flag.Flag

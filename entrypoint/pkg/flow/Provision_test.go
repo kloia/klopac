@@ -1,9 +1,10 @@
 package flow
 
 import (
-	"awesomeProject/mock"
-	"github.com/golang/mock/gomock"
+	"entrypoint/mock"
 	"testing"
+
+	"github.com/golang/mock/gomock"
 )
 
 func TestProvision(t *testing.T) {

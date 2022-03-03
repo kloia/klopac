@@ -1,4 +1,4 @@
-module awesomeProject
+module entrypoint
 
 go 1.17
 

@@ -1,7 +1,7 @@
 package flow
 
 import (
-	"awesomeProject/pkg/shell"
+	"entrypoint/pkg/shell"
 	"log"
 )
 

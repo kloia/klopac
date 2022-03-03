@@ -1,12 +1,12 @@
 package main
 
 import (
-	"awesomeProject/pkg/command"
-	"awesomeProject/pkg/flag"
-	"awesomeProject/pkg/flow"
-	"awesomeProject/pkg/option"
-	"awesomeProject/pkg/shell"
-	"awesomeProject/pkg/websocket"
+	"entrypoint/pkg/command"
+	"entrypoint/pkg/flag"
+	"entrypoint/pkg/flow"
+	"entrypoint/pkg/option"
+	"entrypoint/pkg/shell"
+	"entrypoint/pkg/websocket"
 	"fmt"
 	"strings"
 )
@@ -15,6 +15,7 @@ func main() {
 	options := option.NewOptionService(flag.NewFlagService()).Get()
 	webSocketEnabled := options["websocket"].(*bool)
 	if *webSocketEnabled {
+
 		websocket.Enable(*options["uri"].(*string), *options["username"].(*string), *options["password"].(*string))
 	} else {
 		shellService := shell.NewShellService(command.NewCommandService())

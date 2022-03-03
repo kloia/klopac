@@ -1,8 +1,8 @@
 package shell
 
 import (
-	cmdService "awesomeProject/pkg/command"
 	"bytes"
+	cmdService "entrypoint/pkg/command"
 	"log"
 )
 

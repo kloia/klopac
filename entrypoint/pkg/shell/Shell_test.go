@@ -1,7 +1,7 @@
 package shell
 
 import (
-	"awesomeProject/pkg/command"
+	"entrypoint/pkg/command"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
