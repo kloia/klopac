@@ -1,0 +1,3 @@
+gitops:
+  enabled: true
+  name: argocd

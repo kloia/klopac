@@ -1,0 +1,12 @@
+ins:
+  name: terraform
+  master:
+    count: 1
+    cpu: 4
+    memory: 8g
+    disk-size: 100g
+  worker:
+    count: 3
+    cpu: 12
+    memory: 128g
+    disk-size: 300g

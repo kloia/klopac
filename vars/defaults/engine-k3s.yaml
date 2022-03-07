@@ -1,0 +1,7 @@
+k3s:
+  version: v1.23.4+k3s1
+  inputs:
+    master:
+      count: "{{ instance.master.count }}"
+    worker:
+      count: "{{ instance.worker.count }}"

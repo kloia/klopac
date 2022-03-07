@@ -1,0 +1,23 @@
+int:
+  ingress:
+    enabled: true
+    name: nginx
+  cpi:
+    enabled: false
+    name: vsphere
+  csi:
+    enabled: false
+    name: vsphere
+    depends_on: cpi
+  vault:
+    enabled: true
+    name: hashicorp
+  ca:
+    enabled: false
+    name: cert-manager
+  monitoring:
+    enabled: true
+    name: pga-stack
+  logging:
+    enabled: true
+    name: efk

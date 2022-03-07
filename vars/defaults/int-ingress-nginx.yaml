@@ -1,0 +1,2 @@
+ingress-nginx:
+  version: 3.15.2

@@ -1,0 +1,2 @@
+logging-efk:
+  version: 3.17.2

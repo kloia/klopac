@@ -1,0 +1,13 @@
+apm:
+  enabled: false
+  name: instana-agent
+app:
+  - name: sock-shop
+    enabled: true
+    based_on: gitops
+  - name: example
+    enabled: false
+    based_on: gitops
+  - name: test
+    enabled: true
+    depends_on: sock-shop

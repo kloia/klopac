@@ -1,0 +1,4 @@
+img:
+  name: packer
+  os: ubuntu:20.04
+  disk-size: 100g

@@ -1,0 +1,9 @@
+engine:
+  type: k3s
+  provider:
+    name: aws
+  rbac:
+    enabled: false
+    type: ldap
+    user: usename
+    pass: pass

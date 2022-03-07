@@ -1,0 +1,7 @@
+general:
+  environment: test
+  provider: 
+    name: aws
+    type: ec2
+  log:
+    level: error
