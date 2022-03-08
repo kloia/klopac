@@ -38,7 +38,7 @@ sudo mv /root/.pulumi /app/; sudo chown -R platform:platform /app/.pulumi; echo 
 WORKDIR /app
 
 COPY --from=build /app/entrypoint/main /usr/local/bin/entrypoint
-RUN chmod +x /usr/local/bin/entrypoint
+RUN sudo chmod +x /usr/local/bin/entrypoint
 
 COPY . .
 ENTRYPOINT ["entrypoint"]
