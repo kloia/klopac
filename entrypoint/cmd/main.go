@@ -19,30 +19,28 @@ func main() {
 		websocket.Enable(*options["uri"].(*string), *options["username"].(*string), *options["password"].(*string))
 	} else {
 		shellService := shell.NewShellService(command.NewCommandService())
+		flowService := flow.NewFlowService(shellService)
 		if *options["provision"].(*bool) || *options["validate"].(*bool) {
-			flow.NewProvisionService(shellService).Run(strings.Trim(fmt.Sprintf(`
+			flowService.Run(strings.Trim(fmt.Sprintf(`
 				export LOGLEVEL=%v
 				cd provisioner;
-				ls;
+				ansible-playbook provisioner.yaml;
 			`, *options["loglevel"].(*string)), " "))
-			//ansible-playbook provisioner.yaml
 			if *options["validate"].(*bool) {
-				flow.NewValidateService(shellService).Run(strings.Trim(fmt.Sprintf(`
+				flow.NewFlowService(shellService).Run(strings.Trim(fmt.Sprintf(`
 					export LOGLEVEL=%v				
 					cd validator;
-					ls;
+					ansible-playbook validator.yaml;
 				`, *options["loglevel"].(*string)), " "))
-				//ansible-playbook validator.yaml
 			}
 		}
 		if *options["healthcheck"].(*bool) {
-			flow.NewFinalizeService(shellService).Run(strings.Trim(fmt.Sprintf(`
+			flowService.Run(strings.Trim(fmt.Sprintf(`
 				export LOGLEVEL=%v
 				export HEALTHCHECK=%v
 				cd finalizer;
-				ls;
+				ansible-playbook finalizer.yaml;
 			`, *options["loglevel"].(*string), *options["healthcheck"].(*bool)), " "))
-			//ansible-playbook finalizer.yaml
 		}
 	}
 }

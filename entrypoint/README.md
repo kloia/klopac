@@ -15,5 +15,9 @@ go test ./... -v
 MOCK
 mockgen -source=pkg/shell/Shell.go -destination=mock/mock_shell.go -package=mock
 
+MANUAL TEST
+go build cmd/main.go
+mv main ..
+
 
 ```
