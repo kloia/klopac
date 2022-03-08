@@ -4,8 +4,62 @@
   tasks:
     - name: Create bundle from state and config files
       command: tar -czvf bundle.tar.gz ./data
-    - name: Bare include (free-form)
-      include_vars: myvars.yaml
-    - name: Print
-      debug:
-        var: outputs
+
+    - name: Include variables from YAML
+      include_vars: test_vars.yaml
+
+    - name: Set facts
+      set_fact:
+        public_ip: "{{ outputs['ec2']['public-ip'] }}"
+        ssh_key: "{{ outputs['ec2']['ssh_key'] }}"
+
+    - name: "Clean Servers Group in Inventory file"
+      ignore_errors: true
+      ini_file:
+        dest: "./inventory"
+        section: "servers"
+        option: "{{ public_ip }} ansible_ssh_private_key_file"
+        value: "{{ ssh_key }}"
+        no_extra_spaces: yes
+        mode: 0666
+        state: absent
+        backup: no
+
+    - name: "Update inventory file with SERVER list"
+      ini_file:
+        dest: "./inventory"
+        section: "servers"
+        option: "{{ public_ip }} ansible_ssh_private_key_file"
+        value: "{{ ssh_key }}"
+        no_extra_spaces: yes
+        mode: 0666
+        state: present
+        backup: no
+
+    - name: Refresh inventory
+      meta: refresh_inventory
+
+- hosts: servers
+  gather_facts: false
+  tasks:
+    - name: Include variables from YAML
+      include_vars: test_vars.yaml
+
+    - name: Get OS Name
+      shell: cat /etc/os-release | grep -E "^NAME" | awk -F"=" '{ print $2 }' | sed 's/"//g'
+      register: os_name
+
+    - name: Get OS Version
+      shell: cat /etc/os-release | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
+      register: os_version
+
+    - name: Check OS name
+      fail:
+        msg: "OS is not correct"
+      when: os_name.stdout | lower != img.os.name | lower
+
+    - name: Check OS version
+      fail:
+        msg: "OS is not correct"
+      when: os_version.stdout | lower != img.os.version | lower
+
