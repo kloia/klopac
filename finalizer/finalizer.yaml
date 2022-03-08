@@ -1,0 +1,11 @@
+---
+
+- hosts: localhost
+  tasks:
+    - name: Create bundle from state and config files
+      command: tar -czvf bundle.tar.gz ./data
+    - name: Bare include (free-form)
+      include_vars: myvars.yaml
+    - name: Print
+      debug:
+        var: outputs

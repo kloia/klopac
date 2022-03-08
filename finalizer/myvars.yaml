@@ -1,0 +1,4 @@
+outputs:
+  ec2:
+    public-ip: 10.200.142.120
+    ssh_key: "asd"

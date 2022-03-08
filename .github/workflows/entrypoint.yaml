@@ -1,0 +1,25 @@
+name: Go
+
+on:
+  push:
+    branches: [ 0.1-alpha ]
+  pull_request:
+    branches: [ 0.1-alpha ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Build
+        run: cd entrypoint && go build cmd/main.go
+
+      - name: Test
+        run: cd entrypoint && go test -v ./...
