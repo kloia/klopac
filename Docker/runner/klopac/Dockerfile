@@ -1,3 +1,10 @@
+FROM golang:1.17-alpine as build
+WORKDIR /app
+COPY . .
+RUN cd entrypoint && \
+    CGO_ENABLED=0 go build ./cmd/main.go
+
+
 FROM ubuntu:20.04
 
 RUN groupadd docker -g 998 && useradd -s /bin/bash -d /app -m -u 1000 -G docker platform && \
@@ -29,3 +36,11 @@ RUN curl -fsSL https://get.pulumi.com | sudo bash -s -- --version 3.22.1 --silen
 sudo mv /root/.pulumi /app/; sudo chown -R platform:platform /app/.pulumi; echo "export PATH=$PATH:~/.pulumi/bin" >> /app/.bashrc
 
 WORKDIR /app
+
+COPY --from=build /app/entrypoint/main /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
+COPY . .
+ENTRYPOINT ["entrypoint"]
+
+
