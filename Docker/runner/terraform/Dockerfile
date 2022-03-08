@@ -12,5 +12,4 @@ RUN apt-get update -y && \
     apt-get clean
 
 WORKDIR /app
-COPY . .
-CMD [ "sh", "-c","terraform init && terraform plan -out 'tfplan' && terraform apply plan"]
+CMD [ "sh", "-c","terraform init && terraform plan -out 'tfplan' && terraform apply tfplan"]
