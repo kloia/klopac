@@ -6,5 +6,9 @@ img:
   disk-size: 100g
 outputs:
   ec2:
-    public-ip: 10.10.10.10
-    ssh_key: "~/.ssh/test.pem"
+    - public_ip: 
+      ssh_key: "~/.ssh/test.pem"
+      remote_user: ubuntu
+    - public_ip: 
+      ssh_key: "~/.ssh/test.pem"
+      remote_user: ubuntu

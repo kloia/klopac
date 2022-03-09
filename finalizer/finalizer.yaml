@@ -10,34 +10,32 @@
 
     - name: Set facts
       set_fact:
-        public_ip: "{{ outputs['ec2']['public-ip'] }}"
-        ssh_key: "{{ outputs['ec2']['ssh_key'] }}"
+        ec2: "{{ outputs['ec2'] }}"
 
-    - name: "Clean Servers Group in Inventory file"
+    - name: "Remove inventory file if it exists"
       ignore_errors: true
-      ini_file:
-        dest: "./inventory"
-        section: "servers"
-        option: "{{ public_ip }} ansible_ssh_private_key_file"
-        value: "{{ ssh_key }}"
-        no_extra_spaces: yes
-        mode: 0666
-        state: absent
-        backup: no
+      command: rm inventory
+
+    - name: "Create inventory file"
+      shell: echo "[servers]" > inventory
 
     - name: "Update inventory file with SERVER list"
       ini_file:
         dest: "./inventory"
         section: "servers"
-        option: "{{ public_ip }} ansible_ssh_private_key_file"
-        value: "{{ ssh_key }}"
+        option: "{{ item.public_ip }} ansible_ssh_private_key_file={{ item.ssh_key }} ansible_ssh_user"
+        values: "{{ item.remote_user }}"
         no_extra_spaces: yes
         mode: 0666
         state: present
         backup: no
+      with_items: "{{ ec2 }}"
 
     - name: Refresh inventory
       meta: refresh_inventory
+
+    - name: Write to file (for testing purposes)
+      shell: echo "{{ outputs | to_nice_yaml(indent=2) }}" > output.yaml
 
 - hosts: servers
   gather_facts: false
@@ -53,13 +51,10 @@
       shell: cat /etc/os-release | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
       register: os_version
 
-    - name: Check OS name
-      fail:
-        msg: "OS is not correct"
-      when: os_name.stdout | lower != img.os.name | lower
+    - name: Write os_name checks to outputs
+      delegate_to: localhost
+      shell: "echo 'os_name: {{ os_name.stdout | lower == img.os.name | lower }}' >> output.yaml"
 
-    - name: Check OS version
-      fail:
-        msg: "OS is not correct"
-      when: os_version.stdout | lower != img.os.version | lower
-
+    - name: Write os_version checks to outputs
+      delegate_to: localhost
+      shell: "echo 'os_version: {{ os_version.stdout | lower == img.os.version | lower }}' >> output.yaml"
