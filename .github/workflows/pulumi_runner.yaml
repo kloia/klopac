@@ -1,0 +1,23 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [ 0.1-alpha]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and Push Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v4
+        with:
+          image: "${{ secrets.DOCKER_HUB }}/klopac-pulumi-runner"
+          tag: 0.1
+          registry: docker.io
+          username: ${{ secrets.DOCKER_HUB }}
+          password: ${{ secrets.DOCKER_HUB_KEY }}
+          dockerfile: Docker/runner/pulumi/Dockerfile
+          buildArgs: PULUMI_VERSION=3.22.1
