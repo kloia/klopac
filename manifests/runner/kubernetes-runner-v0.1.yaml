@@ -1,0 +1,21 @@
+runner:
+  kubernetes:
+    version: v0.1
+    kubectl:
+      version: v1.23.4
+      inputs:
+        path: '/app'
+        log:
+          level: "{{ general.log.level }}"
+    helm:
+      version: v3.8.0
+      inputs:
+        path: '/app'
+        log:
+          level: "{{ general.log.level }}"
+    kustomize:
+      version: 4.5.2
+      inputs:
+        path: '/app'
+        log:
+          level: "{{ general.log.level }}"

@@ -1,6 +1,2 @@
 vault-hashicorp:
-  version: 
-  outputs:
-    root_key: 
-    service_name:
-    namespace_name:  
+  version: v1.9.4
