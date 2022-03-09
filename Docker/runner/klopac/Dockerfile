@@ -41,6 +41,7 @@ COPY --from=build /app/entrypoint/main /usr/local/bin/entrypoint
 RUN sudo chmod +x /usr/local/bin/entrypoint
 
 COPY . .
+RUN ansible-galaxy collection install -r finalizer/requirements.yml
 ENTRYPOINT ["entrypoint"]
 
 
