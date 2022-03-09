@@ -13,8 +13,9 @@
         ec2: "{{ outputs['ec2'] }}"
 
     - name: "Remove inventory file if it exists"
-      ignore_errors: true
-      command: rm inventory
+      file:
+        path: inventory
+        state: absent
 
     - name: "Create inventory file"
       shell: echo "[servers]" > inventory
@@ -44,11 +45,19 @@
       include_vars: test_vars.yaml
 
     - name: Get OS Name
-      shell: cat /etc/os-release | grep -E "^NAME" | awk -F"=" '{ print $2 }' | sed 's/"//g'
+      shell: |
+        set -o pipefail
+        cat /etc/os-release | grep -E "^NAME" | awk -F"=" '{ print $2 }' | sed 's/"//g'
+      args:
+        executable: /bin/bash
       register: os_name
 
     - name: Get OS Version
-      shell: cat /etc/os-release | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
+      shell: |
+        set -o pipefail
+        cat /etc/os-release | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
+      args:
+        executable: /bin/bash
       register: os_version
 
     - name: Write os_name checks to outputs
