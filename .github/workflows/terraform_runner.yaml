@@ -1,4 +1,4 @@
-name: Build and Publish
+name: Terraform Runner Image Build and Publish
 
 on:
   push:

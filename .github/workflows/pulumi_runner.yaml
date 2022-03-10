@@ -1,4 +1,4 @@
-name: Build and Publish
+name: Pulumi Runner Image Build and Publish
 
 on:
   push:
