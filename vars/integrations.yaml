@@ -12,9 +12,11 @@ int:
   vault:
     enabled: true
     name: hashicorp
-  ca:
+  cert:
     enabled: false
     name: cert-manager
+  autoscaler:
+    enabled: true
   monitoring:
     enabled: true
     name: pga-stack

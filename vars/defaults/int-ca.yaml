@@ -1,2 +1,2 @@
-cert-manager:
-  version: v1.7.1
+autoscaler:
+  version: 9.16.1
