@@ -1,12 +1,31 @@
 ins:
-  name: terraform
+  type: terraform
+  auth:
+    type: pem
+    user: ubuntu
   master:
     count: 1
     cpu: 4
-    memory: 8g
-    disk-size: 100g
+    mem: 8g
+    disk-size: 200g
+    net:
+      dhcp: true
+      ip:
+        pool: [10.0.0.10]
+        subnet: 24
+        gw: 10.0.0.1
+      dns: ["10.0.0.100","10.0.0.101"]
+      domain: pac.local
   worker:
     count: 3
     cpu: 12
-    memory: 128g
+    mem: 128g
     disk-size: 300g
+    net:
+      dhcp: true
+      ip:
+        pool: [10.0.0.20..22]
+        subnet: 24
+        gw: 10.0.0.1
+      dns: ["10.0.0.100","10.0.0.101"]
+      domain: pac.local

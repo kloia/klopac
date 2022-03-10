@@ -1,5 +1,2 @@
 instana-agent:
   version: latest
-  inputs:
-    zone: general.environment
-    token: ''

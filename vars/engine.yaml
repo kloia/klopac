@@ -1,6 +1,7 @@
 engine:
   type: k3s
   provider:
+    enabled: false
     name: aws
   rbac:
     enabled: false
