@@ -1,0 +1,26 @@
+repo:
+  rke-ansible:
+    name: "Rancher-Ansible"
+    uri: "https://github.com/kloia/rancher-ansible"
+    type: git
+    branch: master
+    runner:
+      name: ansible
+      version: 5.2.0
+    state:
+      enabled: false
+    healthcheck:
+      type: kubeconfig
+    inputs:
+      kubeconfig:
+        type: file
+        path: "./"
+    outputs:
+      logging:
+        user: ''
+        password: ''
+        uri: ''
+      monitoring:
+        user: ''
+        password: ''
+        uri: '' 
