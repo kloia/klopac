@@ -1,4 +1,4 @@
-general:
+platform:
   environment: test
   provider: 
     name: aws
