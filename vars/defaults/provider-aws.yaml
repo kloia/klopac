@@ -1,0 +1,6 @@
+aws:
+  auth:
+    aws_access_key_id: ''
+    aws_secret_access_key: ''
+  profile: default
+  region: eu-east-1
