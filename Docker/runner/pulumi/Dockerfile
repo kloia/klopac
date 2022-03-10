@@ -11,6 +11,6 @@ RUN curl -fsSL https://get.pulumi.com | sudo bash -s -- --version ${PULUMI_VERSI
     sudo mv /root/.pulumi /app/; sudo chown -R root:root /app/.pulumi
 
 ENV PATH="/app/.pulumi/bin:${PATH}"
-ENTRYPOINT ["pulumi"]
+CMD ["pulumi"]
 
 
