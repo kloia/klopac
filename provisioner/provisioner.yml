@@ -1,0 +1,12 @@
+---
+- name: Provisioner Playbook
+  hosts: localhost
+  tasks:
+  - name: include_engine_file
+    include_vars: ../vars/engine.yaml
+  - name: include_manifest_file
+    include_vars: ../manifests/repo/{{ engine.type }}.yaml
+  - ansible.builtin.git:
+      repo: "{{ repo.uri }}"
+      dest: "repos/{{ repo.name }}"
+      version: "{{ repo.branch }}"
