@@ -2,3 +2,4 @@ tls.crt
 tls.key
 ca.crt
 id_rsa
+.DS_Store

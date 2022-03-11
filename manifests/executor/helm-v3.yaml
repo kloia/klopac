@@ -1,0 +1,13 @@
+executor:
+  name: helm
+  version: v3.8.1
+  runner: kubernetes-runner-v0.1
+  inputs:
+    name: ''
+    namespacename: ''
+    version: ''
+    repo: ''
+    username: ''
+    password: ''
+    kubeconfig: ''
+    args: [""]
