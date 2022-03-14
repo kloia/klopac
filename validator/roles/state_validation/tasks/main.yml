@@ -1,0 +1,20 @@
+# ---
+
+# # State files exists checks
+# - name: Check if state file exists
+#   ansible.builtin.stat:
+#     path: "state.tfstate" # Vu state dosyası nerede?
+#   when: repo.runner.name == terraform  
+#   register: state_files_exists
+
+# - name: Check if state file exists
+#   ansible.builtin.stat:
+#     path: "state.tfstate" # Vu state dosyası nerede?
+#   when: repo.runner.name == pulumi  
+#   register: state_files_exists
+
+# - name: Write state_files_exists to outputs
+#   shell: "echo 'state_files_exists: {{ state_files_exists.stdout }}' >> output.yaml"
+
+# # State'te bir bozulma var mı kontrolü.
+# # TODO

@@ -1,0 +1,16 @@
+# # Repo directory check
+# - name: Check if the directory exists
+#   ansible.builtin.stat:
+#     path: "repos/{{ repo.name }}"
+#   register: repo_dir_exists
+
+# - name: Write repo_dir_exists to outputs
+#   shell: "echo 'repo_dir_exists: {{ repo_dir_exists.stdout }}' >> output.yaml"
+
+# # Required fields checks
+# - name: Check runner.name is defined
+#   shell: "echo 'required_fields_defined: False' >> output.yaml"
+#   when: runner.name is not defined
+
+
+
