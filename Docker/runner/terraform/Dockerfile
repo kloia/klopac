@@ -1,6 +1,6 @@
 FROM ubuntu:20.04 as base
-ARG TF_VERSION
-ARG TG_VERSION
+ARG TF_VERSION=1.1.7
+ARG TG_VERSION=v0.36.3
 RUN apt-get update -y && \
     apt-get install -y curl wget unzip gnupg ssh apt-transport-https ca-certificates gnupg lsb-release software-properties-common sudo && \
     curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - && \
@@ -12,4 +12,4 @@ RUN apt-get update -y && \
     apt-get clean
 
 WORKDIR /app
-CMD [ "sh", "-c","terraform init && terraform plan -out 'tfplan' && terraform apply tfplan"]
+CMD ["terraform"]

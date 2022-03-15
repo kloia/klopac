@@ -1,0 +1,14 @@
+img:
+  name: packer
+  os:
+    name: ubuntu
+    version: 20.04.2
+  disk-size: 100g
+outputs:
+  ec2:
+    - public_ip: 
+      ssh_key: "~/.ssh/test.pem"
+      remote_user: ubuntu
+    - public_ip: 
+      ssh_key: "~/.ssh/test.pem"
+      remote_user: ubuntu

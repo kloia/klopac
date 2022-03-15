@@ -1,0 +1,8 @@
+azure:
+  auth:
+    type: principal
+    id: ''
+    secret: ''
+  profile: default
+  tenant: ''
+  subscription: ''

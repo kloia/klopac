@@ -1,2 +1,21 @@
 packer:
   version: 1.8.0
+  os: ubuntu:20.04
+  disk-size: 300g
+  pre-reqs:
+    file-limits:
+      nofile:
+        hard: 1024000
+        soft: 1024000
+      nproc:
+        hard: 1024000
+        soft: 1024000
+    parameters:
+      kernel: 
+        net.bridge.bridge-nf-call-ip6tables: 1
+        net.bridge.bridge-nf-call-iptables: 1
+    timezone: Europe/Istanbul
+    logrotate:
+      enabled: true
+      rotate: 10
+      maxsize: 250M 

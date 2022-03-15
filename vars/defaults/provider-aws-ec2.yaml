@@ -1,0 +1,15 @@
+aws-ec2:
+  master:
+    network: ''
+    ami: ''
+    asg: ''
+    pool: ''
+    instance:
+      type: ''
+  worker:
+    network: ''
+    ami: ''
+    asg: ''
+    pool: ''
+    instance:
+      type: ''
