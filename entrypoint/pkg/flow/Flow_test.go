@@ -7,7 +7,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestProvision(t *testing.T) {
+func TestFlow(t *testing.T) {
 	t.Run("execute provision succesfully", func(t *testing.T) {
 		tcs := []struct {
 			given           string
@@ -20,7 +20,7 @@ func TestProvision(t *testing.T) {
 		mockShell := mock.NewMockShell(gomock.NewController(t))
 		for _, tc := range tcs {
 			mockShell.EXPECT().Run(tc.given).Return(tc.expected_err, tc.expected_stdout, tc.expected_stderr)
-			NewProvisionService(mockShell).Run(tc.given)
+			NewFlowService(mockShell).Run(tc.given)
 		}
 
 	})

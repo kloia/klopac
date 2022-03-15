@@ -5,15 +5,15 @@ import (
 	"log"
 )
 
-type Provision interface {
+type Flow interface {
 	Run(command string)
 }
 
-type provisionService struct {
+type flowService struct {
 	shell shell.Shell
 }
 
-func (p provisionService) Run(command string) {
+func (p flowService) Run(command string) {
 	err, out, errout := p.shell.Run(command)
 	if err != nil {
 		log.Printf("error: %v\n", err)
@@ -24,6 +24,6 @@ func (p provisionService) Run(command string) {
 	log.Print(errout)
 }
 
-func NewProvisionService(s shell.Shell) Provision {
-	return &provisionService{shell: s}
+func NewFlowService(s shell.Shell) Flow {
+	return &flowService{shell: s}
 }
