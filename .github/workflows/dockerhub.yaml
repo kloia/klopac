@@ -3,7 +3,8 @@ name: Build and Publish
 on:
   push:
     branches: [ 0.1-alpha ]
-
+    paths:
+      - 'Docker/runner/klopac/Dockerfile'
 jobs:
 
   build:
