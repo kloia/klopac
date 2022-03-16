@@ -2,8 +2,9 @@ name: Terraform Runner Image Build and Publish
 
 on:
   push:
-    branches: [ 0.1-alpha]
-
+    branches: [ 0.1-alpha ]
+    paths:
+      - 'Docker/runner/terraform/Dockerfile'
 jobs:
 
   build:
