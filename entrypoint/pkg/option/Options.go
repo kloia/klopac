@@ -1,17 +1,21 @@
 package option
 
-import "entrypoint/pkg/flag"
+import (
+	"entrypoint/pkg"
+	"entrypoint/pkg/flag"
+)
 
 type optionService struct {
-	flag flag.Flag
+	flag   flag.Flag
+	params map[string]interface{}
 }
 
-func NewOptionService(f flag.Flag) *optionService {
-	return &optionService{flag: f}
+func GetParam[V comparable](param string) V {
+	return *pkg.OptionService.params[param].(*V)
 }
 
-func (o optionService) Get() map[string]interface{} {
-	options := map[string]interface{}{
+func (o *optionService) setFlags() {
+	o.params = map[string]interface{}{
 		"provision":   o.flag.Bool("provision", false, "sadece provision çalıştırır"),
 		"validate":    o.flag.Bool("validate", false, "provision ve validate sıra ile çalıştırır"),
 		"healthcheck": o.flag.Bool("healthcheck", false, "healthcheck environmentini set ederek sadece finalizer çalıştırır"),
@@ -22,5 +26,10 @@ func (o optionService) Get() map[string]interface{} {
 		"loglevel":    o.flag.String("loglevel", "INFO", "üretilen log'ların seviyesini set eder"),
 	}
 	o.flag.Parse()
-	return options
+}
+
+func NewOptionService(f flag.Flag) *optionService {
+	service := optionService{flag: f}
+	service.setFlags()
+	return &service
 }

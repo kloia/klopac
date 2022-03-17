@@ -5,67 +5,84 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
-	"net/http"
+	"net/url"
+	"os"
+	"os/signal"
+	"time"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
 type Input struct {
-	Deneme string `json:"deneme" xml:"deneme"`
+	Provision string `json:"provisioner" xml:"provisioner"`
 }
 
-func Enable(uri string, username string, password string) {
-	/*setupRoutes()
-	tlsEnabled, _ := strconv.ParseBool()
-	if tlsEnabled {
-		fmt.Println("Websocket Routes Enabled (:443/ws)")
-		log.Fatal(http.ListenAndServeTLS(":443",
-			*params["certPath"],
-			*params["keyPath"],
-			nil))
-	} else {
-		fmt.Println("Websocket Routes Enabled (:80/ws)")
-		log.Fatal(http.ListenAndServe(":80", nil))
-	}*/
-
+type Output struct {
+	Deneme string `json:"provisioner" xml:"provisioner"`
 }
 
-func setupRoutes() {
-	http.HandleFunc("/ws", wsEndpoint)
-}
+func Enable(uri, username, password string) {
 
-func wsEndpoint(writer http.ResponseWriter, request *http.Request) {
-	upgrader.CheckOrigin = func(r *http.Request) bool {
-		return true
-	}
-	conn, err := upgrader.Upgrade(writer, request, nil)
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+
+	u := url.URL{Scheme: "ws", Host: uri, Path: "/ws"}
+	log.Printf("connecting to %s", u.String())
+
+	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		log.Println(err)
+		log.Fatal("dial:", err)
 	}
-	log.Println("Client succesfully Connected...")
-	defer func() { conn.Close() }()
-	reader(conn)
-}
+	defer c.Close()
 
-func reader(conn *websocket.Conn) {
+	done := make(chan struct{})
+	messages := make(chan Input)
+
+	go func() {
+		defer close(done)
+		for {
+			_, message, err := c.ReadMessage()
+			if err != nil {
+				return
+			}
+			log.Printf("recv: %s", message)
+			var input Input
+			if err = json.Unmarshal(message, &input); err != nil {
+				continue
+			}
+			messages <- input
+		}
+	}()
+
 	for {
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
+		select {
+		case <-done:
 			return
-		}
-		input := Input{}
-		if err := json.Unmarshal(p, &input); err != nil {
-			log.Printf("error decoding request: %v", err)
+		case <-interrupt:
+			log.Println("interrupt")
+
+			// Cleanly close the connection by sending a close message and then
+			// waiting (with timeout) for the server to close the connection.
+			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+			if err != nil {
+				log.Println("write close:", err)
+				return
+			}
+			select {
+			case <-done:
+			case <-time.After(time.Second):
+			}
 			return
-		}
-		fmt.Println(input)
-		if err := conn.WriteMessage(messageType, []byte("Data alındı okay")); err != nil {
-			log.Println(err)
-			return
+		case message := <-messages:
+			//ENGINE.YAML I OVERRIDE ET GELEN PARAMETRELERE GORE
+			//flow.OpenSource(message.Provision)
+			fmt.Printf("INPUT FROM SERVER: %v", message)
+			//RESPONSE
+			output := Output{Deneme: "123"}
+			outputByte, _ := json.Marshal(output)
+			err := c.WriteMessage(websocket.TextMessage, outputByte)
+			if err != nil {
+				log.Println("write:", err)
+				return
+			}
 		}
 	}
 }
