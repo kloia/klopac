@@ -1,2 +1,38 @@
-img:
-  type: packer     
+img: #image layer variables
+  required: [enabled,type,os,disk-size,pre-reqs.timezone,pre-reqs.logrotate.enabled]
+  enabled: true
+  type: packer #packer, ansible or vagrant
+  installation:
+    type: repo #type for installation executor or repo
+  os: ubuntu:20.04 #ubuntu, suse or redhat
+  name: 'Ubuntu-20.04-klopac'
+  id: '' #for aws, azure or gcp. image template id
+  path: '/tmp/Ubuntu-20.04-klopac' #only vsphere. image path
+  disk-size: 300g #image / disk size
+  auth:
+    type: pem #only support pem auth
+    user: ubuntu #default username
+    pem: #pem settings
+      type: file #pem file
+      path: '/data/sensitive/pem.file' #pem file path
+  pre-reqs: 
+    file-limits:
+      nofile: 
+        hard: 1024000
+        soft: 1024000
+      nproc:
+        hard: 1024000
+        soft: 1024000
+    parameters: 
+      kernel: #kernel parameters, saved in /etc/sysctl.d folder
+        net.bridge.bridge-nf-call-ip6tables: 1
+        net.bridge.bridge-nf-call-iptables: 1
+    timezone: Europe/Istanbul 
+    logrotate: #for all log files
+      enabled: true
+      rotate: 10 
+      maxsize: 250M 
+  outputs:
+    name: img.name
+    id: img.id
+    os: img.os

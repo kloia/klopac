@@ -1,7 +1,20 @@
-platform:
-  environment: test
+platform: #platform specific general variables
+  required: [environment,provider.name,provider.type]
+  environment: test #test or prod
   provider: 
-    name: aws
-    type: ec2
+    name: aws #aws, azure, gcp or vsphere
+    type: ec2 #for aws ec2 or eks, for azure vmss or vm, for gcp vm or gke, for vsphere vm
+    auth:
+      type: id #id or user 
+      id: '' #for aws aws_access_key_id, for azure principal secret id
+      key: '' #for aws aws_secret_access_key, for azure principal value
+      #or
+      user: '' 
+      password: ''
+      ####
+      tenant: '' #optional only for azure, tenant id
+      subscription: '' #optional only for azure, subscription id
+      region-1: '' #optional single zone for aws, azure or gcp
+      region-2: '' #optional ha zone for aws, azure or gcp
   log:
-    level: error
+    level: error #default log level for all layers

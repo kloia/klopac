@@ -1,2 +1,49 @@
-ins:
-  type: terraform
+ins: #instance layer variables
+  required: [enabled, type,master.count,master.cpu,master.mem,master.disk-size,master.net.dhcp,worker.count,worker.cpu,worker.mem,worker.disk-size,worker.net.dhcp]
+  enabled: true 
+  type: terraform #terraform or ansible
+  installation:
+    type: repo
+  master: #kubernetes master instance settings
+    count: 1 
+    cpu: 4 
+    mem: 8g 
+    disk-size: 200g 
+    net:
+      dhcp: true 
+      ip: 
+        pool: [10.0.0.10] #ipv4 address pool, pac will be increase last digit of pool by default
+        subnet: 24
+        gw: 10.0.0.1
+      dns: ["10.0.0.100","10.0.0.101"]
+      domain: pac.local
+  worker:
+    count: 3
+    cpu: 12
+    mem: 128g 
+    disk-size: 300g
+    net:
+      dhcp: true
+      ip: 
+        pool: [10.0.0.20..22] #ipv4 address pool, pac will be increase last digit of pool by default
+        subnet: 24
+        gw: 10.0.0.1
+      dns: ["10.0.0.100","10.0.0.101"]
+      domain: pac.local
+  inputs:
+    image: 
+      name: img.name
+      id: img.id
+      os: img.os
+      auth:
+        type: img.auth.type
+        user: img.auth.user
+        pem.type: img.pem.type
+        pem.path: img.pem.path
+  outputs:
+    master:
+      count: ins.master.count
+      ips: ins.master.net.ip.pool
+    worker:
+      count: ins.master.count
+      ips: ins.master.net.ip.pool

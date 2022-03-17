@@ -1,10 +1,34 @@
-engine:
-  type: k3s
-  provider:
+engine: #engine layer variables
+  required: [enabled, type, prodiver.enabled, rbac.enabled]
+  enabled: true
+  type: k3s #k3s, rke2 or kubeadm
+  provider: #engine provider settings if it is enable integration layer cpi's not work
     enabled: false
-    name: aws
-  rbac:
-    enabled: false
-    type: ldap
-    user: usename
-    pass: pass
+    name: aws #aws, azure, gcp or vsphere
+  rbac: 
+    enabled: false 
+    type: ldap #only support ldap
+    protocol: ldap #connection protocol. ldap or ldaps
+    user: usename #ldap service account username
+    pass: pass #ldap service account password
+  endpoint:
+    uri: '' #kubernetes api endpoint
+  kubeconfig:
+    path: '/data/sensitive/kubeconfig' #generated kubeconfig file
+  inputs:
+    master:
+      count: ins.master.count
+      ips: ins.master.net.ip.pool
+    worker:
+      count: ins.master.count
+      ips: ins.master.net.ip.pool
+    auth:
+      type: img.auth.type
+      user: img.auth.user
+      pem.type: img.pem.type
+      pem.path: img.pem.path
+  outputs:
+    endpoint:
+      uri: engine.endpoint.uri
+    kubeconfig:
+      path: engine.kubeconfig.path

@@ -1,5 +1,5 @@
 repo:
-  rke2-ansible:
+  rke2:
     name: "RKE2-Ansible"
     uri: "https://github.com/kloia/rke2-ansible"
     type: git

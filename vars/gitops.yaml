@@ -1,3 +1,21 @@
 gitops:
+  required: [enabled, name, project, service-type]
   enabled: true
   name: argocd
+  namespace: argocd
+  project: default #gitops default project
+  service-type: NodePort
+  uri: '' #management ui uri
+  user: '' #management ui user
+  password: '' #management ui password
+  installation:
+    type: executor
+  inputs:
+    name: gitops.name
+    namespace: gitops.namespace
+    project: gitops.project
+    service-type: gitops.service-type
+  outputs:
+    uri: gitops.uri
+    user: gitops.user
+    password: gitops.password

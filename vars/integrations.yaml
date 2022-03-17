@@ -1,25 +1,114 @@
-int:
+int: #integration layer variables
+  required: [enabled,endpoint.uri,kubeconfig.path] 
+  enabled: true 
   ingress:
+    required: [enabled, name, namespace, type]
     enabled: true
     name: nginx
+    namespace: ingress-nginx
+    type: daemonset #daemonset or deploy
+    installation:
+      type: executor 
+    inputs:
+      name: int.ingress.name
+      namespace: int.ingress.namespace
+      installation:
+        type: int.ingress.installation.type
   cpi:
+    required: [enabled, name, namespace]
     enabled: false
     name: vsphere
+    namespace: kube-system
+    installation:
+      type: executor
+    inputs:
+      name: int.cpi.name
+      namespace: int.cpi.namespace
   csi:
+    required: [enabled, name, namespace, storageclass.name, storageclass.default]
     enabled: false
     name: vsphere
+    namespace: kube-system
+    storageclass:
+      name: vsphere-sc
+      default: true
     depends_on: cpi
+    installation:
+      type: executor
+    inputs:
+      name: int.csi.name
+      namespace: int.csi.namespace
+      storageclass:
+        name: int.csi.storageclass.name
+        default: int.csi.storageclass.default
   vault:
     enabled: true
     name: hashicorp
-  cert:
+    namespace: vault
+    uri: '' #vault api uri
+    root-keys: [''] #generated root keys
+    installation:
+      type: executor
+    inputs:
+      name: int.vault.name
+      namespace: int.vault.namespace
+    outputs:
+      uri: int.vault.uri
+      root-keys: int.vault.root-keys
+  cert-manager:
     enabled: false
     name: cert-manager
+    namespace: cert-manager
+    installation:
+      type: executor
+    inputs:
+      name: int.cert-manager.name
+      namespace: int.cert-manager.namespace
   autoscaler:
-    enabled: true
+    enabled: false
+    name: cluster-autoscaler
+    provider: platform.provider #for provider based cluster autoscaler settings
+    namespace: kube-system
+    installation:
+      type: executor
+    inputs:
+      name: int.autoscaler.name
+      namespace: int.autoscaler.namespace
   monitoring:
     enabled: true
     name: pga-stack
+    namespace: monitoring
+    service-type: NodePort #NodePort, ClusterIP or Load Balancer
+    uri: '' #management ui uri
+    user: '' #management user
+    password: '' #management user password
+    installation:
+      type: executor
+    inputs:
+      name: int.monitoring.name
+      namespace: int.monitoring.namespace
+    outputs:
+      uri: int.monitoring.uri
+      user: int.monitoring.user
+      password: int.monitoring.password
   logging:
     enabled: true
     name: efk
+    namespace: logging
+    uri: '' #management ui uri
+    user: '' #management ui user
+    password: '' #management ui password
+    installation:
+      type: executor
+    inputs:
+      name: int.logging.name
+      namespace: int.logging.namespace
+    outputs:
+      uri: int.logging.uri
+      user: int.logging.user
+      password: int.logging.password
+  inputs:
+    endpoint:
+      uri: engine.endpoint.uri
+    kubeconfig:
+      path: engine.kubeconfig.path

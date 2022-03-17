@@ -1,13 +1,22 @@
 apm:
+  required: [enabled, name]
   enabled: false
   name: instana-agent
+  installation:
+    type: executor
 app:
   - name: sock-shop
     enabled: true
-    based_on: gitops
+    based_on: gitops #for based technology
+    installation:
+      type: repo
   - name: example
     enabled: false
+    installation:
+      type: executor
     based_on: gitops
   - name: test
     enabled: true
-    depends_on: sock-shop
+    installation:
+      type: executor
+    depends_on: sock-shop #for depended object
