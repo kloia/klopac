@@ -1,21 +1,16 @@
 package option
 
 import (
-	"entrypoint/pkg"
 	"entrypoint/pkg/flag"
 )
 
 type optionService struct {
 	flag   flag.Flag
-	params map[string]interface{}
-}
-
-func GetParam[V comparable](param string) V {
-	return *pkg.OptionService.params[param].(*V)
+	Params map[string]interface{}
 }
 
 func (o *optionService) setFlags() {
-	o.params = map[string]interface{}{
+	o.Params = map[string]interface{}{
 		"provision":   o.flag.Bool("provision", false, "sadece provision çalıştırır"),
 		"validate":    o.flag.Bool("validate", false, "provision ve validate sıra ile çalıştırır"),
 		"healthcheck": o.flag.Bool("healthcheck", false, "healthcheck environmentini set ederek sadece finalizer çalıştırır"),
@@ -24,6 +19,8 @@ func (o *optionService) setFlags() {
 		"username":    o.flag.String("username", "", "websocket ile çalışacaksa uri erişimi için kullanılacak username"),
 		"password":    o.flag.String("password", "", "websocket ile çalışacaksa uri erişimi için kullanılacak password"),
 		"loglevel":    o.flag.String("loglevel", "INFO", "üretilen log'ların seviyesini set eder"),
+		"valuesFile":  o.flag.String("valuesFile", "values.yaml", "Config File"),
+		"varsPath":    o.flag.String("vars", "./vars", "Config File"),
 	}
 	o.flag.Parse()
 }

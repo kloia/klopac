@@ -1,9 +1,9 @@
 package main
 
 import (
-	"entrypoint/pkg/flow"
+	"entrypoint/pkg/klopac"
 )
 
 func main() {
-	flow.Run()
+	klopac.Run()
 }
