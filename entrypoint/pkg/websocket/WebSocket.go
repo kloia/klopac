@@ -2,7 +2,10 @@ package websocket
 
 import (
 	"encoding/json"
-	"entrypoint/pkg/klopac"
+	"entrypoint/pkg/command"
+	"entrypoint/pkg/flow"
+	"entrypoint/pkg/helper"
+	"entrypoint/pkg/shell"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
@@ -17,6 +20,7 @@ type Output struct {
 }
 
 func Enable(uri, username, password string) {
+	FlowService := flow.NewFlowService(shell.NewShellService(command.NewCommandService()))
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
@@ -73,14 +77,14 @@ func Enable(uri, username, password string) {
 			fmt.Printf("INPUT FROM SERVER: %v", message)
 
 			//UPDATE VARS FILE
-			klopac.UpdateValuesFile(message, klopac.GetParam[string]("varsPath"))
+			helper.UpdateValuesFile(message, helper.GetParam[string]("varsPath"))
 
 			//RUN FLOW
 			provision := message["provision"].(bool)
 			validate := message["validate"].(bool)
 			healthCheck := message["healthCheck"].(bool)
 			logLevel := message["logLevel"].(string)
-			klopac.FlowService.Run(provision, validate, healthCheck, logLevel)
+			FlowService.Run(provision, validate, healthCheck, logLevel)
 
 			//RESPONSE
 			output := Output{Deneme: "123"}

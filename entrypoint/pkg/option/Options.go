@@ -4,12 +4,12 @@ import (
 	"entrypoint/pkg/flag"
 )
 
-type optionService struct {
+type OptionService struct {
 	flag   flag.Flag
 	Params map[string]interface{}
 }
 
-func (o *optionService) setFlags() {
+func (o *OptionService) setFlags() {
 	o.Params = map[string]interface{}{
 		"provision":   o.flag.Bool("provision", false, "sadece provision çalıştırır"),
 		"validate":    o.flag.Bool("validate", false, "provision ve validate sıra ile çalıştırır"),
@@ -26,8 +26,8 @@ func (o *optionService) setFlags() {
 	o.flag.Parse()
 }
 
-func NewOptionService(f flag.Flag) *optionService {
-	service := optionService{flag: f}
+func NewOptionService(f flag.Flag) *OptionService {
+	service := OptionService{flag: f}
 	service.setFlags()
 	return &service
 }
