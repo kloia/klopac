@@ -21,6 +21,7 @@ func (o *optionService) setFlags() {
 		"loglevel":    o.flag.String("loglevel", "INFO", "üretilen log'ların seviyesini set eder"),
 		"valuesFile":  o.flag.String("valuesFile", "values.yaml", "Config File"),
 		"varsPath":    o.flag.String("vars", "./vars", "Config File"),
+		"bundleFile":  o.flag.String("bundleFile", "bundle.tar.gz", "Bundle File"),
 	}
 	o.flag.Parse()
 }

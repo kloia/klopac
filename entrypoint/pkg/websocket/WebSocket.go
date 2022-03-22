@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"encoding/json"
+	"entrypoint/pkg/klopac"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
@@ -10,10 +11,6 @@ import (
 	"os/signal"
 	"time"
 )
-
-type Input struct {
-	Provision string `json:"provisioner" xml:"provisioner"`
-}
 
 type Output struct {
 	Deneme string `json:"provisioner" xml:"provisioner"`
@@ -34,7 +31,7 @@ func Enable(uri, username, password string) {
 	defer c.Close()
 
 	done := make(chan struct{})
-	messages := make(chan Input)
+	messages := make(chan map[string]interface{})
 
 	go func() {
 		defer close(done)
@@ -44,7 +41,7 @@ func Enable(uri, username, password string) {
 				return
 			}
 			log.Printf("recv: %s", message)
-			var input Input
+			input := make(map[string]interface{})
 			if err = json.Unmarshal(message, &input); err != nil {
 				continue
 			}
@@ -72,9 +69,19 @@ func Enable(uri, username, password string) {
 			}
 			return
 		case message := <-messages:
-			//ENGINE.YAML I OVERRIDE ET GELEN PARAMETRELERE GORE
-			//flow.OpenSource(message.Provision)
+
 			fmt.Printf("INPUT FROM SERVER: %v", message)
+
+			//UPDATE VARS FILE
+			klopac.UpdateValuesFile(message, klopac.GetParam[string]("varsPath"))
+
+			//RUN FLOW
+			provision := message["provision"].(bool)
+			validate := message["validate"].(bool)
+			healthCheck := message["healthCheck"].(bool)
+			logLevel := message["logLevel"].(string)
+			klopac.FlowService.Run(provision, validate, healthCheck, logLevel)
+
 			//RESPONSE
 			output := Output{Deneme: "123"}
 			outputByte, _ := json.Marshal(output)

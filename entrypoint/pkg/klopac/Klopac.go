@@ -24,23 +24,30 @@ func GetParam[V comparable](param string) V {
 
 func Run() {
 	webSocketEnabled := GetParam[bool]("websocket")
+
 	if webSocketEnabled == true {
 		uri := GetParam[string]("uri")
 		username := GetParam[string]("username")
 		password := GetParam[string]("password")
 		websocket.Enable(uri, username, password)
 	} else {
-		valuesModel := model.ReadFile(GetParam[string]("valuesFile"))
-		updateValuesFile(valuesModel, GetParam[string]("varsPath"))
-		/*provision := GetParam[bool]("provision")
+		bundleFile := GetParam[string]("bundleFile")
+		if bundleFile != "bundle.tar.gz" {
+			//TODO: UNTAR BUNDLE FILE AND OVERRIDE VARS FOLDER
+		} else {
+			valuesModel := model.ReadFile(GetParam[string]("valuesFile"))
+			UpdateValuesFile(valuesModel, GetParam[string]("varsPath"))
+		}
+		provision := GetParam[bool]("provision")
 		validate := GetParam[bool]("validate")
 		logLevel := GetParam[string]("loglevel")
 		healthCheck := GetParam[bool]("healthcheck")
-		FlowService.Run(provision, validate, healthCheck, logLevel)*/
+
+		FlowService.Run(provision, validate, healthCheck, logLevel)
 	}
 }
 
-func updateValuesFile(valuesModel map[string]interface{}, varsPath string) {
+func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) {
 	filepath.Walk(varsPath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
