@@ -2,41 +2,27 @@ package model
 
 import (
 	"fmt"
-	"github.com/imdario/mergo"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
 )
 
-type Engine struct {
-	Hits int64 `yaml:"hits,omitempty"`
-	Time int64 `yaml:"time,omitempty"`
-}
-
-type Model struct {
-	Engine Engine `yaml:"engine,omitempty"`
-}
-
-func (c *Model) Set(filename string) *Model {
-
+func ReadFile(filename string) map[string]interface{} {
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)
 	}
-	err = yaml.Unmarshal(yamlFile, c)
+
+	m := make(map[string]interface{})
+	err = yaml.Unmarshal(yamlFile, m)
 	if err != nil {
 		log.Fatalf("Unmarshal: %v", err)
 	}
-
-	return c
+	return m
 }
 
-func (c *Model) Merge(other *Model) {
-	_ = mergo.Merge(c, other, mergo.WithOverride)
-}
-
-func (c *Model) WriteFile(filename string) error {
-	yamlData, err := yaml.Marshal(c)
+func WriteFile(filename string, data map[string]interface{}) error {
+	yamlData, err := yaml.Marshal(data)
 
 	if err != nil {
 		fmt.Printf("Error while Marshaling. %v", err)
@@ -49,8 +35,12 @@ func (c *Model) WriteFile(filename string) error {
 	return nil
 }
 
-func CreateByFileName(filename string) *Model {
-	var model Model
-	model.Set(filename)
-	return &model
+func GetDifference(first map[string]interface{}, second map[string]interface{}) map[string]interface{} {
+	newMap := make(map[string]interface{})
+	for k, v := range first {
+		if _, ok := second[k]; ok {
+			newMap[k] = v
+		}
+	}
+	return newMap
 }

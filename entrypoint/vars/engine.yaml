@@ -1,3 +1,10 @@
 engine:
-    hits: 5
-    time: 10000
+    type: k3s
+    provider:
+        enabled: false
+        name: aws
+    rbac:
+        enabled: false
+        type: ldap
+        user: usename
+        pass: pass

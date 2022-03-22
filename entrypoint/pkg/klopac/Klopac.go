@@ -8,9 +8,9 @@ import (
 	"entrypoint/pkg/option"
 	"entrypoint/pkg/shell"
 	"entrypoint/pkg/websocket"
-	"fmt"
-	"io/ioutil"
-	"log"
+	"github.com/imdario/mergo"
+	"os"
+	"path/filepath"
 )
 
 var (
@@ -30,7 +30,8 @@ func Run() {
 		password := GetParam[string]("password")
 		websocket.Enable(uri, username, password)
 	} else {
-		updateValuesFile(GetParam[string]("varsPath"))
+		valuesModel := model.ReadFile(GetParam[string]("valuesFile"))
+		updateValuesFile(valuesModel, GetParam[string]("varsPath"))
 		/*provision := GetParam[bool]("provision")
 		validate := GetParam[bool]("validate")
 		logLevel := GetParam[string]("loglevel")
@@ -39,17 +40,18 @@ func Run() {
 	}
 }
 
-func updateValuesFile(varsPath string) {
-	valuesModel := model.CreateByFileName(GetParam[string]("valuesFile"))
-	files, err := ioutil.ReadDir(varsPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, f := range files {
-		fmt.Println()
-		mainModel := model.CreateByFileName(fmt.Sprintf("%v/%v", varsPath, f.Name()))
-		mainModel.Merge(valuesModel)
-		mainModel.WriteFile(fmt.Sprintf("%v/%v", varsPath, f.Name()))
-	}
+func updateValuesFile(valuesModel map[string]interface{}, varsPath string) {
+	filepath.Walk(varsPath,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() && filepath.Ext(path) == ".yaml" {
+				defaultModel := model.ReadFile(path)
+				newMap := model.GetDifference(valuesModel, defaultModel)
+				mergo.Merge(&defaultModel, newMap, mergo.WithOverride)
+				model.WriteFile(path, defaultModel)
+			}
+			return nil
+		})
 }

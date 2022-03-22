@@ -1,2 +1,4 @@
 engine:
-  hits: 5
+  type: k4s
+k3s:
+  version: version
