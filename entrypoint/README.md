@@ -7,7 +7,7 @@ OPENSOURCE
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock runner --provision --validate
 
 WEBSOCKET - HTTP
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock runner --websocket
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock runner --websocket --uri localhost:80
 
 TEST
 go test ./... -v
@@ -18,6 +18,7 @@ mockgen -source=pkg/shell/Shell.go -destination=mock/mock_shell.go -package=mock
 MANUAL TEST
 go build cmd/main.go
 mv main ..
+./main
 
 
 ```
