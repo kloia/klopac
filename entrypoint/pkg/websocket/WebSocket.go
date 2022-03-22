@@ -2,10 +2,7 @@ package websocket
 
 import (
 	"encoding/json"
-	"entrypoint/pkg/command"
-	"entrypoint/pkg/flow"
 	"entrypoint/pkg/helper"
-	"entrypoint/pkg/shell"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
@@ -20,8 +17,6 @@ type Output struct {
 }
 
 func Enable(uri, username, password string) {
-	FlowService := flow.NewFlowService(shell.NewShellService(command.NewCommandService()))
-
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
@@ -84,7 +79,7 @@ func Enable(uri, username, password string) {
 			validate := message["validate"].(bool)
 			healthCheck := message["healthCheck"].(bool)
 			logLevel := message["logLevel"].(string)
-			FlowService.Run(provision, validate, healthCheck, logLevel)
+			helper.GetFlowService().Run(provision, validate, healthCheck, logLevel)
 
 			//RESPONSE
 			output := Output{Deneme: "123"}
