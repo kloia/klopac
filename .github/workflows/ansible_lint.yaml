@@ -4,8 +4,6 @@ name: Ansible Lint
 on:
   push:
     branches: [ 0.1-alpha ]
-  pull_request:
-    branches: [ 0.1-alpha ]
 
 jobs:
   ansible-lint:
