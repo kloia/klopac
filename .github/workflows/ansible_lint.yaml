@@ -4,8 +4,6 @@ name: Ansible Lint
 on:
   push:
     branches: [ 0.1-alpha ]
-  pull_request:
-    branches: [ 0.1-alpha ]
 
 jobs:
   ansible-lint:
@@ -16,7 +14,7 @@ jobs:
 
     - name: Lint Ansible Playbook
       # replace "master" with any valid ref
-      uses: ansible/ansible-lint-action@master
+      uses: ansible/ansible-lint-action@main
       with:
         # [required]
         # Paths to ansible files (i.e., playbooks, tasks, handlers etc..)

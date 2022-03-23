@@ -1,0 +1,4 @@
+engine:
+  type: k4s
+k3s:
+  version: version
