@@ -23,6 +23,3 @@ jobs:
 
       - name: Test
         run: cd entrypoint && go test -v ./...
-      
-      - name: Format
-        run: cd entrypoint && go fmt ./...
