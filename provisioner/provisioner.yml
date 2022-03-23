@@ -9,5 +9,11 @@
   - name: clone
     ansible.builtin.git:
       repo: "{{ repo.uri }}"
-      dest: "repos/{{ repo.name }}"
+      dest: "/data/repos/{{ repo.name }}"
       version: "{{ repo.branch }}"
+  - name: copy
+    copy:
+      src: "{{ item.path }}"
+      dest: "/data/repos/{{ repo.name }}/"
+    with_items: "{{ repo.outputs.values() | list }}"
+    when: item.type == 'file'
