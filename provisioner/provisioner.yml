@@ -6,7 +6,8 @@
     include_vars: ../vars/engine.yaml
   - name: include_manifest_file
     include_vars: ../manifests/repo/{{ engine.type }}.yaml
-  - ansible.builtin.git:
+  - name: clone
+    ansible.builtin.git:
       repo: "{{ repo.uri }}"
       dest: "repos/{{ repo.name }}"
       version: "{{ repo.branch }}"
