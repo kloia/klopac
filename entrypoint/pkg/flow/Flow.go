@@ -42,6 +42,14 @@ func (p flowService) Run(provision, validate, healthCheck bool, logLevel string)
 				`, logLevel), " "))
 		}
 	}
+
+	p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
+		export LOGLEVEL=%v
+		export HEALTHCHECK=%v
+		cd controller;
+		ansible-playbook controller.yaml;
+		`, logLevel, healthCheck), " "))
+
 	if healthCheck == true {
 		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
 				export LOGLEVEL=%v
