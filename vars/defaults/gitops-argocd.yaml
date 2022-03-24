@@ -1,2 +1,5 @@
-argocd:
-  version: v2.2.5
+gitops:
+  argocd: #ArgoCD specific variables
+    version: 4.2.1
+    argoRollout: true
+    namespace: argocd

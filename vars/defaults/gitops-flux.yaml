@@ -1,0 +1,3 @@
+gitops:
+  flux: #flux specific variables
+    version: 1.24.3

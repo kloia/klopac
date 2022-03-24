@@ -1,0 +1,3 @@
+int:
+  clusterAutoscaler: #cluster autoscaler general variables
+    version: 9.16.1

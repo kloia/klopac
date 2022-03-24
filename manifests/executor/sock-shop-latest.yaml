@@ -1,0 +1,12 @@
+platform:
+  executor:
+    sockShop:
+      0.0.12:
+        runner: 
+          name: kubernetes
+          version: v0.1
+          command: helm
+        helm:
+          repo: 'https://github.com/microservices-demo/microservices-demo/tree/master/deploy/kubernetes/helm-chart'
+          namespace: default
+          name: sock-shop

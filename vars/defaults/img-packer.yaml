@@ -1,2 +1,3 @@
-packer:
-  version: 1.8.0
+img:
+  packer: #packer specific variables
+    version: 1.8.0

@@ -1,7 +1,13 @@
 engine: #engine layer variables
-  required: [enabled, type, prodiver.enabled, rbac.enabled]
+  required: [enabled, type, prodiver.enabled, rbac.enabled, operation.type, runner.type, instance.master.count, instance.master.ips, instance.worker.count, instance.worker.ips, instance.auth.type]
   enabled: true
   type: k3s #k3s, rke2 or kubeadm
+  operation:
+    type: install #none, install, update or delete
+    update:
+      policy: apply #apply or recreate
+  runner:
+    type: repo
   provider: #engine provider settings if it is enable integration layer cpi's not work
     enabled: false
     name: aws #aws, azure, gcp or vsphere
@@ -14,8 +20,8 @@ engine: #engine layer variables
   endpoint:
     uri: '' #kubernetes api endpoint
   kubeconfig:
-    path: '/data/sensitive/kubeconfig' #generated kubeconfig file
-  inputs:
+    path: '/data/sensitive/kubeconfig/' #generated kubeconfig file
+  instance:
     master:
       count: ins.master.count
       ips: ins.master.net.ip.pool

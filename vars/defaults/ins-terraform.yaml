@@ -1,2 +1,4 @@
-terraform:
-  version: 1.1.7
+ins:
+  terraform: #terraform general variables
+    version: 1.1.7
+    logLevel: platform.log.level

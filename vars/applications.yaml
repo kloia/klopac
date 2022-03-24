@@ -1,22 +1,45 @@
-apm:
-  required: [enabled, name]
-  enabled: false
-  name: instana-agent
-  installation:
-    type: executor
 app:
-  - name: sock-shop
+  - name: instana
+    required: [enabled, name, namespace, type, operation.type, runner.type]
+    type: agent
+    namespace: instana-agent
+    enabled: false
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
+      type: executor
+  - sock-shop:
+    required: [enabled, name, namespace, operation.type, runner.type]
     enabled: true
-    based_on: gitops #for based technology
-    installation:
+    namespace: sock-shop
+    basedOn: gitops #for based technology
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: repo
   - name: example
+    required: [enabled, name, namespace, operation.type, runner.type]
     enabled: false
-    installation:
+    namespace: example
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
-    based_on: gitops
+    basedOn: gitops
   - name: test
+    required: [enabled, name, namespace, operation.type, runner.type]
+    namespace: default
     enabled: true
-    installation:
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
-    depends_on: sock-shop #for depended object
+    dependsOn: sock-shop #for depended object

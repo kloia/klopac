@@ -1,0 +1,3 @@
+int:
+  loggingBanzaicloud: #banzaicloud logging operator specific variables
+    version: 3.17.2

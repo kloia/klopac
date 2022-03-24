@@ -1,0 +1,18 @@
+platform:
+  executor:
+    clusterAutoscaler:
+      9.16.1:
+        runner: 
+          name: kubernetes
+          version: v0.1
+          command: helm
+        helm:
+          repo: https://kubernetes.github.io/autoscaler
+          namespace: cluster-autocaler
+          name: cluster-autocaler
+          masterGroup: int.clusterAutoscaler.master.group
+          masterMax: int.clusterAutoscaler.master.max
+          masterMin: int.clusterAutoscaler.master.min
+          workerGroup: int.clusterAutoscaler.worker.group
+          workerMax: int.clusterAutoscaler.worker.max
+          workerMin: int.clusterAutoscaler.worker.min

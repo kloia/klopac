@@ -1,8 +1,9 @@
-azure:
-  auth:
-    type: principal
-    id: ''
-    secret: ''
-  profile: default
-  tenant: ''
-  subscription: ''
+platform:
+  provider:
+    azure:
+      vnet: #virtual network
+        name: 'klopac-vnet'
+        subnet: 'klopac-subnet'
+        addressSpace: '10.0.0.0/16'
+      role:
+        arn: ''

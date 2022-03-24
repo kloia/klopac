@@ -1,10 +1,11 @@
 platform:
   repo:
-    rke2:
-      main:
-        uri: "https://github.com/kloia/rke2-ansible"
+    k3s:
+      v1.23.4:
+        uri: "https://github.com/k3s-io/k3s"
         type: git
-        branch: main
+        branch: master
+        tag: v1.23.4+k3s1
         runner:
           name: ansible
           version: 5.2.0
@@ -16,3 +17,4 @@ platform:
           kubeconfig:
             type: file
             path: kubecfg_path
+        

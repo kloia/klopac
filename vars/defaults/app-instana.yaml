@@ -1,0 +1,11 @@
+app:
+  instana: #instana specific variables
+    type: agent
+    version: latest
+    agent:
+      key: ''
+      downloadKey: ''
+      endpointHost: ''
+      endpointPort: ''
+      clusterName: ''
+      zoneName: ''

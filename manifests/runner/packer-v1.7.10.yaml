@@ -1,0 +1,8 @@
+platform:
+  runner:
+    packer:
+      v1.7.10:
+        inputs:
+          path: '/app'
+          log:
+            level: "{{ general.log.level }}"

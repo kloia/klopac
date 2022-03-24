@@ -1,10 +1,11 @@
 platform:
   repo:
-    rke2:
-      main:
-        uri: "https://github.com/kloia/rke2-ansible"
+    kubeadm:
+      v1.23.4:
+        uri: ''
         type: git
-        branch: main
+        branch: master
+        tag: v1.23.4
         runner:
           name: ansible
           version: 5.2.0

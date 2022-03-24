@@ -2,107 +2,127 @@ int: #integration layer variables
   required: [enabled,endpoint.uri,kubeconfig.path] 
   enabled: true 
   ingress:
-    required: [enabled, name, namespace, type]
+    required: [enabled, name, namespace, type, operation.type, runner.type]
     enabled: true
     name: nginx
     namespace: ingress-nginx
     type: daemonset #daemonset or deploy
-    installation:
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor 
-    inputs:
-      name: int.ingress.name
-      namespace: int.ingress.namespace
-      installation:
-        type: int.ingress.installation.type
   cpi:
-    required: [enabled, name, namespace]
+    required: [enabled, name, namespace, operation.type, runner.type]
     enabled: false
     name: vsphere
     namespace: kube-system
-    installation:
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
-    inputs:
-      name: int.cpi.name
-      namespace: int.cpi.namespace
   csi:
-    required: [enabled, name, namespace, storageclass.name, storageclass.default]
+    required: [enabled, name, namespace, storageClass.name, operation.type, runner.type]
     enabled: false
     name: vsphere
     namespace: kube-system
-    storageclass:
+    storageClass:
       name: vsphere-sc
       default: true
-    depends_on: cpi
-    installation:
+    dependsOn: cpi
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
-    inputs:
-      name: int.csi.name
-      namespace: int.csi.namespace
-      storageclass:
-        name: int.csi.storageclass.name
-        default: int.csi.storageclass.default
   vault:
+    required: [enabled, name, namespace, operation.type, runner.type]
     enabled: true
     name: hashicorp
     namespace: vault
     uri: '' #vault api uri
-    root-keys: [''] #generated root keys
-    installation:
+    rootKeys: [''] #generated root keys
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
     inputs:
       name: int.vault.name
       namespace: int.vault.namespace
     outputs:
       uri: int.vault.uri
-      root-keys: int.vault.root-keys
-  cert-manager:
+      root-keys: int.vault.rootKeys
+  certManager:
+    required: [enabled, name, namespace, operation.type, runner.type]
     enabled: false
     name: cert-manager
     namespace: cert-manager
-    installation:
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
-    inputs:
-      name: int.cert-manager.name
-      namespace: int.cert-manager.namespace
-  autoscaler:
+  clusterAutoscaler:
+    required: [enabled, name, provider, namespace, master.min, master.max, master.group, worker.min, worker.max, worker.group, operation.type, runner.type]
     enabled: false
-    name: cluster-autoscaler
+    name: clusterAutoscaler
     provider: platform.provider #for provider based cluster autoscaler settings
     namespace: kube-system
-    installation:
+    logLevel: platform.log.level
+    master:
+      min: ins.master.count
+      max: ins.master.count * 1.5
+      group: ins.master.group
+    worker:
+      min: ins.worker.count
+      max: ins.worker.count * 1.5
+      group: ins.worker.group
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
-    inputs:
-      name: int.autoscaler.name
-      namespace: int.autoscaler.namespace
   monitoring:
+    required: [enabled, name, namespace, serviceType, operation.type, runner.type]
     enabled: true
-    name: pga-stack
+    name: pgaStack
     namespace: monitoring
-    service-type: NodePort #NodePort, ClusterIP or Load Balancer
+    serviceType: NodePort #NodePort, ClusterIP or Load Balancer
     uri: '' #management ui uri
     user: '' #management user
     password: '' #management user password
-    installation:
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
-    inputs:
-      name: int.monitoring.name
-      namespace: int.monitoring.namespace
     outputs:
       uri: int.monitoring.uri
       user: int.monitoring.user
       password: int.monitoring.password
   logging:
+    required: [enabled, name, namespace, operation.type, runner.type]
     enabled: true
     name: efk
     namespace: logging
     uri: '' #management ui uri
     user: '' #management ui user
     password: '' #management ui password
-    installation:
+    operation:
+      type: install #none, install, update or delete
+      update:
+        policy: apply #apply or recreate
+    runner:
       type: executor
-    inputs:
-      name: int.logging.name
-      namespace: int.logging.namespace
     outputs:
       uri: int.logging.uri
       user: int.logging.user

@@ -1,0 +1,3 @@
+int:
+  loggingEfk: #EFK specific variables
+    version: 7.4.0

@@ -1,14 +1,19 @@
 ins: #instance layer variables
-  required: [enabled, type,master.count,master.cpu,master.mem,master.disk-size,master.net.dhcp,worker.count,worker.cpu,worker.mem,worker.disk-size,worker.net.dhcp]
+  required: [enabled, type, master.count, master.cpu, master.mem, master.diskSize, master.net.dhcp, worker.count, worker.cpu, worker.mem, worker.diskSize, worker.net.dhcp, img.name, img.id, img.auth.type]
   enabled: true 
   type: terraform #terraform or ansible
-  installation:
+  operation:
+    type: install #none, install, update or delete
+    update:
+      policy: apply #apply or recreate
+  runner:
     type: repo
   master: #kubernetes master instance settings
     count: 1 
     cpu: 4 
     mem: 8g 
-    disk-size: 200g 
+    diskSize: 200g 
+    group: 'asgMaster' #autoscaling group
     net:
       dhcp: true 
       ip: 
@@ -21,7 +26,8 @@ ins: #instance layer variables
     count: 3
     cpu: 12
     mem: 128g 
-    disk-size: 300g
+    diskSize: 300g
+    group: 'asgWorker' #autoscaling group
     net:
       dhcp: true
       ip: 
@@ -30,16 +36,15 @@ ins: #instance layer variables
         gw: 10.0.0.1
       dns: ["10.0.0.100","10.0.0.101"]
       domain: pac.local
-  inputs:
-    image: 
-      name: img.name
-      id: img.id
-      os: img.os
-      auth:
-        type: img.auth.type
-        user: img.auth.user
-        pem.type: img.pem.type
-        pem.path: img.pem.path
+  image: 
+    name: img.name
+    id: img.id
+    os: img.os
+    auth:
+      type: img.auth.type
+      user: img.auth.user
+      pem.type: img.pem.type
+      pem.path: img.pem.path
   outputs:
     master:
       count: ins.master.count
