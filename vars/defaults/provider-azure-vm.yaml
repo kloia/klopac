@@ -1,0 +1,16 @@
+platform:
+  provider:
+    azure:
+      vm: #Azure VM specific variables
+        master:
+          size: ''
+          vnet: ''
+          resourceGroup: ''
+          keyPair: ''
+          user: img.auth.user
+        worker:
+          size: ''
+          vnet: ''
+          resourceGroup: ''
+          keyPair: ''
+          user: img.auth.user

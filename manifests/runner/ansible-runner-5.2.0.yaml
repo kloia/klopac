@@ -1,7 +1,0 @@
-runner:
-  ansible:
-    version: 5.2.0
-    inputs:
-      path: '/app'
-      log:
-        level: "{{ general.log.level }}"

@@ -1,0 +1,13 @@
+int:
+  csiVsphere: #vsphere csi specific variables
+    version: v2.5.0
+    storageclass:
+      name: 'klopac-sc'
+      datastoreuri: '' #vsphere datastore url like ds://....
+      storagepolicyname: '' #vsphere storage policy name, datastores must be tagged
+    vcenter:
+      insecure: 1 #insecure ssl connection
+      datacenter: vsphere.vcenter.datacenter
+      host: vsphere.vcenter.host
+      username: vsphere.vcenter.username
+      password: vsphere.vcenter.password

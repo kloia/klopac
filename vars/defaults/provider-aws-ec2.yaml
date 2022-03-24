@@ -1,15 +1,22 @@
-aws-ec2:
-  master:
-    network: ''
-    ami: ''
-    asg: ''
-    pool: ''
-    instance:
-      type: ''
-  worker:
-    network: ''
-    ami: ''
-    asg: ''
-    pool: ''
-    instance:
-      type: ''
+platform:
+  provider:
+    aws:
+      ec2: #AWS EC2 specific variables
+        master:
+          instanceType: ''
+          vpc: ''
+          iamRole: ''
+          securityGroup: ''
+          subnet: ''
+          az: 'eu-central-1a'
+          tag: 'klopac-master'
+          keyPair: ''
+        worker:
+          instanceType: ''
+          vpc: ''
+          iamRole: ''
+          securityGroup: ''
+          subnet: ''
+          az: 'eu-central-1a'
+          tag: 'klopac-worker'
+          keyPair: ''

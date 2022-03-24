@@ -1,0 +1,12 @@
+int:
+  cpiVsphere:
+    version: v1.22.5
+    vcenter:
+      insecure: 1 #insecure ssl connection
+      datacenter: vsphere.vcenter.datacenter
+      host: vsphere.vcenter.host
+      username: vsphere.vcenter.username
+      password: vsphere.vcenter.password
+      uri: vsphere.vcenter.uri
+      cluster: vsphere.vcenter.cluster
+      folder: vsphere.vcenter.folder

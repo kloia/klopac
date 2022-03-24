@@ -1,0 +1,20 @@
+platform:
+  executor:
+    instana:
+      latest:
+        type: agent
+        runner: 
+          name: kubernetes
+          version: v0.1
+          command: helm
+        helm:
+          repo: https://agents.instana.io/helm
+          namespace: app.instana.namespace
+          name: instana-agent
+          agent:
+            key: app.instana.agent.key
+            downloadKey: app.instana.agent.downloadKey
+            endpointHost: app.instana.agent.endpointHost
+            endpointPort: app.instana.agent.endpointPort
+            clusterName: app.instana.agent.clusterName
+            zoneName: app.instana.agent.zoneName

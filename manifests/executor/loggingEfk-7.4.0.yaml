@@ -1,0 +1,25 @@
+platform:
+  executor:
+    loggingEfk:
+      7.4.0:
+        runner: 
+          name: kubernetes
+          version: v0.1
+          command: helm
+        elasticsearch:
+          helm:
+            repo: https://helm.elastic.co
+            namespace: logging
+            name: elasticsearch
+            appVersion: 7.4.0
+            args:
+              fluentd:
+                enabled: true
+                elasticsearch:
+                  hostname: elasticsearch-master
+        kibana:
+          helm:
+            repo: https://helm.elastic.co
+            namespace: logging
+            name: kibana
+            appVersion: 7.4.0

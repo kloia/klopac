@@ -1,6 +1,8 @@
-aws:
-  auth:
-    aws_access_key_id: ''
-    aws_secret_access_key: ''
-  profile: default
-  region: eu-east-1
+platform:
+  provider:
+    aws: #AWS general variables
+      vpc:
+        name: 'klopac-default'
+        cidrBlock: '10.0.0.0/16'
+      role:
+        arn: ''

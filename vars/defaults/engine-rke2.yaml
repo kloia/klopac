@@ -1,2 +1,4 @@
-rke2:
-  version: v1.21.6+rke2r1
+engine:
+  rke2: #RKE2 specific variables
+    version: v1.21.6
+    branch: main

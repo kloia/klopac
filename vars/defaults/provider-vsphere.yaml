@@ -1,19 +1,21 @@
-vsphere:
-  vcenter:
-    username: ''
-    password: ''
-    uri: ''
-    host: ''
-    datacenter: ''
-    cluster: ''
-    folder: ''
-  master:
-    resource-pool: ''
-    network: ''
-    datastore: ''
-    template: ''
-  worker:
-    resource-pool: ''
-    network: ''
-    datastore: ''
-    template: ''
+platform:
+  provider:
+    vsphere: #vSphere variables
+      vcenter:
+        username: ''
+        password: ''
+        uri: ''
+        host: ''
+        datacenter: ''
+        cluster: ''
+        folder: ''
+      master:
+        resourcePool: ''
+        network: ''
+        datastore: ''
+        template: ''
+      worker:
+        resourcePool: ''
+        network: ''
+        datastore: ''
+        template: ''

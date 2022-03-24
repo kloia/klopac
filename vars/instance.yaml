@@ -1,2 +1,54 @@
-ins:
-  type: terraform
+ins: #instance layer variables
+  required: [enabled, type, master.count, master.cpu, master.mem, master.diskSize, master.net.dhcp, worker.count, worker.cpu, worker.mem, worker.diskSize, worker.net.dhcp, img.name, img.id, img.auth.type]
+  enabled: true 
+  type: terraform #terraform or ansible
+  operation:
+    type: install #none, install, update or delete
+    update:
+      policy: apply #apply or recreate
+  runner:
+    type: repo
+  master: #kubernetes master instance settings
+    count: 1 
+    cpu: 4 
+    mem: 8g 
+    diskSize: 200g 
+    group: 'asgMaster' #autoscaling group
+    net:
+      dhcp: true 
+      ip: 
+        pool: [10.0.0.10] #ipv4 address pool, pac will be increase last digit of pool by default
+        subnet: 24
+        gw: 10.0.0.1
+      dns: ["10.0.0.100","10.0.0.101"]
+      domain: pac.local
+  worker:
+    count: 3
+    cpu: 12
+    mem: 128g 
+    diskSize: 300g
+    group: 'asgWorker' #autoscaling group
+    net:
+      dhcp: true
+      ip: 
+        pool: [10.0.0.20..22] #ipv4 address pool, pac will be increase last digit of pool by default
+        subnet: 24
+        gw: 10.0.0.1
+      dns: ["10.0.0.100","10.0.0.101"]
+      domain: pac.local
+  image: 
+    name: img.name
+    id: img.id
+    os: img.os
+    auth:
+      type: img.auth.type
+      user: img.auth.user
+      pem.type: img.pem.type
+      pem.path: img.pem.path
+  outputs:
+    master:
+      count: ins.master.count
+      ips: ins.master.net.ip.pool
+    worker:
+      count: ins.master.count
+      ips: ins.master.net.ip.pool
