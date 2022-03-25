@@ -4,7 +4,8 @@ on:
   push:
     branches: [ 0.1-alpha ]
     paths:
-      - 'Docker/runner/terraform/Dockerfile'
+      - 'Docker/runner/generic/Dockerfile'
+      
 jobs:
 
   build:
@@ -22,3 +23,14 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_KEY }}
           dockerfile: Docker/runner/terraform/Dockerfile
           buildArgs: TF_VERSION=1.1.7, TG_VERSION=v0.36.3
+  test:
+    runs-on: ubuntu-20.04
+    needs: build
+    container: 
+      image: "docker.io/kloiadocker/klopac-terraform-runner:0.1"
+      credentials:
+        username: ${{ secrets.DOCKER_HUB }}
+        password: ${{ secrets.DOCKER_HUB_KEY }}
+    steps:
+      - run: terraform version
+        name: Check terraform version
