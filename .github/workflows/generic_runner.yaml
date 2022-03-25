@@ -21,3 +21,18 @@ jobs:
           username: ${{ secrets.DOCKER_HUB }}
           password: ${{ secrets.DOCKER_HUB_KEY }}
           dockerfile: Docker/runner/generic/Dockerfile
+  test:
+    runs-on: ubuntu-20.04
+    needs: build
+    container: 
+      image: "docker.io/kloiadocker/klopac-generic-runner:0.1"
+      credentials:
+        username: ${{ secrets.DOCKER_HUB }}
+        password: ${{ secrets.DOCKER_HUB_KEY }}
+    steps:
+      - run: bash --version
+        name: Check bash version
+      - run: python3 --version
+        name: Check python version
+      - run: go version
+        name: Check go version
