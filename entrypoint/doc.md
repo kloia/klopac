@@ -14,14 +14,14 @@
       <a href="/pkg/command/Command.go">Command</a>
     </li>
     <li>
-      <a href="/pkg/flag/Flag.go">Flag</a>
+      <a href="/entrypoint/pkg/flag/Flag.go">Flag</a>
     </li>
-    <li><a href="/pkg/flow/Flow.go">Flow</a></li>
-    <li><a href="/pkg/helper/Helper.go">Helper</a></li>
-    <li><a href="/pkg/klopac/Klopac.go">Klopac</a></li>
-    <li><a href="/pkg/option/Options.go">Options</a></li>
-    <li><a href="/pkg/shell/Shell.go">Shell</a></li>
-    <li><a href="/pkg/websocket/WebSocket.go">Websocket</a></li>
+    <li><a href="/entrypoint/pkg/flow/Flow.go">Flow</a></li>
+    <li><a href="/entrypoint/pkg/helper/Helper.go">Helper</a></li>
+    <li><a href="/entrypoint/pkg/klopac/Klopac.go">Klopac</a></li>
+    <li><a href="/entrypoint/pkg/option/Options.go">Options</a></li>
+    <li><a href="/entrypoint/pkg/shell/Shell.go">Shell</a></li>
+    <li><a href="/entrypoint/pkg/websocket/WebSocket.go">Websocket</a></li>
   </ol>
 </details>
 
