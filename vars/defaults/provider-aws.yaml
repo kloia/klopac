@@ -1,8 +1,8 @@
 platform:
-  provider:
-    aws: #AWS general variables
-      vpc:
-        name: 'klopac-default'
-        cidrBlock: '10.0.0.0/16'
-      role:
-        arn: ''
+    provider:
+        aws:
+            role:
+                arn: ""
+            vpc:
+                cidrBlock: 10.0.0.0/16
+                name: klopac-default

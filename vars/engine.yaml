@@ -1,40 +1,51 @@
-engine: #engine layer variables
-  required: [enabled, type, prodiver.enabled, rbac.enabled, operation.type, runner.type, instance.master.count, instance.master.ips, instance.worker.count, instance.worker.ips, instance.auth.type]
-  enabled: true
-  type: k3s #k3s, rke2 or kubeadm
-  operation:
-    type: install #none, install, update or delete
-    update:
-      policy: apply #apply or recreate
-  runner:
-    type: repo
-  provider: #engine provider settings if it is enable integration layer cpi's not work
-    enabled: false
-    name: aws #aws, azure, gcp or vsphere
-  rbac: 
-    enabled: false 
-    type: ldap #only support ldap
-    protocol: ldap #connection protocol. ldap or ldaps
-    user: usename #ldap service account username
-    pass: pass #ldap service account password
-  endpoint:
-    uri: '' #kubernetes api endpoint
-  kubeconfig:
-    path: '/data/sensitive/kubeconfig/' #generated kubeconfig file
-  instance:
-    master:
-      count: ins.master.count
-      ips: ins.master.net.ip.pool
-    worker:
-      count: ins.master.count
-      ips: ins.master.net.ip.pool
-    auth:
-      type: img.auth.type
-      user: img.auth.user
-      pem.type: img.pem.type
-      pem.path: img.pem.path
-  outputs:
+engine:
+    enabled: true
     endpoint:
-      uri: engine.endpoint.uri
+        uri: ""
+    instance:
+        auth:
+            pem.path: img.pem.path
+            pem.type: img.pem.type
+            type: img.auth.type
+            user: img.auth.user
+        master:
+            count: ins.master.count
+            ips: ins.master.net.ip.pool
+        worker:
+            count: ins.master.count
+            ips: ins.master.net.ip.pool
     kubeconfig:
-      path: engine.kubeconfig.path
+        path: /data/sensitive/kubeconfig/
+    operation:
+        type: install
+        update:
+            policy: apply
+    outputs:
+        endpoint:
+            uri: engine.endpoint.uri
+        kubeconfig:
+            path: engine.kubeconfig.path
+    provider:
+        enabled: false
+        name: aws
+    rbac:
+        enabled: false
+        pass: pass
+        protocol: ldap
+        type: ldap
+        user: usename
+    required:
+      - enabled
+      - type
+      - prodiver.enabled
+      - rbac.enabled
+      - operation.type
+      - runner.type
+      - instance.master.count
+      - instance.master.ips
+      - instance.worker.count
+      - instance.worker.ips
+      - instance.auth.type
+    runner:
+        type: repo
+    type: k3s
