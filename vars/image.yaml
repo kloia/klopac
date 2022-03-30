@@ -1,41 +1,50 @@
-img: #image layer variables
-  required: [enabled, type, operation.type, runner.type, os, name, diskSize, preReqs.timezone, preReqs.logrotate.enabled]
-  enabled: true
-  type: packer #packer, ansible or vagrant
-  operation:
-    type: install #none, install, update or delete
-    update:
-      policy: apply #apply or recreate
-  runner:
-    type: repo #type for runner executor or repo
-  os: ubuntu:20.04 #ubuntu, suse or redhat
-  name: 'Ubuntu-20.04-klopac'
-  id: '' #for aws, azure or gcp. image template id
-  path: '/tmp/Ubuntu-20.04-klopac' #only vsphere. image path
-  diskSize: 300g #image / disk size
-  auth:
-    type: pem #only support pem auth
-    user: ubuntu #default username
-    pem: #pem settings
-      type: file #pem file
-      path: '/data/sensitive/pem.file' #pem file path
-  preReqs: 
-    fileLimits:
-      nofile: 
-        hard: 1024000
-        soft: 1024000
-      nproc:
-        hard: 1024000
-        soft: 1024000
-    parameters: 
-      kernel: #kernel parameters, saved in /etc/sysctl.d folder
-        net.bridge.bridgeNfCallIptables: 1
-    timezone: Europe/Istanbul 
-    logrotate: #for all log files
-      enabled: true
-      rotate: 10 
-      maxsize: 250M 
-  outputs:
-    name: img.name
-    id: img.id
-    os: img.os
+img:
+    auth:
+        pem:
+            path: /data/sensitive/pem.file
+            type: file
+        type: pem
+        user: ubuntu
+    diskSize: 300g
+    enabled: true
+    id: ""
+    name: Ubuntu-20.04-klopac
+    operation:
+        type: install
+        update:
+            policy: apply
+    os: ubuntu:20.04
+    outputs:
+        id: img.id
+        name: img.name
+        os: img.os
+    path: /tmp/Ubuntu-20.04-klopac
+    preReqs:
+        fileLimits:
+            nofile:
+                hard: 1024000
+                soft: 1024000
+            nproc:
+                hard: 1024000
+                soft: 1024000
+        logrotate:
+            enabled: true
+            maxsize: 250M
+            rotate: 10
+        parameters:
+            kernel:
+                net.bridge.bridgeNfCallIptables: 1
+        timezone: Europe/Istanbul
+    required:
+      - enabled
+      - type
+      - operation.type
+      - runner.type
+      - os
+      - name
+      - diskSize
+      - preReqs.timezone
+      - preReqs.logrotate.enabled
+    runner:
+        type: repo
+    type: packer

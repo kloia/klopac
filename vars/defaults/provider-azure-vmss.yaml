@@ -1,18 +1,18 @@
 platform:
-  provider:
-    azure:
-      vmss: #Azure VMSS specific variables
-        master:
-          size: ''
-          vnet: ''
-          resourceGroup: ''
-          keyPair: ''
-          user: img.auth.user
-          vmss: ''
-        worker:
-          size: ''
-          vnet: ''
-          resourceGroup: ''
-          keyPair: ''
-          user: img.auth.user
-          vmss: ''
+    provider:
+        azure:
+            vmss:
+                master:
+                    keyPair: ""
+                    resourceGroup: ""
+                    size: ""
+                    user: img.auth.user
+                    vmss: ""
+                    vnet: ""
+                worker:
+                    keyPair: ""
+                    resourceGroup: ""
+                    size: ""
+                    user: img.auth.user
+                    vmss: ""
+                    vnet: ""

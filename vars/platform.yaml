@@ -1,24 +1,27 @@
-platform: #platform specific general variables
-  required: [environment, provider.name, provider.type, provider.auth.type, operation.type]
-  environment: test #test or prod
-  operation:
-    type: install #none, install, update or delete
-    update:
-      policy: apply #apply or recreate
-  provider: 
-    name: aws #aws, azure, gcp or vsphere
-    type: ec2 #for aws ec2 or eks, for azure vmss or vm, for gcp vm or gke, for vsphere vm
-    auth:
-      type: id #id or user 
-      id: '' #for aws aws_access_key_id, for azure principal secret id
-      key: '' #for aws aws_secret_access_key, for azure principal value
-      #or
-      user: '' 
-      password: ''
-      ####
-      tenant: '' #optional only for azure, tenant id
-      subscription: '' #optional only for azure, subscription id
-      region1: 'eu-central-1 ' #optional single zone for aws, azure or gcp
-      region2: 'eu-west-1' #optional ha zone for aws, azure or gcp
-  log:
-    level: error #default log level for all layers
+platform:
+    environment: test
+    log:
+        level: error
+    operation:
+        type: install
+        update:
+            policy: apply
+    provider:
+        auth:
+            id: ""
+            key: ""
+            password: ""
+            region1: 'eu-central-1 '
+            region2: eu-west-1
+            subscription: ""
+            tenant: ""
+            type: id
+            user: ""
+        name: aws
+        type: ec2
+    required:
+      - environment
+      - provider.name
+      - provider.type
+      - provider.auth.type
+      - operation.type
