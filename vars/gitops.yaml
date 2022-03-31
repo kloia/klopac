@@ -1,20 +1,26 @@
 gitops:
-  required: [enabled, name, project, serviceType, operation.type, runner.type]
-  enabled: true
-  name: argocd
-  namespace: argocd
-  project: default #gitops default project
-  serviceType: NodePort
-  uri: '' #management ui uri
-  user: '' #management ui user
-  password: '' #management ui password
-  operation:
-    type: install #none, install, update or delete
-    update:
-      policy: apply #apply or recreate
-  runner:
-    type: executor
-  outputs:
-    uri: gitops.uri
-    user: gitops.user
-    password: gitops.password
+    enabled: true
+    name: argocd
+    namespace: argocd
+    operation:
+        type: install
+        update:
+            policy: apply
+    outputs:
+        password: gitops.password
+        uri: gitops.uri
+        user: gitops.user
+    password: ""
+    project: default
+    required:
+      - enabled
+      - name
+      - project
+      - serviceType
+      - operation.type
+      - runner.type
+    runner:
+        type: executor
+    serviceType: NodePort
+    uri: ""
+    user: ""

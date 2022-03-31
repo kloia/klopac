@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 )
 
 func ReadFile(filename string) map[string]interface{} {
@@ -43,14 +44,54 @@ func WriteFile(filename string, data map[string]interface{}) error {
 	return nil
 }
 
-func GetDifference(first map[string]interface{}, second map[string]interface{}) map[string]interface{} {
+func Intersection(first, second map[string]interface{}) map[string]interface{} {
 	newMap := make(map[string]interface{})
-	for k, v := range first {
-		if _, ok := second[k]; ok {
-			newMap[k] = v
+	IntersectionHelper(first, second, newMap)
+	return newMap
+}
+
+func IntersectionHelper(inputMap, defaultMap, newMap interface{}) {
+	for inputKey, inputVal := range inputMap.(map[string]interface{}) {
+		if defaultVal, ok := defaultMap.(map[string]interface{})[inputKey]; ok {
+			if reflect.TypeOf(defaultVal).Kind() == reflect.Bool || reflect.TypeOf(defaultVal).Kind() == reflect.String {
+				newMap.(map[string]interface{})[inputKey] = inputVal
+			} else if reflect.TypeOf(defaultVal).Kind() == reflect.Slice {
+				for _, defaultValElem := range defaultVal.([]interface{}) {
+					if reflect.TypeOf(defaultValElem).Kind() == reflect.Bool || reflect.TypeOf(defaultValElem).Kind() == reflect.String {
+						if ok, i := contains(inputVal.([]interface{}), defaultValElem); ok {
+							if newMap.(map[string]interface{})[inputKey] == nil {
+								newMap.(map[string]interface{})[inputKey] = make([]interface{}, 0)
+							}
+							newMap.(map[string]interface{})[inputKey] = append(newMap.(map[string]interface{})[inputKey].([]interface{}), inputVal.([]interface{})[i])
+						}
+					} else {
+						if newMap.(map[string]interface{})[inputKey] == nil {
+							newMap.(map[string]interface{})[inputKey] = make([]interface{}, 0)
+						}
+						for _, inputValElem := range inputVal.([]interface{}) {
+							tempMap := make(map[string]interface{})
+							IntersectionHelper(inputValElem, defaultValElem, tempMap)
+							if len(tempMap) > 0 {
+								newMap.(map[string]interface{})[inputKey] = append(newMap.(map[string]interface{})[inputKey].([]interface{}), tempMap)
+							}
+						}
+					}
+				}
+			} else {
+				newMap.(map[string]interface{})[inputKey] = make(map[string]interface{})
+				IntersectionHelper(inputVal, defaultVal, newMap.(map[string]interface{})[inputKey])
+			}
 		}
 	}
-	return newMap
+}
+
+func contains(s []interface{}, e interface{}) (bool, int) {
+	for i, a := range s {
+		if a == e {
+			return true, i
+		}
+	}
+	return false, -1
 }
 
 func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) {
@@ -59,11 +100,13 @@ func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) {
 			if err != nil {
 				return err
 			}
-			if !info.IsDir() && filepath.Ext(path) == ".yaml" {
+			if !info.IsDir() && filepath.Ext(path) == ".yaml" || filepath.Ext(path) == ".yml" {
 				defaultModel := ReadFile(path)
-				newMap := GetDifference(valuesModel, defaultModel)
-				mergo.Merge(&defaultModel, newMap, mergo.WithOverride)
-				WriteFile(path, defaultModel)
+				intersectionMap := Intersection(valuesModel, defaultModel)
+				if len(intersectionMap) > 0 {
+					mergo.Merge(&defaultModel, intersectionMap, mergo.WithOverride)
+					WriteFile(path, defaultModel)
+				}
 			}
 			return nil
 		})

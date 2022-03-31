@@ -1,21 +1,21 @@
 platform:
-  provider:
-    vsphere: #vSphere variables
-      vcenter:
-        username: ''
-        password: ''
-        uri: ''
-        host: ''
-        datacenter: ''
-        cluster: ''
-        folder: ''
-      master:
-        resourcePool: ''
-        network: ''
-        datastore: ''
-        template: ''
-      worker:
-        resourcePool: ''
-        network: ''
-        datastore: ''
-        template: ''
+    provider:
+        vsphere:
+            master:
+                datastore: ""
+                network: ""
+                resourcePool: ""
+                template: ""
+            vcenter:
+                cluster: ""
+                datacenter: ""
+                folder: ""
+                host: ""
+                password: ""
+                uri: ""
+                username: ""
+            worker:
+                datastore: ""
+                network: ""
+                resourcePool: ""
+                template: ""

@@ -1,5 +1,5 @@
 gitops:
-  argocd: #ArgoCD specific variables
-    version: 4.2.1
-    argoRollout: true
-    namespace: argocd
+    argocd:
+        argoRollout: true
+        namespace: argocd
+        version: 4.2.1
