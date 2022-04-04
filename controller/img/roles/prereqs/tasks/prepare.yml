@@ -1,0 +1,21 @@
+---
+- include_vars: ../../../../../vars/defaults/img-{{ img.type }}.yaml
+
+- include_vars: ../../../../../manifests/repo/{{ img.type }}-{{ img.packer.version }}.yaml
+
+#- vars:
+#    msg: |
+#       Module Variables ("vars"):
+#       --------------------------------
+#       {{ vars | to_nice_yaml }}
+#  debug:
+#    msg: "{{ msg.split('\n') }}"
+
+- name: set workplace folder
+  set_fact:
+    workspace: '~/Documents/ws/pac/'
+
+- copy:
+    content: "{{ platform.repo[img.type].dialect.file.content }}"
+    dest: "{{ workspace }}/{{ platform.repo[img.type].name }}/{{ platform.repo[img.type].dialect.file.destination }}"
+#    when: platform.repo[img.type].dialect.type == 'file'

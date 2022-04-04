@@ -1,0 +1,8 @@
+open_file_limit         = "1024000"
+region                  = "eu-west-1"
+vpc_id                  = ""
+subnet_id               = ""
+source_ami              = ""
+instance_type           = "t2.micro"
+ssh_username            = "ubuntu"
+ami_name = "Ubuntu-20_04-klopac"

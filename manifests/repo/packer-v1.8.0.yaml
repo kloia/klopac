@@ -1,0 +1,39 @@
+platform:
+  repo:
+    packer:
+        uri: 'https://github.com/kloia/packer-images'
+        name: packer-images
+        type: git
+        branch: platform.provider.name
+        aws:
+          sourceAmi: 'ami-08ca3fed11864d6bb'
+          region: platform.provider.region1
+          vpc:
+            name: platform.provider.aws.vpc.name
+            id: platform.provider.aws.vpc.id
+            subnet:
+              id: platform.provider.aws.vpc.subnet.id
+        tag: v1.8.0
+        id: ""
+        runner:
+          name: packer
+          version: v1.8.0
+        dialect:
+          type: file
+          file:
+            destination: vars/vars.hcl
+            content: |
+              instance_type           = "t2.micro"
+              open_file_limit         = "{{ img.preReqs.fileLimits.nofile.hard }}"
+              region                  = "{{ platform.repo.packer.aws.region }}"
+#              vpc_id                  = '{{ platform.repo.packer[platform.prowider.name].vpc.id }}'
+#              subnet_id               = '{{ platform.repo.packer[platform.prowider.name].vpc.subnet.id }}'
+#              source_ami              = '{{ platform.repo.packer[platform.prowider.name].sourceAmi }}'
+#              ssh_username            = '{{ img.auth.user }}'
+#              ami_name = 'Ubuntu-20_04-klopac'
+        state:
+          enabled: false
+        outputs:
+          img:
+            id: platform.repo.packer.id
+        
