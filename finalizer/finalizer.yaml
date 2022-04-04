@@ -1,10 +1,8 @@
 ---
 
+# INVENTORY FILE - UPDATE
 - hosts: localhost
   tasks:
-    - name: Create bundle from state and config files
-      command: tar -czvf bundle.tar.gz ./data
-
     - name: Include variables from YAML
       include_vars: test_vars.yaml
 
@@ -38,6 +36,8 @@
     - name: Write to file (for testing purposes)
       shell: echo "{{ outputs | to_nice_yaml(indent=2) }}" > output.yaml
 
+
+# LAYER TESTS
 - hosts: servers
   gather_facts: false
   tasks:
@@ -47,7 +47,7 @@
     - name: Get OS Name
       shell: |
         set -o pipefail
-        cat /etc/os-release | grep -E "^NAME" | awk -F"=" '{ print $2 }' | sed 's/"//g'
+        cat /etc/*release* | grep -E "^NAME" | awk -F"=" '{ print $2 }' | sed 's/"//g'
       args:
         executable: /bin/bash
       register: os_name
@@ -55,7 +55,7 @@
     - name: Get OS Version
       shell: |
         set -o pipefail
-        cat /etc/os-release | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
+        cat /etc/*release* | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
       args:
         executable: /bin/bash
       register: os_version
@@ -67,3 +67,20 @@
     - name: Write os_version checks to outputs
       delegate_to: localhost
       shell: "echo 'os_version: {{ os_version.stdout | lower == img.os.version | lower }}' >> output.yaml"
+
+
+# FINALIZE
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    # TODO: Variables will be gotten from test results
+    - name: Include variables
+      include_vars: defaults/main.yaml
+
+    - name: Create Human Readable File
+      template:
+        src: templates/human_readable.md.j2
+        dest: "/app/data/bundle/human_readable.md"
+
+    - name: Create bundle from state and config files
+      command: tar -czvf bundle.tar.gz /app/data

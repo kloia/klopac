@@ -1,12 +1,5 @@
 # entrypoint godoc
 
-
-<!-- PROJECT LOGO -->
-<br />
-
-
-
-
 ## Getting Started
 
 This is an example of how you may give instructions on setting up entrypoint locally.

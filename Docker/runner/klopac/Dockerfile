@@ -1,6 +1,6 @@
 FROM golang:1.18-alpine as build
 WORKDIR /app
-COPY . .
+COPY entrypoint ./entrypoint
 RUN cd entrypoint && \
     CGO_ENABLED=0 go build ./cmd/main.go
 
@@ -20,6 +20,8 @@ install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
 chmod +x /usr/local/bin/kubectl && \
 apt-get clean && \
 echo '%docker ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+mkdir -p /data/repo /data/outputs && \
+chown -R 1000:1000 /data && \
 pip3 install ansible==5.2.0
 
 USER 1000
@@ -29,6 +31,12 @@ WORKDIR /app
 COPY --from=build /app/entrypoint/main /usr/local/bin/entrypoint
 RUN sudo chmod +x /usr/local/bin/entrypoint
 
-COPY . .
+COPY --chown=1000:1000 vars /data/vars
+COPY --chown=1000:1000 manifests /data/manifests
+COPY --chown=1000:1000 entrypoint ./entrypoint
+COPY --chown=1000:1000 provisioner ./provisioner
+COPY --chown=1000:1000 validator ./validator
+COPY --chown=1000:1000 controller ./controller
+COPY --chown=1000:1000 finalizer ./finalizer
 RUN ansible-galaxy collection install -r finalizer/requirements.yml
 ENTRYPOINT ["entrypoint"]
