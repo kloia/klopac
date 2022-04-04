@@ -9,18 +9,19 @@ type OptionService struct {
 	Params map[string]interface{}
 }
 
+// It defines args' values and their specified names
 func (o *OptionService) setFlags() {
 	o.Params = map[string]interface{}{
-		"provision":   o.flag.Bool("provision", false, "sadece provision çalıştırır"),
-		"validate":    o.flag.Bool("validate", false, "provision ve validate sıra ile çalıştırır"),
-		"healthcheck": o.flag.Bool("healthcheck", false, "healthcheck environmentini set ederek sadece finalizer çalıştırır"),
-		"websocket":   o.flag.Bool("websocket", false, "websocket"),
-		"uri":         o.flag.String("uri", "", "websocket ile çalışacaksa iletişim yapılacak uri"),
-		"username":    o.flag.String("username", "", "websocket ile çalışacaksa uri erişimi için kullanılacak username"),
-		"password":    o.flag.String("password", "", "websocket ile çalışacaksa uri erişimi için kullanılacak password"),
-		"loglevel":    o.flag.String("loglevel", "INFO", "üretilen log'ların seviyesini set eder"),
-		"valuesFile":  o.flag.String("valuesFile", "values.yaml", "Config File"),
-		"varsPath":    o.flag.String("vars", "./vars", "Config File"),
+		"provision":   o.flag.Bool("provision", false, "It executes provisioner"),
+		"validate":    o.flag.Bool("validate", false, "It executes both provisioner and validator"),
+		"healthcheck": o.flag.Bool("healthcheck", false, "It executes finalizer"),
+		"websocket":   o.flag.Bool("websocket", false, "It helps to make use of websocket connection - required uri, username, password"),
+		"uri":         o.flag.String("uri", "", "websocket uri"),
+		"username":    o.flag.String("username", "", "username for websocket connection"),
+		"password":    o.flag.String("password", "", "password for websocket connection"),
+		"loglevel":    o.flag.String("loglevel", "INFO", "It sets the level of the producing logs"),
+		"valuesFile":  o.flag.String("valuesFile", "/data/values.yaml", "Value File"),
+		"varsPath":    o.flag.String("vars", "/data/vars", "Variable File"),
 		"bundleFile":  o.flag.String("bundleFile", "bundle.tar.gz", "Bundle File"),
 	}
 	o.flag.Parse()

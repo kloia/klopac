@@ -4,17 +4,21 @@ import (
 	"encoding/json"
 	"entrypoint/pkg/helper"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 type Output struct {
 	Deneme string `json:"provisioner" xml:"provisioner"`
 }
+
+// It creates a bidirectional channel with 1 buffer. And it also start to listen the websocket and basically what this function does is reads the messages that sent to channel.
+// And it closes channel. After the close operation done. It uses select to define conditions.
 
 func Enable(uri, username, password string) {
 	interrupt := make(chan os.Signal, 1)

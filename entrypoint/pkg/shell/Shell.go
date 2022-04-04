@@ -14,6 +14,7 @@ type shellService struct {
 	command cmdService.Command
 }
 
+// It runs the command string and return its result as output
 func (s shellService) Run(command string) (error, string, string) {
 	log.Print(command)
 	var stdout bytes.Buffer

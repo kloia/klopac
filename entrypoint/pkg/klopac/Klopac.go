@@ -3,8 +3,10 @@ package klopac
 import (
 	"entrypoint/pkg/helper"
 	"entrypoint/pkg/websocket"
+	"log"
 )
 
+// It might be considered as main function. It will execute some sort of code blocks depending to whether we are going to access klopac via a websocket or from command-line
 func Run() {
 	webSocketEnabled := helper.GetParam[bool]("websocket")
 
@@ -19,7 +21,11 @@ func Run() {
 			//TODO: UNTAR BUNDLE FILE AND OVERRIDE VARS FOLDER
 		} else {
 			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
-			helper.UpdateValuesFile(valuesModel, helper.GetParam[string]("varsPath"))
+			err := helper.UpdateValuesFile(valuesModel, helper.GetParam[string]("varsPath"))
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		}
 		provision := helper.GetParam[bool]("provision")
 		validate := helper.GetParam[bool]("validate")
