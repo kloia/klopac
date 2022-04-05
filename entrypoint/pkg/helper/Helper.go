@@ -7,15 +7,17 @@ import (
 	"entrypoint/pkg/option"
 	"entrypoint/pkg/shell"
 	"fmt"
-	"github.com/imdario/mergo"
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"reflect"
+
+	"github.com/imdario/mergo"
+	"gopkg.in/yaml.v3"
 )
 
+// Reads content of the yaml file and returns it
 func ReadFile(filename string) map[string]interface{} {
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -29,6 +31,8 @@ func ReadFile(filename string) map[string]interface{} {
 	}
 	return m
 }
+
+// Writes content to a yaml file
 
 func WriteFile(filename string, data map[string]interface{}) error {
 	yamlData, err := yaml.Marshal(data)
@@ -44,12 +48,14 @@ func WriteFile(filename string, data map[string]interface{}) error {
 	return nil
 }
 
+// Basically we have two map and we compare them if there are some sort of values that should be changed according to its logic
 func Intersection(first, second map[string]interface{}) map[string]interface{} {
 	newMap := make(map[string]interface{})
 	IntersectionHelper(first, second, newMap)
 	return newMap
 }
 
+// Code blocks of the intersection logic. It compares two different map and runs the provided conditions
 func IntersectionHelper(inputMap, defaultMap, newMap interface{}) {
 	for inputKey, inputVal := range inputMap.(map[string]interface{}) {
 		if defaultVal, ok := defaultMap.(map[string]interface{})[inputKey]; ok {
@@ -85,6 +91,7 @@ func IntersectionHelper(inputMap, defaultMap, newMap interface{}) {
 	}
 }
 
+// To check whether its content have the searched struct or not
 func contains(s []interface{}, e interface{}) (bool, int) {
 	for i, a := range s {
 		if a == e {
@@ -94,8 +101,9 @@ func contains(s []interface{}, e interface{}) (bool, int) {
 	return false, -1
 }
 
-func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) {
-	filepath.Walk(varsPath,
+// Basically takes a interface and varsPath(which is path of the variable files) then it starts to override or leaves unchanged depending to intersection logic
+func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) error {
+	return filepath.Walk(varsPath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
