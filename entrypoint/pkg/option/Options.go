@@ -22,7 +22,7 @@ func (o *OptionService) setFlags() {
 		"loglevel":    o.flag.String("loglevel", "INFO", "It sets the level of the producing logs"),
 		"valuesFile":  o.flag.String("valuesFile", "/data/values.yaml", "Value File"),
 		"varsPath":    o.flag.String("vars", "/data/vars", "Variable File"),
-		"bundleFile":  o.flag.String("bundleFile", "bundle.tar.gz", "Bundle File"),
+		"bundleFile":  o.flag.String("bundleFile", "/data/bundle.tar.gz", "Bundle File"),
 	}
 	o.flag.Parse()
 }

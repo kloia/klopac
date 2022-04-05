@@ -3,7 +3,9 @@ package klopac
 import (
 	"entrypoint/pkg/helper"
 	"entrypoint/pkg/websocket"
+	"errors"
 	"log"
+	"os"
 )
 
 // It might be considered as main function. It will execute some sort of code blocks depending to whether we are going to access klopac via a websocket or from command-line
@@ -17,8 +19,11 @@ func Run() {
 		websocket.Enable(uri, username, password)
 	} else {
 		bundleFile := helper.GetParam[string]("bundleFile")
-		if bundleFile != "bundle.tar.gz" {
-			//TODO: UNTAR BUNDLE FILE AND OVERRIDE VARS FOLDER
+		if _, err := os.Stat(bundleFile); !errors.Is(err, os.ErrNotExist) {
+			err := helper.Untar(bundleFile, "/data/")
+			if err != nil {
+				log.Fatal("error while untarring bundle file, please check whether you have correct named bundlefile ", err)
+			}
 		} else {
 			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
 			err := helper.UpdateValuesFile(valuesModel, helper.GetParam[string]("varsPath"))
