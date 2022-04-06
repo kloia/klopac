@@ -3,8 +3,9 @@ name: Ansible Lint
 
 on:
   push:
-    branches: [ 0.1-alpha , ansible-lint-test ]
-
+    branches: [ 0.1-alph ]
+  pull_request:
+    branches: [ 0.1-alpha ]
 jobs:
   ansible-lint:
     runs-on: ubuntu-20.04
@@ -50,5 +51,5 @@ jobs:
         #                         path to directories or files to skip. This option is
         #                         repeatable.
         #   -c C                  Specify configuration file to use. Defaults to ".ansible-lint"
-        args: "-c .yamllint"
+        args: ""
         # https://ansible-lint.readthedocs.io/en/latest/rules.html
