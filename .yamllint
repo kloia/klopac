@@ -1,0 +1,10 @@
+---
+
+extends: default
+
+rules:
+  indentation:
+    spaces: consistent
+    indent-sequences: whatever
+  line-length: disable
+  comments-indentation: disable

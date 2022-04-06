@@ -1,12 +1,5 @@
+---
 repos:
-  - repo: https://github.com/ansible-community/ansible-lint.git
-    rev: 'v5.4.0'
-    hooks:
-      - id: ansible-lint
-        args:
-          - "--force-color"
-          - "finalizer/finalizer.yaml"
-          - "provisioner/provisioner.yml"
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
     rev: v4.1.0
     hooks:
@@ -15,3 +8,9 @@ repos:
       - id: detect-private-key
       - id: trailing-whitespace
       - id: check-executables-have-shebangs
+  - repo: https://github.com/ansible-community/ansible-lint.git
+    rev: 'v5.4.0'
+    hooks:
+      - id: ansible-lint
+        args:
+          - "--force-color"

@@ -1,3 +1,4 @@
+---
 engine:
-    kubeadm:
-        version: v1.23.4
+  kubeadm:
+    version: v1.23.4

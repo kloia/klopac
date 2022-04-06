@@ -1,3 +1,4 @@
+---
 platform:
   runner:
     terraform-aws:
@@ -5,11 +6,11 @@ platform:
         terraform:
           version: v1.1.7
           inputs:
-            path: '/app'
+            path: /app
             log:
-              level: "{{ general.log.level }}"
+              level: '{{ general.log.level }}'
         awscli:
           version: 2.4.23
           inputs:
-            aws_access_key_id: "{{ aws.aws_access_key_id }}"
-            aws_secret_access_key: "{{ aws.aws_secret_access_key }}"
+            aws_access_key_id: '{{ aws.aws_access_key_id }}'
+            aws_secret_access_key: '{{ aws.aws_secret_access_key }}'

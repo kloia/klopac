@@ -1,3 +1,4 @@
+---
 platform:
   runner:
     onprem:
@@ -5,6 +6,6 @@ platform:
         govc:
           version: 0.26.1
           inputs:
-            path: '/app'
+            path: /app
             log:
-              level: "{{ general.log.level }}"
+              level: '{{ general.log.level }}'

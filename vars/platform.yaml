@@ -1,27 +1,28 @@
+---
 platform:
-    environment: test
-    log:
-        level: error
-    operation:
-        type: install
-        update:
-            policy: apply
-    provider:
-        auth:
-            id: ""
-            key: ""
-            password: ""
-            region1: 'eu-central-1 '
-            region2: eu-west-1
-            subscription: ""
-            tenant: ""
-            type: id
-            user: ""
-        name: aws
-        type: ec2
-    required:
-      - environment
-      - provider.name
-      - provider.type
-      - provider.auth.type
-      - operation.type
+  environment: test
+  log:
+    level: error
+  operation:
+    type: install
+    update:
+      policy: apply
+  provider:
+    auth:
+      id: ''
+      key: ''
+      password: ''
+      region1: 'eu-central-1 '
+      region2: eu-west-1
+      subscription: ''
+      tenant: ''
+      type: id
+      user: ''
+    name: aws
+    type: ec2
+  required:
+    - environment
+    - provider.name
+    - provider.type
+    - provider.auth.type
+    - operation.type

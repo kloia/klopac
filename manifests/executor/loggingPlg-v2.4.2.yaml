@@ -1,13 +1,14 @@
+---
 platform:
   executor:
     loggingPlg:
       v2.4.2:
-        runner: 
+        runner:
           name: kubernetes
           version: v0.1
           command: helm
         helm:
-          repo: https://grafana.github.io/helm-charts
+          repo: 'https://grafana.github.io/helm-charts'
           namespace: logging
           name: loki-stack
           args:

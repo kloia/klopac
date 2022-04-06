@@ -1,13 +1,14 @@
+---
 int:
-    csiVsphere:
-        storageclass:
-            datastoreuri: ""
-            name: klopac-sc
-            storagepolicyname: ""
-        vcenter:
-            datacenter: vsphere.vcenter.datacenter
-            host: vsphere.vcenter.host
-            insecure: 1
-            password: vsphere.vcenter.password
-            username: vsphere.vcenter.username
-        version: v2.5.0
+  csiVsphere:
+    storageclass:
+      datastoreuri: ''
+      name: klopac-sc
+      storagepolicyname: ''
+    vcenter:
+      datacenter: vsphere.vcenter.datacenter
+      host: vsphere.vcenter.host
+      insecure: 1
+      password: vsphere.vcenter.password
+      username: vsphere.vcenter.username
+    version: v2.5.0

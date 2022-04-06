@@ -1,12 +1,13 @@
+---
 platform:
   executor:
     cpiVsphere:
       1.22.5:
-        runner: 
+        runner:
           name: kubernetes
           version: v0.1
           command: helm
         helm:
-          repo: https://kubernetes.github.io/cloud-provider-vsphere
+          repo: 'https://kubernetes.github.io/cloud-provider-vsphere'
           namespace: kube-system
           name: vsphere-cpi

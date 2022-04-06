@@ -1,3 +1,4 @@
+---
 platform:
   repo:
     packer:
@@ -17,4 +18,3 @@ platform:
           kubeconfig:
             type: file
             path: kubecfg_path
-        

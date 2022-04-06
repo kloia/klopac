@@ -1,3 +1,4 @@
+---
 int:
-    loggingPlg:
-        version: v2.4.2
+  loggingPlg:
+    version: v2.4.2

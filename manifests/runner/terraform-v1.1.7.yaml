@@ -1,8 +1,9 @@
+---
 platform:
   runner:
     terraform:
       v1.1.7:
         inputs:
-          path: '/app'
+          path: /app
           log:
-            level: "{{ general.log.level }}"
+            level: '{{ general.log.level }}'

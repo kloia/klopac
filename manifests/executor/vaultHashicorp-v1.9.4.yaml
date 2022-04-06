@@ -1,8 +1,9 @@
+---
 platform:
   executor:
     vaultHashicorp:
       v1.9.4:
-        runner: 
+        runner:
           name: kubernetes
           version: v0.1
           command: helm
