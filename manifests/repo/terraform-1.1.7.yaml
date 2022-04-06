@@ -2,22 +2,21 @@
 platform:
   repo:
     terraform:
-      1.1.7:
-        uri: ''
-        type: git
-        branch: master
-        tag: platform.provider.name + platform.provider.type
-        runner:
-          name: terraform
-          version: 1.1.7
-        state:
-          enabled: false
-        healthcheck:
-          type: kubeconfig
-        outputs:
-          master:
-            count: ins.master.count
-            ips: ins.master.net.ip.pool
-          worker:
-            count: ins.master.count
-            ips: ins.master.net.ip.pool
+      uri: ''
+      type: git
+      branch: master
+      tag: platform.provider.name + platform.provider.type
+      runner:
+        name: terraform
+        version: 1.1.7
+      state:
+        enabled: false
+      healthcheck:
+        type: kubeconfig
+      outputs:
+        master:
+          count: ins.master.count
+          ips: ins.master.net.ip.pool
+        worker:
+          count: ins.master.count
+          ips: ins.master.net.ip.pool

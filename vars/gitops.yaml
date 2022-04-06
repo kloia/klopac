@@ -4,13 +4,9 @@ gitops:
   name: argocd
   namespace: argocd
   operation:
-    type: install
+    type: create
     update:
       policy: apply
-  outputs:
-    password: gitops.password
-    uri: gitops.uri
-    user: gitops.user
   password: ''
   project: default
   required:

@@ -11,14 +11,10 @@ img:
   id: ''
   name: Ubuntu-20.04-klopac
   operation:
-    type: install
+    type: create
     update:
       policy: apply
   os: 'ubuntu:20.04'
-  outputs:
-    id: img.id
-    name: img.name
-    os: img.os
   path: /tmp/Ubuntu-20.04-klopac
   preReqs:
     fileLimits:

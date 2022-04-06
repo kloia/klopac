@@ -2,12 +2,12 @@
 platform:
   executor:
     test:
-      latest:
-        runner:
-          name: kubernetes
-          version: v0.1
-          command: helm
-        helm:
-          repo: ''
-          namespace: default
-          name: test
+      version: latest
+      runner:
+        name: kubernetes
+        version: v0.1
+        command: helm
+      helm:
+        repo: ''
+        namespace: default
+        name: test

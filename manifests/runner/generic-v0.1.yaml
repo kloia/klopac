@@ -2,16 +2,16 @@
 platform:
   runner:
     generic:
-      v0.1:
-        python:
-          version: 3.9.10
-          inputs:
-            path: /app
-            log:
-              level: '{{ general.log.level }}'
-        go:
-          version: 1.17.8
-          inputs:
-            path: /app
-            log:
-              level: '{{ general.log.level }}'
+      version: v0.1
+      python:
+        version: 3.9.10
+        inputs:
+          path: /app
+          log:
+            level: '{{ general.log.level }}'
+      go:
+        version: 1.17.8
+        inputs:
+          path: /app
+          log:
+            level: '{{ general.log.level }}'

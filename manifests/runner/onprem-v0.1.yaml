@@ -2,10 +2,10 @@
 platform:
   runner:
     onprem:
-      v0.1:
-        govc:
-          version: 0.26.1
-          inputs:
-            path: /app
-            log:
-              level: '{{ general.log.level }}'
+      version: v0.1
+      govc:
+        version: 0.26.1
+        inputs:
+          path: /app
+          log:
+            level: '{{ general.log.level }}'

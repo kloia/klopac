@@ -28,16 +28,9 @@ ins:
           - 10.0.0.10
         subnet: 24
   operation:
-    type: install
+    type: create
     update:
       policy: apply
-  outputs:
-    master:
-      count: ins.master.count
-      ips: ins.master.net.ip.pool
-    worker:
-      count: ins.master.count
-      ips: ins.master.net.ip.pool
   required:
     - enabled
     - type
@@ -72,5 +65,7 @@ ins:
       ip:
         gw: 10.0.0.1
         pool:
-          - 10.0.0.20..22
+          - 10.0.0.20
+          - 10.0.0.21
+          - 10.0.0.22
         subnet: 24

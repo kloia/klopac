@@ -1,0 +1,38 @@
+platform:
+  repo:
+    packer:
+      uri: 'https://github.com/kloia/packer-images'
+      name: packer-images
+      type: git
+      branch: platform.provider.name
+      aws:
+        sourceAmi: 'ami-08ca3fed11864d6bb'
+        dialect:
+          command:
+            create: "packer build -var-file ./vars/vars.hcl ."
+            output: 
+              id: "jq -r '.builds[-1].artifact_id' manifest.json | cut -d ':' -f2"
+          type: file
+          file:
+            destination: vars/vars.hcl
+            content: |
+              instance_type           = "t2.micro"
+              region                  = "{{ vars['platform']['provider']['region1'] }}"
+              vpc_id                  = "{{ vars['platform']['provider'][provider_name]['vpc']['id'] }}"
+              subnet_id               = "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id'] }}"
+              source_ami              = "{{ vars['platform']['repo'][img_type][provider_name]['sourceAmi'] }}"
+              ssh_username            = "{{ img.auth.user }}"
+              ami_name                = "Ubuntu-20_04-klopac"
+              access_key              = "{{ vars['platform']['provider']['auth']['id'] }}"
+              secret_key              = "{{ vars['platform']['provider']['auth']['key'] }}"
+              role_arn                = "{{ vars['platform']['provider'][provider_name]['role']['arn'] }}"
+      tag: v1.8.0
+      runner:
+        name: packer
+        version: v1.8.0
+      state:
+        enabled: false
+      outputs:
+        img:
+          id: img.id
+        

@@ -5,7 +5,7 @@ int:
     name: cert-manager
     namespace: cert-manager
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     required:
@@ -26,7 +26,7 @@ int:
     name: clusterAutoscaler
     namespace: kube-system
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     provider: platform.provider
@@ -54,7 +54,7 @@ int:
     name: vsphere
     namespace: kube-system
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     required:
@@ -71,7 +71,7 @@ int:
     name: vsphere
     namespace: kube-system
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     required:
@@ -92,7 +92,7 @@ int:
     name: nginx
     namespace: ingress-nginx
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     required:
@@ -105,23 +105,14 @@ int:
     runner:
       type: executor
     type: daemonset
-  inputs:
-    endpoint:
-      uri: engine.endpoint.uri
-    kubeconfig:
-      path: engine.kubeconfig.path
   logging:
     enabled: true
     name: efk
     namespace: logging
     operation:
-      type: install
+      type: create
       update:
         policy: apply
-    outputs:
-      password: int.logging.password
-      uri: int.logging.uri
-      user: int.logging.user
     password: ''
     required:
       - enabled
@@ -138,13 +129,9 @@ int:
     name: pgaStack
     namespace: monitoring
     operation:
-      type: install
+      type: create
       update:
         policy: apply
-    outputs:
-      password: int.monitoring.password
-      uri: int.monitoring.uri
-      user: int.monitoring.user
     password: ''
     required:
       - enabled
@@ -164,18 +151,12 @@ int:
     - kubeconfig.path
   vault:
     enabled: true
-    inputs:
-      name: int.vault.name
-      namespace: int.vault.namespace
     name: hashicorp
     namespace: vault
     operation:
-      type: install
+      type: create
       update:
         policy: apply
-    outputs:
-      root-keys: int.vault.rootKeys
-      uri: int.vault.uri
     required:
       - enabled
       - name

@@ -1,0 +1,21 @@
+---
+- name: img get id
+  shell: "{{ vars['platform']['repo'][img_type][provider_name]['dialect']['command']['output']['id'] }}"
+  args:
+    chdir:  "{{ img_repo_path }}"
+  register: img_id
+
+- name: img set id
+  set_fact: 
+    img:
+      id: "{{ img_id.stdout_lines[0] }}"
+
+- name: update img.id in yaml file
+  command: "yq -i -y '.img.id = \"{{ vars['img']['id'] }}\"' ../../vars/image.yaml"
+
+- vars:
+    msg: |
+       {{ vars['img'] | to_nice_yaml }}
+  debug:
+    msg: "{{ msg.split('\n') }}"
+  when: vars['platform']['log']['level']=='debug'

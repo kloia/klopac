@@ -18,14 +18,9 @@ engine:
   kubeconfig:
     path: /data/sensitive/kubeconfig/
   operation:
-    type: install
+    type: create
     update:
       policy: apply
-  outputs:
-    endpoint:
-      uri: engine.endpoint.uri
-    kubeconfig:
-      path: engine.kubeconfig.path
   provider:
     enabled: false
     name: aws

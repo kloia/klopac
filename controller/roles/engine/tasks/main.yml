@@ -1,0 +1,18 @@
+---
+- name: pre
+  include: pre.yml
+  when: img.enabled == true
+#- include: prereqs.yml
+#  vars_files:
+#    - ../../../vars/platform.yaml
+#    - ../../../vars/image.yaml
+#
+#- include: set_vars.yml
+#  vars_files:
+#    - ../../../vars/platform.yaml
+#    - ../../../vars/image.yaml
+#
+#- include: generate_roles.yml
+#  vars_files:
+#    - ../../../vars/platform.yaml
+#    - ../../../vars/image.yaml

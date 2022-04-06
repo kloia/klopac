@@ -1,0 +1,20 @@
+---
+- name: pre
+  include: pre.yml
+  when: img.enabled == true
+
+- name: create
+  include: create.yml
+  when: img.enabled == true and img.operation.type == 'create'
+
+- name: update
+  include: update.yml
+  when: img.enabled == true and img.operation.type == 'update'
+
+- name: delete
+  include: delete.yml
+  when: img.enabled == true and img.operation.type == 'delete'
+
+- name: post
+  include: post.yml
+  when: img.enabled == true

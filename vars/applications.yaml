@@ -6,7 +6,7 @@ app:
     enabled: false
     namespace: example
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     required:
@@ -21,7 +21,7 @@ app:
     enabled: false
     namespace: instana-agent
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     required:
@@ -39,7 +39,7 @@ app:
     enabled: true
     namespace: sock-shop
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     required:
@@ -55,7 +55,7 @@ app:
     enabled: true
     namespace: default
     operation:
-      type: install
+      type: create
       update:
         policy: apply
     required:

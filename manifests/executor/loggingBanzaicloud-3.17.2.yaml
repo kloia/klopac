@@ -2,12 +2,12 @@
 platform:
   executor:
     loggingBanzaicloud:
-      3.17.2:
-        runner:
-          name: kubernetes
-          version: v0.1
-          command: helm
-        helm:
-          repo: 'https://kubernetes-charts.banzaicloud.com'
-          namespace: logging
-          name: logging-operator
+      version: 3.17.2
+      runner:
+        name: kubernetes
+        version: v0.1
+        command: helm
+      helm:
+        repo: 'https://kubernetes-charts.banzaicloud.com'
+        namespace: logging
+        name: logging-operator
