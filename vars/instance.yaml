@@ -1,75 +1,71 @@
+---
 ins:
-    enabled: true
-    image:
-        auth:
-            pem.path: img.pem.path
-            pem.type: img.pem.type
-            type: img.auth.type
-            user: img.auth.user
-        id: img.id
-        name: img.name
-        os: img.os
-    master:
-        count: 1
-        cpu: 4
-        diskSize: 200g
-        group: asgMaster
-        mem: 8g
-        net:
-            dhcp: true
-            dns:
-              - 10.0.0.100
-              - 10.0.0.101
-            domain: pac.local
-            ip:
-                gw: 10.0.0.1
-                pool:
-                  - 10.0.0.10
-                subnet: 24
-    operation:
-        type: install
-        update:
-            policy: apply
-    outputs:
-        master:
-            count: ins.master.count
-            ips: ins.master.net.ip.pool
-        worker:
-            count: ins.master.count
-            ips: ins.master.net.ip.pool
-    required:
-      - enabled
-      - type
-      - master.count
-      - master.cpu
-      - master.mem
-      - master.diskSize
-      - master.net.dhcp
-      - worker.count
-      - worker.cpu
-      - worker.mem
-      - worker.diskSize
-      - worker.net.dhcp
-      - img.name
-      - img.id
-      - img.auth.type
-    runner:
-        type: repo
-    type: terraform
-    worker:
-        count: 3
-        cpu: 12
-        diskSize: 300g
-        group: asgWorker
-        mem: 128g
-        net:
-            dhcp: true
-            dns:
-              - 10.0.0.100
-              - 10.0.0.101
-            domain: pac.local
-            ip:
-                gw: 10.0.0.1
-                pool:
-                  - 10.0.0.20..22
-                subnet: 24
+  enabled: true
+  image:
+    auth:
+      pem.path: img.pem.path
+      pem.type: img.pem.type
+      type: img.auth.type
+      user: img.auth.user
+    id: img.id
+    name: img.name
+    os: img.os
+  master:
+    count: 1
+    cpu: 4
+    diskSize: 200g
+    group: asgMaster
+    mem: 8g
+    net:
+      dhcp: true
+      dns:
+        - 10.0.0.100
+        - 10.0.0.101
+      domain: pac.local
+      ip:
+        gw: 10.0.0.1
+        pool:
+          - 10.0.0.10
+        subnet: 24
+  operation:
+    type: create
+    update:
+      policy: apply
+  required:
+    - enabled
+    - type
+    - master.count
+    - master.cpu
+    - master.mem
+    - master.diskSize
+    - master.net.dhcp
+    - worker.count
+    - worker.cpu
+    - worker.mem
+    - worker.diskSize
+    - worker.net.dhcp
+    - img.name
+    - img.id
+    - img.auth.type
+  runner:
+    type: repo
+  type: terraform
+  worker:
+    count: 3
+    cpu: 12
+    diskSize: 300g
+    group: asgWorker
+    mem: 128g
+    net:
+      dhcp: true
+      dns:
+        - 10.0.0.100
+        - 10.0.0.101
+      domain: pac.local
+      ip:
+        gw: 10.0.0.1
+        pool:
+          - 10.0.0.20
+          - 10.0.0.21
+          - 10.0.0.22
+        subnet: 24

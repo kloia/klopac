@@ -1,0 +1,16 @@
+---
+
+- name: Gitops Tests
+  debug:
+    msg: Gitops tests
+
+# gitops_layer:
+#   type: argocd
+#   status: true
+#   apps:
+#   - name: sock-shop-gitops
+#     status: Healthy
+#     endpoint: localhost:8082
+#   - name: test-gitops
+#     status: Unhealthy
+#     endpoint: localhost:8083

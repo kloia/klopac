@@ -1,0 +1,43 @@
+---
+
+- name: Include Image Variables
+  include_vars: ../vars/image.yaml
+
+- name: Include Image Variables
+  include_vars: ../vars/instance.yaml
+
+- name: "Remove inventory file if it exists"
+  file:
+    path: inventory
+    state: absent
+
+- name: "Create inventory file"
+  changed_when: false
+  shell: echo "[servers]" > inventory
+
+- name: "Update inventory file with Master list"
+  ini_file:
+    dest: "./inventory"
+    section: "servers"
+    option: "{{ item }} ansible_ssh_private_key_file={{ img.auth.pem.path }} ansible_ssh_user"
+    values: "{{ img.auth.user }}"
+    no_extra_spaces: true
+    mode: 0666
+    state: present
+    backup: false
+  with_items: "{{ ins.master.net.ip.pool }}"
+
+- name: "Update inventory file with Worker list"
+  ini_file:
+    dest: "./inventory"
+    section: "servers"
+    option: "{{ item }} ansible_ssh_private_key_file={{ img.auth.pem.path }} ansible_ssh_user"
+    values: "{{ img.auth.user }}"
+    no_extra_spaces: true
+    mode: 0666
+    state: present
+    backup: false
+  with_items: "{{ ins.worker.net.ip.pool }}"
+
+- name: Refresh inventory
+  meta: refresh_inventory

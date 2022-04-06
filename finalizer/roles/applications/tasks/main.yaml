@@ -1,0 +1,14 @@
+---
+
+- name: Application Tests
+  debug:
+    msg: Application tests
+
+
+# applications_layer:
+#   - name: sock-shop
+#     status: Healthy
+#     endpoint: localhost:8080
+#   - name: test
+#     status: Unhealthy
+#     endpoint: localhost:8081
