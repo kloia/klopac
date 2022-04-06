@@ -1,3 +1,4 @@
+---
 int:
-    monitoringPgaStack:
-        version: v2.4.2
+  monitoringPgaStack:
+    version: v2.4.2

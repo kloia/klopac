@@ -16,6 +16,7 @@
         state: absent
 
     - name: "Create inventory file"
+      changed_when: false
       shell: echo "[servers]" > inventory
 
     - name: "Update inventory file with SERVER list"
@@ -34,6 +35,7 @@
       meta: refresh_inventory
 
     - name: Write to file (for testing purposes)
+      changed_when: false
       shell: echo "{{ outputs | to_nice_yaml(indent=2) }}" > output.yaml
 
 
@@ -45,6 +47,7 @@
       include_vars: test_vars.yaml
 
     - name: Get OS Name
+      changed_when: false
       shell: |
         set -o pipefail
         cat /etc/*release* | grep -E "^NAME" | awk -F"=" '{ print $2 }' | sed 's/"//g'
@@ -53,6 +56,7 @@
       register: os_name
 
     - name: Get OS Version
+      changed_when: false
       shell: |
         set -o pipefail
         cat /etc/*release* | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
@@ -62,10 +66,12 @@
 
     - name: Write os_name checks to outputs
       delegate_to: localhost
+      changed_when: false
       shell: "echo 'os_name: {{ os_name.stdout | lower == img.os.name | lower }}' >> output.yaml"
 
     - name: Write os_version checks to outputs
       delegate_to: localhost
+      changed_when: false
       shell: "echo 'os_version: {{ os_version.stdout | lower == img.os.version | lower }}' >> output.yaml"
 
 
@@ -81,6 +87,8 @@
       template:
         src: templates/human_readable.md.j2
         dest: "/app/data/bundle/human_readable.md"
+        mode: u+rw,g-wx,o-rwx
 
     - name: Create bundle from state and config files
+      changed_when: false
       command: tar -czvf bundle.tar.gz /app/data

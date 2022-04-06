@@ -1,51 +1,52 @@
+---
 engine:
-    enabled: true
+  enabled: true
+  endpoint:
+    uri: ''
+  instance:
+    auth:
+      pem.path: img.pem.path
+      pem.type: img.pem.type
+      type: img.auth.type
+      user: img.auth.user
+    master:
+      count: ins.master.count
+      ips: ins.master.net.ip.pool
+    worker:
+      count: ins.master.count
+      ips: ins.master.net.ip.pool
+  kubeconfig:
+    path: /data/sensitive/kubeconfig/
+  operation:
+    type: install
+    update:
+      policy: apply
+  outputs:
     endpoint:
-        uri: ""
-    instance:
-        auth:
-            pem.path: img.pem.path
-            pem.type: img.pem.type
-            type: img.auth.type
-            user: img.auth.user
-        master:
-            count: ins.master.count
-            ips: ins.master.net.ip.pool
-        worker:
-            count: ins.master.count
-            ips: ins.master.net.ip.pool
+      uri: engine.endpoint.uri
     kubeconfig:
-        path: /data/sensitive/kubeconfig/
-    operation:
-        type: install
-        update:
-            policy: apply
-    outputs:
-        endpoint:
-            uri: engine.endpoint.uri
-        kubeconfig:
-            path: engine.kubeconfig.path
-    provider:
-        enabled: false
-        name: aws
-    rbac:
-        enabled: false
-        pass: pass
-        protocol: ldap
-        type: ldap
-        user: usename
-    required:
-      - enabled
-      - type
-      - prodiver.enabled
-      - rbac.enabled
-      - operation.type
-      - runner.type
-      - instance.master.count
-      - instance.master.ips
-      - instance.worker.count
-      - instance.worker.ips
-      - instance.auth.type
-    runner:
-        type: repo
-    type: k3s
+      path: engine.kubeconfig.path
+  provider:
+    enabled: false
+    name: aws
+  rbac:
+    enabled: false
+    pass: pass
+    protocol: ldap
+    type: ldap
+    user: usename
+  required:
+    - enabled
+    - type
+    - prodiver.enabled
+    - rbac.enabled
+    - operation.type
+    - runner.type
+    - instance.master.count
+    - instance.master.ips
+    - instance.worker.count
+    - instance.worker.ips
+    - instance.auth.type
+  runner:
+    type: repo
+  type: k3s

@@ -1,11 +1,12 @@
+---
 app:
-    instana:
-        agent:
-            clusterName: ""
-            downloadKey: ""
-            endpointHost: ""
-            endpointPort: ""
-            key: ""
-            zoneName: ""
-        type: agent
-        version: latest
+  instana:
+    agent:
+      clusterName: ''
+      downloadKey: ''
+      endpointHost: ''
+      endpointPort: ''
+      key: ''
+      zoneName: ''
+    type: agent
+    version: latest

@@ -1,14 +1,16 @@
+---
 platform:
   executor:
     flux:
       1.24.3:
-        runner: 
+        runner:
           name: kubernetes
           version: v0.1
           command: helm
         manifest:
-          uri: https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
+          uri: >-
+            https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
         helm:
-          repo: https://charts.fluxcd.io
+          repo: 'https://charts.fluxcd.io'
           namespace: flux
           name: flux

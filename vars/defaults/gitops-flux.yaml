@@ -1,3 +1,4 @@
+---
 gitops:
-    flux:
-        version: 1.24.3
+  flux:
+    version: 1.24.3

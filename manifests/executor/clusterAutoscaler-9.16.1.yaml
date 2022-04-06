@@ -1,13 +1,14 @@
+---
 platform:
   executor:
     clusterAutoscaler:
       9.16.1:
-        runner: 
+        runner:
           name: kubernetes
           version: v0.1
           command: helm
         helm:
-          repo: https://kubernetes.github.io/autoscaler
+          repo: 'https://kubernetes.github.io/autoscaler'
           namespace: cluster-autocaler
           name: cluster-autocaler
           masterGroup: int.clusterAutoscaler.master.group

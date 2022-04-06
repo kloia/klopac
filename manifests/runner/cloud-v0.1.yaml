@@ -1,3 +1,4 @@
+---
 platform:
   runner:
     cloud:
@@ -5,15 +6,15 @@ platform:
         awscli:
           version: 2.4.23
           inputs:
-            aws_access_key_id: "{{ aws.aws_access_key_id }}"
-            aws_secret_access_key: "{{ aws.aws_secret_access_key }}"
+            aws_access_key_id: '{{ aws.aws_access_key_id }}'
+            aws_secret_access_key: '{{ aws.aws_secret_access_key }}'
         azurecli:
           version: 2.34.1
           inputs:
-            username: "{{ azure.username }}"
-            password: "{{ azure.password }}"
+            username: '{{ azure.username }}'
+            password: '{{ azure.password }}'
         gcloud:
           version: 375.0.0
           inputs:
-            username: "{{ gcloud.username }}"
-            password: "{{ gcloud.password }}"
+            username: '{{ gcloud.username }}'
+            password: '{{ gcloud.password }}'

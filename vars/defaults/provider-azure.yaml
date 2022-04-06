@@ -1,9 +1,10 @@
+---
 platform:
-    provider:
-        azure:
-            role:
-                arn: ""
-            vnet:
-                addressSpace: 10.0.0.0/16
-                name: klopac-vnet
-                subnet: klopac-subnet
+  provider:
+    azure:
+      role:
+        arn: ''
+      vnet:
+        addressSpace: 10.0.0.0/16
+        name: klopac-vnet
+        subnet: klopac-subnet

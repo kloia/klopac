@@ -1,3 +1,4 @@
+---
 img:
-    packer:
-        version: 1.8.0
+  packer:
+    version: 1.8.0

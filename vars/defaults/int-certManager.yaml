@@ -1,3 +1,4 @@
+---
 int:
-    certManager:
-        version: v1.5.2
+  certManager:
+    version: v1.5.2

@@ -1,188 +1,189 @@
+---
 int:
-    certManager:
-        enabled: false
-        name: cert-manager
-        namespace: cert-manager
-        operation:
-            type: install
-            update:
-                policy: apply
-        required:
-          - enabled
-          - name
-          - namespace
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-    clusterAutoscaler:
-        enabled: false
-        logLevel: platform.log.level
-        master:
-            group: ins.master.group
-            max: ins.master.count * 1.5
-            min: ins.master.count
-        name: clusterAutoscaler
-        namespace: kube-system
-        operation:
-            type: install
-            update:
-                policy: apply
-        provider: platform.provider
-        required:
-          - enabled
-          - name
-          - provider
-          - namespace
-          - master.min
-          - master.max
-          - master.group
-          - worker.min
-          - worker.max
-          - worker.group
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-        worker:
-            group: ins.worker.group
-            max: ins.worker.count * 1.5
-            min: ins.worker.count
-    cpi:
-        enabled: false
-        name: vsphere
-        namespace: kube-system
-        operation:
-            type: install
-            update:
-                policy: apply
-        required:
-          - enabled
-          - name
-          - namespace
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-    csi:
-        dependsOn: cpi
-        enabled: false
-        name: vsphere
-        namespace: kube-system
-        operation:
-            type: install
-            update:
-                policy: apply
-        required:
-          - enabled
-          - name
-          - namespace
-          - storageClass.name
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-        storageClass:
-            default: true
-            name: vsphere-sc
-    enabled: true
-    ingress:
-        enabled: false
-        name: nginx
-        namespace: ingress-nginx
-        operation:
-            type: install
-            update:
-                policy: apply
-        required:
-          - enabled
-          - name
-          - namespace
-          - type
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-        type: daemonset
-    inputs:
-        endpoint:
-            uri: engine.endpoint.uri
-        kubeconfig:
-            path: engine.kubeconfig.path
-    logging:
-        enabled: true
-        name: efk
-        namespace: logging
-        operation:
-            type: install
-            update:
-                policy: apply
-        outputs:
-            password: int.logging.password
-            uri: int.logging.uri
-            user: int.logging.user
-        password: ""
-        required:
-          - enabled
-          - name
-          - namespace
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-        uri: ""
-        user: ""
-    monitoring:
-        enabled: true
-        name: pgaStack
-        namespace: monitoring
-        operation:
-            type: install
-            update:
-                policy: apply
-        outputs:
-            password: int.monitoring.password
-            uri: int.monitoring.uri
-            user: int.monitoring.user
-        password: ""
-        required:
-          - enabled
-          - name
-          - namespace
-          - serviceType
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-        serviceType: NodePort
-        uri: ""
-        user: ""
+  certManager:
+    enabled: false
+    name: cert-manager
+    namespace: cert-manager
+    operation:
+      type: install
+      update:
+        policy: apply
     required:
       - enabled
-      - endpoint.uri
-      - kubeconfig.path
-    vault:
-        enabled: true
-        inputs:
-            name: int.vault.name
-            namespace: int.vault.namespace
-        name: hashicorp
-        namespace: vault
-        operation:
-            type: install
-            update:
-                policy: apply
-        outputs:
-            root-keys: int.vault.rootKeys
-            uri: int.vault.uri
-        required:
-          - enabled
-          - name
-          - namespace
-          - operation.type
-          - runner.type
-        rootKeys:
-          - ""
-        runner:
-            type: executor
-        uri: ""
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+  clusterAutoscaler:
+    enabled: false
+    logLevel: platform.log.level
+    master:
+      group: ins.master.group
+      max: ins.master.count * 1.5
+      min: ins.master.count
+    name: clusterAutoscaler
+    namespace: kube-system
+    operation:
+      type: install
+      update:
+        policy: apply
+    provider: platform.provider
+    required:
+      - enabled
+      - name
+      - provider
+      - namespace
+      - master.min
+      - master.max
+      - master.group
+      - worker.min
+      - worker.max
+      - worker.group
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    worker:
+      group: ins.worker.group
+      max: ins.worker.count * 1.5
+      min: ins.worker.count
+  cpi:
+    enabled: false
+    name: vsphere
+    namespace: kube-system
+    operation:
+      type: install
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+  csi:
+    dependsOn: cpi
+    enabled: false
+    name: vsphere
+    namespace: kube-system
+    operation:
+      type: install
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - storageClass.name
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    storageClass:
+      default: true
+      name: vsphere-sc
+  enabled: true
+  ingress:
+    enabled: false
+    name: nginx
+    namespace: ingress-nginx
+    operation:
+      type: install
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - type
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    type: daemonset
+  inputs:
+    endpoint:
+      uri: engine.endpoint.uri
+    kubeconfig:
+      path: engine.kubeconfig.path
+  logging:
+    enabled: true
+    name: efk
+    namespace: logging
+    operation:
+      type: install
+      update:
+        policy: apply
+    outputs:
+      password: int.logging.password
+      uri: int.logging.uri
+      user: int.logging.user
+    password: ''
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    uri: ''
+    user: ''
+  monitoring:
+    enabled: true
+    name: pgaStack
+    namespace: monitoring
+    operation:
+      type: install
+      update:
+        policy: apply
+    outputs:
+      password: int.monitoring.password
+      uri: int.monitoring.uri
+      user: int.monitoring.user
+    password: ''
+    required:
+      - enabled
+      - name
+      - namespace
+      - serviceType
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    serviceType: NodePort
+    uri: ''
+    user: ''
+  required:
+    - enabled
+    - endpoint.uri
+    - kubeconfig.path
+  vault:
+    enabled: true
+    inputs:
+      name: int.vault.name
+      namespace: int.vault.namespace
+    name: hashicorp
+    namespace: vault
+    operation:
+      type: install
+      update:
+        policy: apply
+    outputs:
+      root-keys: int.vault.rootKeys
+      uri: int.vault.uri
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    rootKeys:
+      - ''
+    runner:
+      type: executor
+    uri: ''

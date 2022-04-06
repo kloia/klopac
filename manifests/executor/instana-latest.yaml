@@ -1,14 +1,15 @@
+---
 platform:
   executor:
     instana:
       latest:
         type: agent
-        runner: 
+        runner:
           name: kubernetes
           version: v0.1
           command: helm
         helm:
-          repo: https://agents.instana.io/helm
+          repo: 'https://agents.instana.io/helm'
           namespace: app.instana.namespace
           name: instana-agent
           agent:

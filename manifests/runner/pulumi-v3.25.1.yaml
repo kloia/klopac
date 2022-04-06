@@ -1,8 +1,9 @@
+---
 platform:
   runner:
     pulumi:
       v3.25.1:
         inputs:
-          path: '/app'
+          path: /app
           log:
-            level: "{{ general.log.level }}"
+            level: '{{ general.log.level }}'

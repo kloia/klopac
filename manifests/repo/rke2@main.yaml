@@ -1,8 +1,9 @@
+---
 platform:
   repo:
     rke2:
       main:
-        uri: "https://github.com/kloia/rke2-ansible"
+        uri: 'https://github.com/kloia/rke2-ansible'
         type: git
         branch: main
         runner:

@@ -15,5 +15,6 @@
     copy:
       src: "{{ item.path }}"
       dest: "/data/repos/{{ repo.name }}/"
+      mode: u+rw,g-wx,o-rwx
     with_items: "{{ repo.outputs.values() | list }}"
     when: item.type == 'file'

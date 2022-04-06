@@ -1,14 +1,15 @@
+---
 platform:
   executor:
     loggingEfk:
       7.4.0:
-        runner: 
+        runner:
           name: kubernetes
           version: v0.1
           command: helm
         elasticsearch:
           helm:
-            repo: https://helm.elastic.co
+            repo: 'https://helm.elastic.co'
             namespace: logging
             name: elasticsearch
             appVersion: 7.4.0
@@ -19,7 +20,7 @@ platform:
                   hostname: elasticsearch-master
         kibana:
           helm:
-            repo: https://helm.elastic.co
+            repo: 'https://helm.elastic.co'
             namespace: logging
             name: kibana
             appVersion: 7.4.0

@@ -1,22 +1,23 @@
+---
 platform:
-    provider:
-        aws:
-            ec2:
-                master:
-                    az: eu-central-1a
-                    iamRole: ""
-                    instanceType: ""
-                    keyPair: ""
-                    securityGroup: ""
-                    subnet: ""
-                    tag: klopac-master
-                    vpc: ""
-                worker:
-                    az: eu-central-1a
-                    iamRole: ""
-                    instanceType: ""
-                    keyPair: ""
-                    securityGroup: ""
-                    subnet: ""
-                    tag: klopac-worker
-                    vpc: ""
+  provider:
+    aws:
+      ec2:
+        master:
+          az: eu-central-1a
+          iamRole: ''
+          instanceType: ''
+          keyPair: ''
+          securityGroup: ''
+          subnet: ''
+          tag: klopac-master
+          vpc: ''
+        worker:
+          az: eu-central-1a
+          iamRole: ''
+          instanceType: ''
+          keyPair: ''
+          securityGroup: ''
+          subnet: ''
+          tag: klopac-worker
+          vpc: ''
