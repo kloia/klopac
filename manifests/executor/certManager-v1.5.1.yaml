@@ -2,15 +2,15 @@
 platform:
   executor:
     cert-manager:
-      v1.5.1:
-        runner:
-          name: kubernetes
-          version: v0.1
-          command: helm
-        manifest:
-          uri: >-
-            https://github.com/cert-manager/cert-manager/releases/download/v1.5.1/cert-manager.crds.yaml
-        helm:
-          repo: 'https://charts.jetstack.io'
-          namespace: cert-manager
-          name: cert-manager
+      version: v1.5.1
+      runner:
+        name: kubernetes
+        version: v0.1
+        command: helm
+      manifest:
+        uri: >-
+          https://github.com/cert-manager/cert-manager/releases/download/v1.5.1/cert-manager.crds.yaml
+      helm:
+        repo: 'https://charts.jetstack.io'
+        namespace: cert-manager
+        name: cert-manager

@@ -2,13 +2,13 @@
 platform:
   executor:
     argocd:
-      4.2.1:
-        runner:
-          name: kubernetes
-          version: v0.1
-          command: helm
-        argoRollout: gitops.argocd.argoRollout
-        helm:
-          repo: 'https://argoproj.github.io/argo-helm'
-          namespace: gitops.argocd.namespace
-          name: argocd
+      version: 4.2.1
+      runner:
+        name: kubernetes
+        version: v0.1
+        command: helm
+      argoRollout: gitops.argocd.argoRollout
+      helm:
+        repo: 'https://argoproj.github.io/argo-helm'
+        namespace: gitops.argocd.namespace
+        name: argocd

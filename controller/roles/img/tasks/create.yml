@@ -1,0 +1,10 @@
+---
+- name: create image
+  command: "{{ vars['platform']['repo'][img_type][provider_name]['dialect']['command']['create'] }}"
+  args:
+    chdir: "{{ img_repo_path }}"
+  register: img_create_log
+
+- debug:
+    msg: "{{ vars['img_create_log'] }}"
+  when: vars['platform']['log']['level']=='debug'

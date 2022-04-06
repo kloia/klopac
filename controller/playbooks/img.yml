@@ -1,0 +1,8 @@
+---  
+- hosts: localhost
+  connection: local
+  roles:
+    - img
+  vars_files:
+    - ../../vars/platform.yaml
+    - ../../vars/image.yaml
