@@ -1,0 +1,9 @@
+---  
+- hosts: localhost
+  connection: local
+  roles:
+    - engine
+  vars_files:
+    - ../../vars/platform.yaml
+    - ../../vars/instance.yaml
+    - ../../vars/engine.yaml

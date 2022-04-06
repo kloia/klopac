@@ -1,0 +1,53 @@
+---
+
+- name: include provider defaults
+  include_vars: 
+    file: ../../vars/defaults/provider-{{ platform.provider.name }}.yaml
+
+- name: include provider type defaults
+  include_vars: 
+    file: ../../vars/defaults/provider-{{ platform.provider.name }}-{{ platform.provider.type }}.yaml
+
+- name: include img defaults
+  include_vars: 
+    file: ../../vars/defaults/img-{{ img.type }}.yaml
+
+- name: set workplace folder
+  set_fact:
+    workspace: '/app'
+
+- name: get img type
+  set_fact:
+    img_type: "{{ img.type }}"
+
+- name: get provider name
+  set_fact:
+    provider_name: "{{ platform.provider.name }}"
+
+- name: get provider type
+  set_fact:
+    provider_type: "{{ platform.provider.type }}"
+
+- name: include repo
+  include_vars: 
+    file: ../../manifests/repo/{{ img.type }}-{{ img.packer.version }}.yaml
+
+- name: get repo path
+  set_fact:
+    img_repo_path: "{{ workspace }}/{{ vars['platform']['repo'][img_type]['name'] }}"
+
+# - vars:
+#     msg: |
+#        {{ vars['platform'] | to_nice_yaml }}
+#   debug:
+#     msg: "{{ msg.split('\n') }}"
+
+- copy:
+    content: "{{ vars['platform']['repo'][img_type][provider_name]['dialect']['file']['content'] }}"
+    dest: ../templates/img_config.j2
+  when:  vars['platform']['repo'][img_type][provider_name]['dialect']['type']=='file'
+
+- template:
+    src: ../templates/img_config.j2
+    dest: "{{ workspace }}/{{ vars['platform']['repo'][img_type]['name'] }}/{{ vars['platform']['repo'][img_type][provider_name]['dialect']['file']['destination'] }}"
+  when:  vars['platform']['repo'][img_type][provider_name]['dialect']['type']=='file'

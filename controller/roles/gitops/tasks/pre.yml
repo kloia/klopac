@@ -1,0 +1,39 @@
+---
+- name: include img defaults
+  include_vars: 
+    file: ../../../../../vars/defaults/img-{{ img.type }}.yaml
+#    hash_behaviour: merge
+
+- name: include repo
+  include_vars: 
+    file: ../../../../../manifests/repo/{{ img.type }}-{{ img.packer.version }}.yaml
+#    hash_behaviour: merge
+
+- vars:
+    msg: |
+       Module Variables ("vars"):
+       --------------------------------
+       {{ vars['platform'] | to_nice_yaml }}
+  debug:
+    msg: "{{ msg.split('\n') }}"
+
+- name: set workplace folder
+  set_fact:
+    workspace: '/app'
+
+- name: get img type
+  set_fact:
+    img_type: "{{ img.type }}"
+
+- copy:
+    content: "{{ vars['platform']['repo'][img_type]['dialect']['file']['content'] }}"
+    dest: ../templates/config.j2
+
+- template:
+    src: ../templates/config.j2
+    dest: "{{ workspace }}/{{ vars['platform']['repo'][img_type]['name'] }}/{{ vars['platform']['repo'][img_type]['dialect']['file']['destination'] }}"
+
+
+#    dest: "{{ workspace }}/{{ hostvars['localhost']['platform']['repo'][img_type]['name'] }}/{{ hostvars['localhost']['platform']['repo'][img_type]['dialect']['file']['destination'] }}"
+#"/data/runner/{{ hostvars['localhost']['platform']['repo'][engine_type][engine_version]['runner']['name']}}-runner-{{ hostvars['localhost']['platform']['repo'][engine_type][engine_version]['runner']['version']}}.yaml"
+#    when: platform.repo[img.type].dialect.type == 'file'

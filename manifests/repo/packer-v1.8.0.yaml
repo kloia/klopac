@@ -7,30 +7,30 @@ platform:
         branch: platform.provider.name
         aws:
           sourceAmi: 'ami-08ca3fed11864d6bb'
-          region: platform.provider.region1
-          vpc:
-            name: platform.provider.aws.vpc.name
-            id: platform.provider.aws.vpc.id
-            subnet:
-              id: platform.provider.aws.vpc.subnet.id
+          dialect:
+            command:
+              create: "packer build -var-file ./vars/vars.hcl ."
+              output: 
+                id: "jq -r '.builds[-1].artifact_id' manifest.json | cut -d ':' -f2"
+            type: file
+            file:
+              destination: vars/vars.hcl
+              content: |
+                instance_type           = "t2.micro"
+                region                  = "{{ vars['platform']['provider']['region1'] }}"
+                vpc_id                  = "{{ vars['platform']['provider'][provider_name]['vpc']['id'] }}"
+                subnet_id               = "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id'] }}"
+                source_ami              = "{{ vars['platform']['repo'][img_type][provider_name]['sourceAmi'] }}"
+                ssh_username            = "{{ img.auth.user }}"
+                ami_name                = "Ubuntu-20_04-klopac"
+                access_key              = "{{ vars['platform']['provider']['auth']['id'] }}"
+                secret_key              = "{{ vars['platform']['provider']['auth']['key'] }}"
+                role_arn                = "{{ vars['platform']['provider'][provider_name]['role']['arn'] }}"
         tag: v1.8.0
         id: ""
         runner:
           name: packer
           version: v1.8.0
-        dialect:
-          type: file
-          file:
-            destination: vars/vars.hcl
-            content: |
-              instance_type           = "t2.micro"
-              open_file_limit         = "{{ img.preReqs.fileLimits.nofile.hard }}"
-              region                  = "{{ platform.repo.packer.aws.region }}"
-#              vpc_id                  = '{{ platform.repo.packer[platform.prowider.name].vpc.id }}'
-#              subnet_id               = '{{ platform.repo.packer[platform.prowider.name].vpc.subnet.id }}'
-#              source_ami              = '{{ platform.repo.packer[platform.prowider.name].sourceAmi }}'
-#              ssh_username            = '{{ img.auth.user }}'
-#              ami_name = 'Ubuntu-20_04-klopac'
         state:
           enabled: false
         outputs:

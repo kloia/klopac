@@ -3,3 +3,8 @@ tls.key
 ca.crt
 id_rsa
 .DS_Store
+.ansible
+.cache
+.local
+.viminfo
+.bash_history
