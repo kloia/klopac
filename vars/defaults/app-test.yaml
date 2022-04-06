@@ -1,3 +1,4 @@
+---
 app:
-    test:
-        version: latest
+  test:
+    version: latest

@@ -1,50 +1,47 @@
+---
 img:
-    auth:
-        pem:
-            path: /data/sensitive/pem.file
-            type: file
-        type: pem
-        user: ubuntu
-    diskSize: 300g
-    enabled: true
-    id: ""
-    name: Ubuntu-20.04-klopac
-    operation:
-        type: install
-        update:
-            policy: apply
-    os: ubuntu:20.04
-    outputs:
-        id: img.id
-        name: img.name
-        os: img.os
-    path: /tmp/Ubuntu-20.04-klopac
-    preReqs:
-        fileLimits:
-            nofile:
-                hard: 1024000
-                soft: 1024000
-            nproc:
-                hard: 1024000
-                soft: 1024000
-        logrotate:
-            enabled: true
-            maxsize: 250M
-            rotate: 10
-        parameters:
-            kernel:
-                net.bridge.bridgeNfCallIptables: 1
-        timezone: Europe/Istanbul
-    required:
-      - enabled
-      - type
-      - operation.type
-      - runner.type
-      - os
-      - name
-      - diskSize
-      - preReqs.timezone
-      - preReqs.logrotate.enabled
-    runner:
-        type: repo
-    type: packer
+  auth:
+    pem:
+      path: /data/sensitive/pem.file
+      type: file
+    type: pem
+    user: ubuntu
+  diskSize: 300g
+  enabled: true
+  id: ''
+  name: Ubuntu-20.04-klopac
+  operation:
+    type: create
+    update:
+      policy: apply
+  os: 'ubuntu:20.04'
+  path: /tmp/Ubuntu-20.04-klopac
+  preReqs:
+    fileLimits:
+      nofile:
+        hard: 1024000
+        soft: 1024000
+      nproc:
+        hard: 1024000
+        soft: 1024000
+    logrotate:
+      enabled: true
+      maxsize: 250M
+      rotate: 10
+    parameters:
+      kernel:
+        net.bridge.bridgeNfCallIptables: 1
+    timezone: Europe/Istanbul
+  required:
+    - enabled
+    - type
+    - operation.type
+    - runner.type
+    - os
+    - name
+    - diskSize
+    - preReqs.timezone
+    - preReqs.logrotate.enabled
+  runner:
+    type: repo
+  type: packer

@@ -2,12 +2,12 @@ package helper
 
 import (
 	"archive/tar"
+	"bytes"
 	"entrypoint/pkg/command"
 	"entrypoint/pkg/flag"
 	"entrypoint/pkg/flow"
 	"entrypoint/pkg/option"
 	"entrypoint/pkg/shell"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -37,13 +37,13 @@ func ReadFile(filename string) map[string]interface{} {
 // Writes content to a yaml file
 
 func WriteFile(filename string, data map[string]interface{}) error {
-	yamlData, err := yaml.Marshal(data)
+	var b bytes.Buffer
+	yamlEncoder := yaml.NewEncoder(&b)
+	yamlEncoder.SetIndent(2)
 
-	if err != nil {
-		fmt.Printf("Error while Marshaling. %v", err)
-	}
+	yamlEncoder.Encode(&data)
 
-	err = ioutil.WriteFile(filename, yamlData, 0644)
+	err := ioutil.WriteFile(filename, b.Bytes(), 0644)
 	if err != nil {
 		return err
 	}

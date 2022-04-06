@@ -1,12 +1,13 @@
+---
 platform:
   executor:
     example:
-      latest:
-        runner: 
-          name: kubernetes
-          version: v0.1
-          command: helm
-        helm:
-          repo: ''
-          namespace: default
-          name: example
+      version: latest
+      runner:
+        name: kubernetes
+        version: v0.1
+        command: helm
+      helm:
+        repo: ''
+        namespace: default
+        name: example

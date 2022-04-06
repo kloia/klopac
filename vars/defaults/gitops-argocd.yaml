@@ -1,5 +1,6 @@
+---
 gitops:
-    argocd:
-        argoRollout: true
-        namespace: argocd
-        version: 4.2.1
+  argocd:
+    argoRollout: true
+    namespace: argocd
+    version: 4.2.1

@@ -1,20 +1,19 @@
+---
 platform:
   repo:
     k3s:
-      v1.23.4:
-        uri: "https://github.com/k3s-io/k3s"
-        type: git
-        branch: master
-        tag: v1.23.4+k3s1
-        runner:
-          name: ansible
-          version: 5.2.0
-        state:
-          enabled: false
-        healthcheck:
-          type: kubeconfig
-        outputs:
-          kubeconfig:
-            type: file
-            path: kubecfg_path
-        
+      uri: 'https://github.com/k3s-io/k3s'
+      type: git
+      branch: master
+      tag: v1.23.4+k3s1
+      runner:
+        name: ansible
+        version: 5.2.0
+      state:
+        enabled: false
+      healthcheck:
+        type: kubeconfig
+      outputs:
+        kubeconfig:
+          type: file
+          path: kubecfg_path

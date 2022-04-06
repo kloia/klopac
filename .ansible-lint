@@ -1,5 +1,6 @@
+---
 warn_list:
-- command-instead-of-module
-- no-changed-when
-- risky-file-permissions
-- var-naming
+  - command-instead-of-module
+  - var-naming
+kinds:
+  - yaml: "**/*.{yml,yaml}"

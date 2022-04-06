@@ -1,0 +1,11 @@
+---  
+- hosts: localhost
+  connection: local
+  roles:
+    - app
+  vars_files:
+    - ../../vars/platform.yaml
+    - ../../vars/engine.yaml
+    - ../../vars/integrations.yaml
+    - ../../vars/gitops.yaml
+    - ../../vars/app.yaml

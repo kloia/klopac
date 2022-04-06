@@ -1,5 +1,4 @@
+---
 int:
   ingress:
-    enabled: false
-  certManager:
-    version: v1.5.2
+    enabled: true

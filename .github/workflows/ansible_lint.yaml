@@ -3,8 +3,9 @@ name: Ansible Lint
 
 on:
   push:
+    branches: [ 0.1-alph ]
+  pull_request:
     branches: [ 0.1-alpha ]
-
 jobs:
   ansible-lint:
     runs-on: ubuntu-20.04
@@ -21,8 +22,8 @@ jobs:
         # or valid Ansible directories according to the Ansible role
         # directory structure.
         # If you want to lint multiple ansible files, use the following syntax
-        targets: |
-          finalizer/finalizer.yaml
+#        targets: |
+#          finalizer/finalizer.yaml
         # [optional]
         # Arguments to override a package and its version to be set explicitly.
         # Must follow the example syntax.
@@ -50,5 +51,5 @@ jobs:
         #                         path to directories or files to skip. This option is
         #                         repeatable.
         #   -c C                  Specify configuration file to use. Defaults to ".ansible-lint"
-        args: "-x command-instead-of-module,no-changed-when"
+        args: ""
         # https://ansible-lint.readthedocs.io/en/latest/rules.html

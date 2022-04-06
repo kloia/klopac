@@ -1,8 +1,0 @@
-platform:
-  runner:
-    terraform:
-      v1.1.6:
-        inputs:
-          path: '/app'
-          log:
-            level: "{{ general.log.level }}"

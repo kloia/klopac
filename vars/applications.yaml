@@ -1,66 +1,68 @@
+---
+
 app:
-    example:
-        basedOn: gitops
-        enabled: false
-        namespace: example
-        operation:
-            type: install
-            update:
-                policy: apply
-        required:
-          - enabled
-          - name
-          - namespace
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-    instana:
-        enabled: false
-        namespace: instana-agent
-        operation:
-            type: install
-            update:
-                policy: apply
-        required:
-          - enabled
-          - name
-          - namespace
-          - type
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
-        type: agent
-    sock-shop:
-        basedOn: gitops
-        enabled: true
-        namespace: sock-shop
-        operation:
-            type: install
-            update:
-                policy: apply
-        required:
-          - enabled
-          - name
-          - namespace
-          - operation.type
-          - runner.type
-        runner:
-            type: repo
-    test:
-        dependsOn: sock-shop
-        enabled: true
-        namespace: default
-        operation:
-            type: install
-            update:
-                policy: apply
-        required:
-          - enabled
-          - name
-          - namespace
-          - operation.type
-          - runner.type
-        runner:
-            type: executor
+  example:
+    basedOn: gitops
+    enabled: false
+    namespace: example
+    operation:
+      type: create
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+  instana:
+    enabled: false
+    namespace: instana-agent
+    operation:
+      type: create
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - type
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    type: agent
+  sock-shop:
+    basedOn: gitops
+    enabled: true
+    namespace: sock-shop
+    operation:
+      type: create
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    runner:
+      type: repo
+  test:
+    dependsOn: sock-shop
+    enabled: true
+    namespace: default
+    operation:
+      type: create
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    runner:
+      type: executor

@@ -1,8 +1,9 @@
+---
 platform:
   runner:
     packer:
-      v1.8.0:
-        inputs:
-          path: '/app'
-          log:
-            level: "{{ general.log.level }}"
+      version: v1.8.0
+      inputs:
+        path: /app
+        log:
+          level: '{{ general.log.level }}'
