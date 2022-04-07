@@ -1,0 +1,38 @@
+name: Cloud Runner Image Build and Publish
+
+on:
+  push:
+    branches: [ 0.1-alpha ]
+    paths:
+      - 'Docker/runner/cloud/Dockerfile'
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and Push Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v4
+        with:
+          image: "${{ secrets.DOCKER_HUB }}/klopac-cloud-runner"
+          tag: 0.1
+          registry: docker.io
+          username: ${{ secrets.DOCKER_HUB }}
+          password: ${{ secrets.DOCKER_HUB_KEY }}
+          dockerfile: Docker/runner/cloud/Dockerfile
+  test:
+    runs-on: ubuntu-20.04
+    needs: build
+    container: 
+      image: "docker.io/kloiadocker/klopac-cloud-runner:0.1"
+      credentials:
+        username: ${{ secrets.DOCKER_HUB }}
+        password: ${{ secrets.DOCKER_HUB_KEY }}
+    steps:
+      - run: aws --version
+        name: Check aws-cli version
+      - run: az --version
+        name: Check az-cli version
+      - run: gcloud --version
+        name: Check gcloud-cli version
