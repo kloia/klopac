@@ -1,0 +1,10 @@
+---
+
+- name: Image Tests
+  debug:
+    msg: image tests
+
+# image_layer:
+#   status: Healthy
+#   id: 123456
+#   provider: AWS

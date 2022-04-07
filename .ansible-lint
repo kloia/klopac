@@ -1,5 +1,6 @@
 ---
 warn_list:
   - command-instead-of-module
+  - var-naming
 kinds:
   - yaml: "**/*.{yml,yaml}"

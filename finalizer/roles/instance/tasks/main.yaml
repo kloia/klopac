@@ -1,0 +1,55 @@
+---
+
+- name: Create bundle directory
+  file:
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: 0750
+    path: "/data/bundle"
+
+- name: Include Image Variables
+  include_vars: ../vars/image.yaml
+
+- name: Get OS Information
+  set_fact:
+    OS_NAME: '{{ img.os.split(":")[0] | lower }}'
+    OS_VERSION: '{{ img.os.split(":")[1] | lower }}'
+
+
+- name: Get OS Name
+  changed_when: false
+  shell: |
+    set -o pipefail
+    cat /etc/*release* | grep -E "^NAME" | awk -F"=" '{ print $2 }' | sed 's/"//g'
+  args:
+    executable: /bin/bash
+  register: os_name
+
+- name: Get OS Version
+  changed_when: false
+  shell: |
+    set -o pipefail
+    cat /etc/*release* | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
+  args:
+    executable: /bin/bash
+  register: os_version
+
+- name: Write os_name checks to outputs
+  delegate_to: localhost
+  changed_when: false
+  shell: "echo 'os_name: {{ os_name.stdout | lower == OS_NAME }}' >> /data/bundle/output.yaml"
+
+- name: Write os_version checks to outputs
+  delegate_to: localhost
+  changed_when: false
+  shell: "echo 'os_version: {{ os_version.stdout | lower == OS_VERSION | lower }}' >> /data/bundle/output.yaml"
+
+# instance_layer:
+#   os:
+#     name: ubuntu
+#     version: 20.04.4
+#   utilization:
+#     disk: "%20"
+#     mem: "%30"
+#     cpu: "%40"

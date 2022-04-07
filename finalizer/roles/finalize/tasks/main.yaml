@@ -1,0 +1,21 @@
+---
+- name: Create bundle directory
+  file:
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: 0750
+    path: "/data/bundle"
+
+- name: Include Image Variables
+  include_vars: /data/bundle/output.yaml
+
+- name: Create Pac Output
+  template:
+    src: templates/output.md.j2
+    dest: "/data/bundle/output.md"
+    mode: u+rw,g-wx,o-rwx
+
+- name: Create bundle from state and config files
+  changed_when: false
+  command: tar -czvf bundle.tar.gz /data/
