@@ -1,5 +1,5 @@
 
-name: Ansible Lint
+name: Run Ansible Lint
 
 on:
   push:
