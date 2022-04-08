@@ -1,4 +1,4 @@
-name: Go
+name: Entrypoint Go Build and Test
 
 on:
   push:
