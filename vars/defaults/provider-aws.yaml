@@ -7,3 +7,6 @@ platform:
       vpc:
         cidrBlock: 10.0.0.0/16
         name: klopac-default
+        id: ''
+        subnet:
+          id: ''

@@ -10,6 +10,8 @@ platform:
         dialect:
           command:
             create: "packer build -var-file ./vars/vars.hcl ."
+            update: "packer build --force -var-file ./vars/vars.hcl ."
+            delete: "aws ec2 deregister-image --image-id $img_id --region $region"
             output: 
               id: "jq -r '.builds[-1].artifact_id' manifest.json | cut -d ':' -f2"
           type: file

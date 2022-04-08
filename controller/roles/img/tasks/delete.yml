@@ -1,0 +1,27 @@
+---
+
+- name: get provider auth id 
+  set_fact:
+    provider_auth_id: "{{ vars['platform']['provider']['auth']['id'] }}"
+
+- name: get provider auth key 
+  set_fact:
+    provider_auth_key: "{{ vars['platform']['provider']['auth']['key'] }}"
+
+- name: get delete command
+  set_fact:
+    img_delete_command: "{{ vars['platform']['repo'][img_type][provider_name]['dialect']['command']['delete'] }}"
+
+- name: get id
+  set_fact:
+    img_id: "{{ img.id }}"
+
+- name: delete image
+  command: "docker run --rm -e img_id=\"{{ img_id }}\" -e region=\"{{ img_region }}\" -e AWS_ACCESS_KEY_ID=\"{{ provider_auth_id }}\" -e AWS_SECRET_ACCESS_KEY=\"{{ provider_auth_key }}\" kloiadocker/klopac-cloud-runner:latest /bin/bash -c \"{{ img_delete_command }}\""
+  become: true
+  register: img_delete_log
+  when:  vars['platform']['provider']['auth']['type']=='id'
+
+- debug:
+    msg: "{{ vars['img_delete_log'] }}"
+  when: vars['platform']['log']['level']=='debug'

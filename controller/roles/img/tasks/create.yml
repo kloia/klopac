@@ -1,8 +1,20 @@
 ---
+
+- name: get runner name
+  set_fact:
+    img_runner_name: "{{ vars['platform']['repo'][img_type]['runner']['name'] }}"
+
+- name: get runner version
+  set_fact:
+    img_runner_version: "{{ vars['platform']['repo'][img_type]['runner']['version'] }}"
+
+- name: get create command
+  set_fact:
+    img_create_command: "{{ vars['platform']['repo'][img_type][provider_name]['dialect']['command']['create'] }}"
+
 - name: create image
-  command: "{{ vars['platform']['repo'][img_type][provider_name]['dialect']['command']['create'] }}"
-  args:
-    chdir: "{{ img_repo_path }}"
+  command: "docker run --rm -v /tmp:/data/repo kloiadocker/klopac-{{ img_runner_name }}-runner:{{ img_runner_version }} /bin/bash -c \"cd {{ img_repo_path }}; {{ img_create_command }}\""
+  become: true
   register: img_create_log
 
 - debug:
