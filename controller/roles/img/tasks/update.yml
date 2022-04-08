@@ -1,0 +1,22 @@
+---
+
+- name: get runner name
+  set_fact:
+    img_runner_name: "{{ vars['platform']['repo'][img_type]['runner']['name'] }}"
+
+- name: get runner version
+  set_fact:
+    img_runner_version: "{{ vars['platform']['repo'][img_type]['runner']['version'] }}"
+
+- name: get update command
+  set_fact:
+    img_update_command: "{{ vars['platform']['repo'][img_type][provider_name]['dialect']['command']['update'] }}"
+
+- name: recreate image
+  command: "docker run --rm -v /tmp:/data/repo kloiadocker/klopac-{{ img_runner_name }}-runner:{{ img_runner_version }} /bin/bash -c \"cd {{ img_repo_path }}; {{ img_update_command }}\""
+  become: true
+  register: img_update_log
+
+- debug:
+    msg: "{{ vars['img_update_log'] }}"
+  when: vars['platform']['log']['level']=='debug'

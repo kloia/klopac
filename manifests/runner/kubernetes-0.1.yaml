@@ -2,7 +2,7 @@
 platform:
   runner:
     kubernetes:
-      version: v0.1
+      version: 0.1
       kubectl:
         version: v1.23.4
         inputs:

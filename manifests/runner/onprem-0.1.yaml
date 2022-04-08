@@ -2,7 +2,7 @@
 platform:
   runner:
     onprem:
-      version: v0.1
+      version: 0.1
       govc:
         version: 0.26.1
         inputs:

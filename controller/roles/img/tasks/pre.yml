@@ -1,20 +1,22 @@
 ---
-
 - name: include provider defaults
   include_vars: 
     file: ../../vars/defaults/provider-{{ platform.provider.name }}.yaml
+    hash_behaviour: merge
 
 - name: include provider type defaults
   include_vars: 
     file: ../../vars/defaults/provider-{{ platform.provider.name }}-{{ platform.provider.type }}.yaml
+    hash_behaviour: merge
 
 - name: include img defaults
   include_vars: 
     file: ../../vars/defaults/img-{{ img.type }}.yaml
+    hash_behaviour: merge
 
 - name: set workplace folder
   set_fact:
-    workspace: '/app'
+    workspace: '/data/repo'
 
 - name: get img type
   set_fact:
@@ -28,19 +30,18 @@
   set_fact:
     provider_type: "{{ platform.provider.type }}"
 
+- name: get provider region
+  set_fact:
+    img_region: "{{ platform.provider.region1 }}"
+
 - name: include repo
   include_vars: 
     file: ../../manifests/repo/{{ img.type }}-{{ img.packer.version }}.yaml
+    hash_behaviour: merge
 
 - name: get repo path
   set_fact:
     img_repo_path: "{{ workspace }}/{{ vars['platform']['repo'][img_type]['name'] }}"
-
-# - vars:
-#     msg: |
-#        {{ vars['platform'] | to_nice_yaml }}
-#   debug:
-#     msg: "{{ msg.split('\n') }}"
 
 - copy:
     content: "{{ vars['platform']['repo'][img_type][provider_name]['dialect']['file']['content'] }}"

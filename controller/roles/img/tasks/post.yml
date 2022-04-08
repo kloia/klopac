@@ -4,11 +4,19 @@
   args:
     chdir:  "{{ img_repo_path }}"
   register: img_id
+  when: img.enabled == true and img.operation.type == 'create' or img.enabled == true and img.operation.type == 'update'
 
 - name: img set id
   set_fact: 
     img:
       id: "{{ img_id.stdout_lines[0] }}"
+  when: img.enabled == true and img.operation.type == 'create' or img.enabled == true and img.operation.type == 'update'
+
+- name: img clear id
+  set_fact: 
+    img:
+      id: " "
+  when: img.enabled == true and img.operation.type == 'delete'
 
 - name: update img.id in yaml file
   command: "yq -i -y '.img.id = \"{{ vars['img']['id'] }}\"' ../../vars/image.yaml"
