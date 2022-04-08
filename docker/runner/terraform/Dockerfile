@@ -9,7 +9,7 @@ RUN apt-get update -y && \
     apt-get install -y terraform=$TF_VERSION && \
     wget -q -O /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TG_VERSION}/terragrunt_linux_amd64" && \
     chmod +x /usr/local/bin/terragrunt && \
-    apt-get clean
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-CMD ["terraform"]
