@@ -5,7 +5,6 @@ import (
 	"entrypoint/pkg/logger"
 	"entrypoint/pkg/websocket"
 	"errors"
-	"fmt"
 	"go.uber.org/zap"
 	"os"
 )
@@ -34,17 +33,14 @@ func Run() {
 		} else {
 			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
 			err := helper.UpdateValuesFile(valuesModel, helper.GetParam[string]("varsPath"))
-			fmt.Println("hiiii")
 			if err != nil {
 				log.Error("Error while patching default values", zap.Error(err))
 			}
 		}
-		fmt.Println("asd23")
 		provision := helper.GetParam[bool]("provision")
 		validate := helper.GetParam[bool]("validate")
 		logLevel := helper.GetParam[string]("logLevel")
 		healthCheck := helper.GetParam[bool]("healthcheck")
-		fmt.Println("asd")
 		log.Info("START: KLOPAC FLOW",
 			zap.Bool("provision", provision),
 			zap.Bool("validate", validate),
