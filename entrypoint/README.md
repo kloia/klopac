@@ -33,6 +33,7 @@ $ go version: go version go1.18
 | password  | ""  | password for websocket connection  |   
 | loglevel  | INFO  | It sets the level of the producing logs  |   
 | valuesFile  | /data/values.yaml  | Value File  |   
+| dataPath  | /data/  | Data File Path  |   
 | varsPath  | /data/vars  | Variable File  |   
 | bundleFile  | bundle.tar.gz  | Bundle File  |   
 

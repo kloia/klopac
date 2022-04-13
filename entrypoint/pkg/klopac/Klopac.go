@@ -20,14 +20,13 @@ func Run() {
 	} else {
 		bundleFile := helper.GetParam[string]("bundleFile")
 		if _, err := os.Stat(bundleFile); !errors.Is(err, os.ErrNotExist) {
-			err := helper.Untar(bundleFile, "/data/")
+			err := helper.Untar(bundleFile, helper.GetParam[string]("dataPath"))
 			if err != nil {
 				log.Fatal("error while untarring bundle file, please check whether you have correct named bundlefile ", err)
 			}
 		} else {
 			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
-			varsPath := helper.GetParam[string]("dataPath") + "vars"
-			err := helper.UpdateValuesFile(valuesModel, varsPath)
+			err := helper.UpdateValuesFile(valuesModel, helper.GetParam[string]("varsPath"))
 			if err != nil {
 				log.Fatal(err)
 				return
