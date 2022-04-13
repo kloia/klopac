@@ -6,38 +6,44 @@ import (
 	"entrypoint/pkg/command"
 	"entrypoint/pkg/flag"
 	"entrypoint/pkg/flow"
+	"entrypoint/pkg/logger"
 	"entrypoint/pkg/option"
 	"entrypoint/pkg/shell"
 	"github.com/imdario/mergo"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"gopkg.in/yaml.v3"
 
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 )
 
 // Reads content of the yaml file and returns it
 func ReadFile(filename string) map[string]interface{} {
+	log := logger.GetLogger()
+	log.Debug("START: READ FILE", zap.String("filename", filename))
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
+		log.Debug("Could not open",
+			zap.String("filename", filename))
 	}
 
 	m := make(map[string]interface{})
 	err = yaml.Unmarshal(yamlFile, m)
 	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
+		log.Debug("Could not decode map",
+			zap.Any("map", m))
 	}
+	log.Debug("END: READ FILE", zap.String("filename", filename))
 	return m
 }
 
 // Writes content to a yaml file
 
 func WriteFile(filename string, data map[string]interface{}) error {
+	log := logger.GetLogger()
+	log.Debug("START: WRITE FILE", zap.String("filename", filename))
 	var b bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&b)
 	yamlEncoder.SetIndent(2)
@@ -46,8 +52,9 @@ func WriteFile(filename string, data map[string]interface{}) error {
 
 	err := ioutil.WriteFile(filename, b.Bytes(), 0644)
 	if err != nil {
-		return err
+		log.Error("Error while writing file ", zap.Error(err), zap.String("filename", filename))
 	}
+	log.Debug("END: WRITE FILE", zap.String("filename", filename))
 	return nil
 }
 
@@ -72,6 +79,9 @@ func Intersection(inputMap, defaultMap map[string]interface{}) (newMap map[strin
 
 // Basically takes a interface and varsPath(which is path of the variable files) then it starts to override or leaves unchanged depending to intersection logic
 func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) error {
+	log := logger.GetLogger()
+	log.Info("START: UPDATE DEFAULT VALUES")
+	defer log.Info("END: UPDATE DEFAULT VALUES")
 	return filepath.Walk(varsPath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
@@ -81,6 +91,7 @@ func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) error
 				defaultModel := ReadFile(path)
 				intersectionMap := Intersection(valuesModel, defaultModel)
 				if len(intersectionMap) > 0 {
+					log.Debug("INTERSECTION", zap.Any("map", intersectionMap))
 					mergo.Merge(&defaultModel, intersectionMap, mergo.WithOverride)
 					WriteFile(path, defaultModel)
 				}
@@ -91,7 +102,9 @@ func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) error
 
 func Untar(tarball, target string) error {
 	reader, err := os.Open(tarball)
+	log := logger.GetLogger()
 	if err != nil {
+		log.Debug("Bundle file could not be opened.")
 		return err
 	}
 	defer reader.Close()
@@ -127,28 +140,9 @@ func Untar(tarball, target string) error {
 	return nil
 }
 
-func InitializeLogger() {
-	config := zap.NewProductionEncoderConfig()
-	config.EncodeTime = zapcore.ISO8601TimeEncoder
-	fileEncoder := zapcore.NewJSONEncoder(config)
-	consoleEncoder := zapcore.NewConsoleEncoder(config)
-	logFile, _ := os.OpenFile("deneme.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	writer := zapcore.AddSync(logFile)
-	defaultLogLevel, err := zapcore.ParseLevel(GetParam[string]("loglevel"))
-	if err != nil {
-		defaultLogLevel = zapcore.InfoLevel
-	}
-	core := zapcore.NewTee(
-		zapcore.NewCore(fileEncoder, writer, defaultLogLevel),
-		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
-	)
-	logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-}
-
 var (
 	optionService = option.NewOptionService(flag.NewFlagService())
 	flowService   = flow.NewFlowService(shell.NewShellService(command.NewCommandService()))
-	logger        *zap.Logger
 )
 
 func GetOptionService() *option.OptionService {
@@ -157,10 +151,6 @@ func GetOptionService() *option.OptionService {
 
 func GetFlowService() flow.Flow {
 	return flowService
-}
-
-func GetLogger() *zap.Logger {
-	return logger
 }
 
 func GetParam[V comparable](param string) V {

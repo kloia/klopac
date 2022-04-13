@@ -1,9 +1,10 @@
 package flow
 
 import (
+	"entrypoint/pkg/logger"
 	"entrypoint/pkg/shell"
 	"fmt"
-	"log"
+	"go.uber.org/zap"
 	"strings"
 )
 
@@ -19,53 +20,60 @@ type flowService struct {
 // It uses the shell type to execute commands
 
 func (p flowService) ExecuteCommand(command string) {
+	log := logger.GetLogger()
+	replacer := strings.NewReplacer("\n", "", "\t", " ")
+	command = replacer.Replace(command)
+	log.Info("Running command", zap.String("command", command))
 	err, out, errout := p.shell.Run(command)
 	if err != nil {
-		log.Fatalf("error: %v\n", err)
+		log.Error("Error while executing command", zap.String("command", command))
 	}
-	log.Print("--- stdout ---")
-	log.Print(out)
-	log.Print("--- stderr ---")
-	log.Print(errout)
+	log.Debug("Streams",
+		zap.String("command", command),
+		zap.String("stdout", out),
+		zap.String("stderr", errout))
 }
 
 // It basically take some sort of args like (provision, validate, healthCheck, logLevel) and depending to its value it execute relative yaml files.
 func (p flowService) Run(provision, validate, healthCheck bool, logLevel string) {
+	log := logger.GetLogger()
 	switch {
 	case !healthCheck || validate || provision:
-		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
+		log.Info("START: PROVISIONER")
+		p.ExecuteCommand(fmt.Sprintf(`
 		export LOGLEVEL=%v
 		cd provisioner;
 		ansible-playbook provisioner.yaml;
-	`, logLevel), " "))
-
+	`, logLevel))
+		log.Info("END: PROVISIONER")
 	case !provision && !healthCheck || validate:
-		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
+		log.Info("START: VALIDATOR")
+		p.ExecuteCommand(fmt.Sprintf(`
 		export LOGLEVEL=%v
 		cd validator;
 		ansible-playbook validator.yaml;
-	`, logLevel), " "))
-
+	`, logLevel))
+		log.Info("END: VALIDATOR")
 	case !provision && !validate && !healthCheck:
-		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
-		export LOGLEVEL=%v
-		export HEALTHCHECK=%v
+		log.Info("START: CONTROLLER")
+		p.ExecuteCommand(fmt.Sprintf(`
+		export LOGLEVEL=%v;
+		export HEALTHCHECK=%v;
 		cd controller;
 		sh controller.sh
-		`, logLevel, healthCheck), " "))
-
+		`, logLevel, healthCheck))
+		log.Info("END: CONTROLLER")
 	case !provision && !validate || healthCheck:
-
-		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
+		log.Info("START: FINALIZER")
+		p.ExecuteCommand(fmt.Sprintf(`
 		export LOGLEVEL=%v
 		export HEALTHCHECK=%v
 		cd finalizer;
 		ansible-playbook finalizer.yaml;
-	`, logLevel, healthCheck), " "))
-
+	`, logLevel, healthCheck))
+		log.Info("END: FINALIZER")
 	default:
-		log.Fatal("wrong inputs")
-
+		log.Error("Options are wrong. Klopac Flow Failed.")
 	}
 
 }
