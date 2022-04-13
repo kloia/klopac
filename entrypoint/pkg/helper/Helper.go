@@ -8,15 +8,13 @@ import (
 	"entrypoint/pkg/flow"
 	"entrypoint/pkg/option"
 	"entrypoint/pkg/shell"
+	"github.com/imdario/mergo"
+	"gopkg.in/yaml.v3"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
-
-	"github.com/imdario/mergo"
-	"gopkg.in/yaml.v3"
 )
 
 // Reads content of the yaml file and returns it
@@ -51,56 +49,22 @@ func WriteFile(filename string, data map[string]interface{}) error {
 }
 
 // Basically we have two map and we compare them if there are some sort of values that should be changed according to its logic
-func Intersection(first, second map[string]interface{}) map[string]interface{} {
-	newMap := make(map[string]interface{})
-	IntersectionHelper(first, second, newMap)
-	return newMap
-}
-
-// Code blocks of the intersection logic. It compares two different map and runs the provided conditions
-func IntersectionHelper(inputMap, defaultMap, newMap interface{}) {
-	for inputKey, inputVal := range inputMap.(map[string]interface{}) {
-		if defaultVal, ok := defaultMap.(map[string]interface{})[inputKey]; ok {
-			if reflect.TypeOf(defaultVal).Kind() == reflect.Bool || reflect.TypeOf(defaultVal).Kind() == reflect.String {
-				newMap.(map[string]interface{})[inputKey] = inputVal
-			} else if reflect.TypeOf(defaultVal).Kind() == reflect.Slice {
-				for _, defaultValElem := range defaultVal.([]interface{}) {
-					if reflect.TypeOf(defaultValElem).Kind() == reflect.Bool || reflect.TypeOf(defaultValElem).Kind() == reflect.String {
-						if ok, i := contains(inputVal.([]interface{}), defaultValElem); ok {
-							if newMap.(map[string]interface{})[inputKey] == nil {
-								newMap.(map[string]interface{})[inputKey] = make([]interface{}, 0)
-							}
-							newMap.(map[string]interface{})[inputKey] = append(newMap.(map[string]interface{})[inputKey].([]interface{}), inputVal.([]interface{})[i])
-						}
-					} else {
-						if newMap.(map[string]interface{})[inputKey] == nil {
-							newMap.(map[string]interface{})[inputKey] = make([]interface{}, 0)
-						}
-						for _, inputValElem := range inputVal.([]interface{}) {
-							tempMap := make(map[string]interface{})
-							IntersectionHelper(inputValElem, defaultValElem, tempMap)
-							if len(tempMap) > 0 {
-								newMap.(map[string]interface{})[inputKey] = append(newMap.(map[string]interface{})[inputKey].([]interface{}), tempMap)
-							}
-						}
-					}
-				}
-			} else {
-				newMap.(map[string]interface{})[inputKey] = make(map[string]interface{})
-				IntersectionHelper(inputVal, defaultVal, newMap.(map[string]interface{})[inputKey])
+func Intersection(inputMap, defaultMap map[string]interface{}) (newMap map[string]interface{}) {
+	newMap = make(map[string]interface{})
+	for inputKey, inputVal := range inputMap {
+		if inputInnerMap, ok := inputVal.(map[string]interface{}); ok {
+			defaultInnerMap, ok := defaultMap[inputKey].(map[string]interface{})
+			if ok {
+				newMap[inputKey] = Intersection(inputInnerMap, defaultInnerMap)
+			}
+		} else {
+			_, ok := defaultMap[inputKey]
+			if ok {
+				newMap[inputKey] = inputVal
 			}
 		}
 	}
-}
-
-// To check whether its content have the searched struct or not
-func contains(s []interface{}, e interface{}) (bool, int) {
-	for i, a := range s {
-		if a == e {
-			return true, i
-		}
-	}
-	return false, -1
+	return newMap
 }
 
 // Basically takes a interface and varsPath(which is path of the variable files) then it starts to override or leaves unchanged depending to intersection logic
