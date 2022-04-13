@@ -21,7 +21,7 @@ type flowService struct {
 func (p flowService) ExecuteCommand(command string) {
 	err, out, errout := p.shell.Run(command)
 	if err != nil {
-		log.Printf("error: %v\n", err)
+		log.Fatalf("error: %v\n", err)
 	}
 	log.Print("--- stdout ---")
 	log.Print(out)
@@ -31,65 +31,43 @@ func (p flowService) ExecuteCommand(command string) {
 
 // It basically take some sort of args like (provision, validate, healthCheck, logLevel) and depending to its value it execute relative yaml files.
 func (p flowService) Run(provision, validate, healthCheck bool, logLevel string) {
-	//
-	if provision == true || validate == true || healthCheck == true {
-
-		if healthCheck == true {
-			p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
-					export LOGLEVEL=%v
-					export HEALTHCHECK=%v
-					cd finalizer;
-					ansible-playbook finalizer.yaml;
-				`, logLevel, healthCheck), " "))
-		} else {
-			p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
-				export LOGLEVEL=%v
-				cd provisioner;
-				ansible-playbook provisioner.yaml;
-			`, logLevel), " "))
-
-			if validate == true {
-				p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
-					export LOGLEVEL=%v
-					cd validator;
-					ansible-playbook validator.yaml;
-				`, logLevel), " "))
-			}
-		}
-
-	} else {
-
-		// execute provisioner
+	switch {
+	case !healthCheck || validate || provision:
 		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
-				export LOGLEVEL=%v
-				cd provisioner;
-				ansible-playbook provisioner.yaml;
-			`, logLevel), " "))
+		export LOGLEVEL=%v
+		cd provisioner;
+		ansible-playbook provisioner.yaml;
+	`, logLevel), " "))
 
-		// execute validator
+	case !provision && !healthCheck || validate:
 		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
-					export LOGLEVEL=%v
-					cd validator;
-					ansible-playbook validator.yaml;
-				`, logLevel), " "))
+		export LOGLEVEL=%v
+		cd validator;
+		ansible-playbook validator.yaml;
+	`, logLevel), " "))
 
-		// execute controller
+	case !provision && !validate && !healthCheck:
 		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
 		export LOGLEVEL=%v
 		export HEALTHCHECK=%v
 		cd controller;
-		ansible-playbook controller.yaml;
+		sh controller.sh
 		`, logLevel, healthCheck), " "))
 
-		// execute healhtCheck
+	case !provision && !validate || healthCheck:
+
 		p.ExecuteCommand(strings.Trim(fmt.Sprintf(`
-				export LOGLEVEL=%v
-				export HEALTHCHECK=%v
-				cd finalizer;
-				ansible-playbook finalizer.yaml;
-			`, logLevel, healthCheck), " "))
+		export LOGLEVEL=%v
+		export HEALTHCHECK=%v
+		cd finalizer;
+		ansible-playbook finalizer.yaml;
+	`, logLevel, healthCheck), " "))
+
+	default:
+		log.Fatal("wrong inputs")
 
 	}
+
 }
 
 func NewFlowService(s shell.Shell) Flow {

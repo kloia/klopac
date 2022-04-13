@@ -26,9 +26,10 @@ func Run() {
 			}
 		} else {
 			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
-			err := helper.UpdateValuesFile(valuesModel, helper.GetParam[string]("varsPath"))
+			varsPath := helper.GetParam[string]("dataPath") + "vars"
+			err := helper.UpdateValuesFile(valuesModel, varsPath)
 			if err != nil {
-				log.Println(err)
+				log.Fatal(err)
 				return
 			}
 		}

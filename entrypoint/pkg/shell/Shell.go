@@ -24,7 +24,7 @@ func (s shellService) Run(command string) (error, string, string) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		log.Print(err.Error())
+		log.Fatal("Error while running command: ", command, "\nError output: ", err.Error())
 	}
 	return err, stdout.String(), stderr.String()
 }
