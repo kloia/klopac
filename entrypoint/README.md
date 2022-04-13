@@ -17,7 +17,9 @@ $ go version: go version go1.18
   ```
   cd entrypoint
   go build cmd/main.go
-  ./main --valuesFile ../values.yaml --vars ../vars
+  mv main ..
+  cd -
+  ./main --valuesFile ./values.yaml --vars ./vars
 ```
 
 ### Configuration Options
