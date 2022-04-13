@@ -8,15 +8,17 @@ import (
 	"entrypoint/pkg/flow"
 	"entrypoint/pkg/option"
 	"entrypoint/pkg/shell"
+	"github.com/imdario/mergo"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"gopkg.in/yaml.v3"
+
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"reflect"
-
-	"github.com/imdario/mergo"
-	"gopkg.in/yaml.v3"
 )
 
 // Reads content of the yaml file and returns it
@@ -160,9 +162,28 @@ func Untar(tarball, target string) error {
 	return nil
 }
 
+func InitializeLogger() {
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	fileEncoder := zapcore.NewJSONEncoder(config)
+	consoleEncoder := zapcore.NewConsoleEncoder(config)
+	logFile, _ := os.OpenFile("deneme.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	writer := zapcore.AddSync(logFile)
+	defaultLogLevel, err := zapcore.ParseLevel(GetParam[string]("loglevel"))
+	if err != nil {
+		defaultLogLevel = zapcore.InfoLevel
+	}
+	core := zapcore.NewTee(
+		zapcore.NewCore(fileEncoder, writer, defaultLogLevel),
+		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
+	)
+	logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+}
+
 var (
 	optionService = option.NewOptionService(flag.NewFlagService())
 	flowService   = flow.NewFlowService(shell.NewShellService(command.NewCommandService()))
+	logger        *zap.Logger
 )
 
 func GetOptionService() *option.OptionService {
@@ -171,6 +192,10 @@ func GetOptionService() *option.OptionService {
 
 func GetFlowService() flow.Flow {
 	return flowService
+}
+
+func GetLogger() *zap.Logger {
+	return logger
 }
 
 func GetParam[V comparable](param string) V {

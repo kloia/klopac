@@ -11,7 +11,6 @@ import (
 // It might be considered as main function. It will execute some sort of code blocks depending to whether we are going to access klopac via a websocket or from command-line
 func Run() {
 	webSocketEnabled := helper.GetParam[bool]("websocket")
-
 	if webSocketEnabled == true {
 		uri := helper.GetParam[string]("uri")
 		username := helper.GetParam[string]("username")
