@@ -1,4 +1,3 @@
----
 ins:
   enabled: true
   image:
@@ -10,8 +9,16 @@ ins:
     id: img.id
     name: img.name
     os: img.os
+  lb:
+    priv:
+      dnsName:
+        - ''
+    pub:
+      dnsName:
+        - ''
   master:
-    count: 1
+    min: 1
+    max: 1
     cpu: 4
     diskSize: 200g
     group: asgMaster
@@ -24,13 +31,11 @@ ins:
       domain: pac.local
       ip:
         gw: 10.0.0.1
-        pool:
-          - 10.0.0.10
         subnet: 24
+        pool:
+          - ''
   operation:
-    type: create
-    update:
-      policy: apply
+    type: delete
   required:
     - enabled
     - type
@@ -51,7 +56,8 @@ ins:
     type: repo
   type: terraform
   worker:
-    count: 3
+    min: 2
+    max: 2
     cpu: 12
     diskSize: 300g
     group: asgWorker
@@ -64,8 +70,6 @@ ins:
       domain: pac.local
       ip:
         gw: 10.0.0.1
-        pool:
-          - 10.0.0.20
-          - 10.0.0.21
-          - 10.0.0.22
         subnet: 24
+        pool:
+          - ''

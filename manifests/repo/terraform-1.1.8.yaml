@@ -1,0 +1,68 @@
+---
+platform:
+  repo:
+    terraform:
+      name: terraform-instances
+      uri: ''
+      type: git
+      branch: platform.provider.name
+      aws:
+        dialect:
+          command:
+            pre: "terraform init"
+            create: "terraform apply -auto-approve -var-file=vars.hcl"
+            update: "terraform apply -auto-approve -var-file=vars.hcl"
+            delete: "terraform destroy -auto-approve -var-file=vars.hcl"
+            output:
+              pem:
+                path: "{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+              master: 
+                ips: "jq '.outputs.\"master-public-ips\".\"value\"' terraform.tfstate"
+              worker:
+                ips: "jq '.outputs.\"worker-public-ips\".\"value\"' terraform.tfstate"
+              lb:
+                private:
+                  dnsName: "jq '.outputs.\"private-lb-dns\".\"value\"' terraform.tfstate"
+                public:
+                  dnsName: "jq '.outputs.\"public-lb-dns\".\"value\"' terraform.tfstate"
+          type: file
+          file:
+            destination: vars.hcl
+            content: |
+              cluster_name           = "{{ vars['platform']['name'] }}"
+              environment            = "{{ vars['platform']['environment'] }}"
+              region                 = "{{ vars['platform']['provider']['region1'] }}"
+              role                   = "{{ vars['platform']['provider'][provider_name]['role']['arn'] }}"
+              ami_id                 = "{{ vars['img']['id'] }}"
+              vpc_id                 = "{{ vars['platform']['provider'][provider_name]['vpc']['id'] }}"
+              worker_instance_type   = "{{ vars['platform']['provider'][provider_name][provider_type]['worker']['instanceType'] }}"
+              master_instance_type   = "{{ vars['platform']['provider'][provider_name][provider_type]['master']['instanceType'] }}"
+              subnet_id1             = "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id1'] }}"
+              subnet_id2             = "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id2'] }}"
+              iam_policy             = "{{ vars['platform']['provider'][provider_name]['iam']['policy'] }}"
+              cidr_blocks            = ["{{ vars['platform']['provider'][provider_name]['vpc']['cidrBlock'] }}"]
+              worker_min_size        = "{{ vars['ins']['worker']['min'] }}"
+              worker_max_size        = "{{ vars['ins']['worker']['max'] }}"
+              worker_desired_size    = "{{ vars['ins']['worker']['min'] }}"
+              master_min_size        = "{{ vars['ins']['master']['min'] }}"
+              master_max_size        = "{{ vars['ins']['master']['max'] }}"
+              master_desired_size    = "{{ vars['ins']['master']['min'] }}"
+              access_key              = "{{ vars['platform']['provider']['auth']['id'] }}"
+              secret_key              = "{{ vars['platform']['provider']['auth']['key'] }}"
+      runner:
+        name: terraform
+        version: 1.1.8
+      state:
+        enabled: true
+        type: file
+        file:
+          path: ./terraform.tfstate
+      healthcheck:
+        type: kubeconfig
+      outputs:
+        master:
+          count: ins.master.count
+          ips: ins.master.net.ip.pool
+        worker:
+          count: ins.master.count
+          ips: ins.master.net.ip.pool

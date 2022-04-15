@@ -4,9 +4,11 @@ platform:
     aws:
       role:
         arn: ''
+      iam:
+        policy: ''
       vpc:
-        cidrBlock: 10.0.0.0/16
-        name: klopac-default
+        cidrBlock: "172.31.0.0/16"
         id: ''
         subnet:
-          id: ''
+          id1: ''
+          id2: ''

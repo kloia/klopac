@@ -6,7 +6,7 @@ platform:
         master:
           az: eu-central-1a
           iamRole: ''
-          instanceType: ''
+          instanceType: 't2.micro'
           keyPair: ''
           securityGroup: ''
           subnet: ''
@@ -15,7 +15,7 @@ platform:
         worker:
           az: eu-central-1a
           iamRole: ''
-          instanceType: ''
+          instanceType: 't2.micro'
           keyPair: ''
           securityGroup: ''
           subnet: ''

@@ -1,18 +1,20 @@
 ---
 - name: pre
   include: pre.yml
-  when: img.enabled == true
-#- include: prereqs.yml
-#  vars_files:
-#    - ../../../vars/platform.yaml
-#    - ../../../vars/image.yaml
-#
-#- include: set_vars.yml
-#  vars_files:
-#    - ../../../vars/platform.yaml
-#    - ../../../vars/image.yaml
-#
-#- include: generate_roles.yml
-#  vars_files:
-#    - ../../../vars/platform.yaml
-#    - ../../../vars/image.yaml
+  when: ins.enabled == true
+
+- name: create
+  include: create.yml
+  when: ins.enabled == true and ins.operation.type == 'create'
+
+- name: update
+  include: update.yml
+  when: ins.enabled == true and ins.operation.type == 'update'
+
+- name: delete
+  include: delete.yml
+  when: ins.enabled == true and ins.operation.type == 'delete'
+
+- name: post
+  include: post.yml
+  when: ins.enabled == true
