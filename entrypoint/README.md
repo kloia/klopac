@@ -17,24 +17,28 @@ $ go version: go version go1.18
   ```
   cd entrypoint
   go build cmd/main.go
-  ./main --valuesFile ../values.yaml --vars ../vars
+  mv main ..
+  cd -
+  ./main --valuesFile ./values.yaml --vars ./vars
 ```
 
 ### Configuration Options
 
-|  Option | Default  | Description |
-|---|---|---|
-| provision | false  | It executes provisioner  |   
-| validate  | false |  It executes both provisioner and validator |   
-| healthcheck  | false  | It executes finalizer  |   
-| websocket  | false  | It helps to make use of websocket connection - required uri, username, password  |   
-| uri  | ""  | websocket uri  |   
-| username  | ""  | username for websocket connection  |   
-| password  | ""  | password for websocket connection  |   
-| loglevel  | INFO  | It sets the level of the producing logs  |   
-| valuesFile  | /data/values.yaml  | Value File  |   
-| varsPath  | /data/vars  | Variable File  |   
-| bundleFile  | bundle.tar.gz  | Bundle File  |   
+| Option      | Default              | Description                                                                     |
+|-------------|----------------------|---------------------------------------------------------------------------------|
+| provision   | false                | It executes provisioner                                                         |   
+| validate    | false                | It executes both provisioner and validator                                      |   
+| healthcheck | false                | It executes finalizer                                                           |   
+| websocket   | false                | It helps to make use of websocket connection - required uri, username, password |   
+| uri         | ""                   | websocket uri                                                                   |   
+| username    | ""                   | username for websocket connection                                               |   
+| password    | ""                   | password for websocket connection                                               |   
+| logLevel    | INFO                 | It sets the level of the producing logs                                         |   
+| logFile     | /data/entrypoint.log | It sets the filename for logs                                                   |  
+| valuesFile  | /data/values.yaml    | Value File                                                                      |   
+| dataPath    | /data/               | Data File Path                                                                  |   
+| varsPath    | /data/vars           | Variable File                                                                   |   
+| bundleFile  | bundle.tar.gz        | Bundle File                                                                     |   
 
 
 <!-- TABLE OF CONTENTS -->
