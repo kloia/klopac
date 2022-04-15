@@ -1,4 +1,3 @@
----
 img:
   auth:
     pem:
@@ -8,12 +7,10 @@ img:
     user: ubuntu
   diskSize: 300g
   enabled: true
-  id: ' '
+  id: ''
   name: Ubuntu-20.04-klopac
   operation:
-    type: delete
-    update:
-      policy: recreate
+    type: create
   os: ubuntu:20.04
   path: /tmp/Ubuntu-20.04-klopac
   preReqs:

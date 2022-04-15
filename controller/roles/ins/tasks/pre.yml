@@ -1,39 +1,62 @@
 ---
-- name: include img defaults
+- name: include provider defaults
   include_vars: 
-    file: ../../../../../vars/defaults/img-{{ img.type }}.yaml
-#    hash_behaviour: merge
+    file: ../../vars/defaults/provider-{{ platform.provider.name }}.yaml
+    hash_behaviour: merge
 
-- name: include repo
+- name: include provider type defaults
   include_vars: 
-    file: ../../../../../manifests/repo/{{ img.type }}-{{ img.packer.version }}.yaml
-#    hash_behaviour: merge
+    file: ../../vars/defaults/provider-{{ platform.provider.name }}-{{ platform.provider.type }}.yaml
+    hash_behaviour: merge
 
-- vars:
-    msg: |
-       Module Variables ("vars"):
-       --------------------------------
-       {{ vars['platform'] | to_nice_yaml }}
-  debug:
-    msg: "{{ msg.split('\n') }}"
+- name: include ins defaults
+  include_vars: 
+    file: ../../vars/defaults/ins-{{ ins.type }}.yaml
+    hash_behaviour: merge
 
-- name: set workplace folder
+- name: set worksplace folder
   set_fact:
-    workspace: '/app'
+    workspace: '/data/repo'
+  when: workspace is not defined
 
 - name: get img type
   set_fact:
     img_type: "{{ img.type }}"
+  when: img_type is not defined
+
+- name: get ins type
+  set_fact:
+    ins_type: "{{ ins.type }}"
+
+- name: get provider name
+  set_fact:
+    provider_name: "{{ platform.provider.name }}"
+  when: provider_name is not defined
+
+- name: get provider type
+  set_fact:
+    provider_type: "{{ platform.provider.type }}"
+  when: provider_type is not defined
+
+- name: get provider region
+  set_fact:
+    ins_region: "{{ platform.provider.region1 }}"
+
+- name: include repo
+  include_vars: 
+    file: ../../manifests/repo/{{ ins.type }}-{{ vars['ins'][ins_type]['version'] }}.yaml
+    hash_behaviour: merge
+
+- name: get repo path
+  set_fact:
+    ins_repo_path: "{{ workspace }}/{{ vars['platform']['repo'][ins_type]['name'] }}"
 
 - copy:
-    content: "{{ vars['platform']['repo'][img_type]['dialect']['file']['content'] }}"
-    dest: ../templates/config.j2
+    content: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['file']['content'] }}"
+    dest: ../templates/ins_config.j2
+  when:  vars['platform']['repo'][ins_type][provider_name]['dialect']['type']=='file'
 
 - template:
-    src: ../templates/config.j2
-    dest: "{{ workspace }}/{{ vars['platform']['repo'][img_type]['name'] }}/{{ vars['platform']['repo'][img_type]['dialect']['file']['destination'] }}"
-
-
-#    dest: "{{ workspace }}/{{ hostvars['localhost']['platform']['repo'][img_type]['name'] }}/{{ hostvars['localhost']['platform']['repo'][img_type]['dialect']['file']['destination'] }}"
-#"/data/runner/{{ hostvars['localhost']['platform']['repo'][engine_type][engine_version]['runner']['name']}}-runner-{{ hostvars['localhost']['platform']['repo'][engine_type][engine_version]['runner']['version']}}.yaml"
-#    when: platform.repo[img.type].dialect.type == 'file'
+    src: ../templates/ins_config.j2
+    dest: "{{ workspace }}/{{ vars['platform']['repo'][ins_type]['name'] }}/{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['file']['destination'] }}"
+  when:  vars['platform']['repo'][ins_type][provider_name]['dialect']['type']=='file'

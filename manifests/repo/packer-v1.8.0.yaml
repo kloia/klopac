@@ -21,7 +21,7 @@ platform:
               instance_type           = "t2.micro"
               region                  = "{{ vars['platform']['provider']['region1'] }}"
               vpc_id                  = "{{ vars['platform']['provider'][provider_name]['vpc']['id'] }}"
-              subnet_id               = "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id'] }}"
+              subnet_id               = "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id1'] }}"
               source_ami              = "{{ vars['platform']['repo'][img_type][provider_name]['sourceAmi'] }}"
               ssh_username            = "{{ img.auth.user }}"
               ami_name                = "Ubuntu-20_04-klopac"
