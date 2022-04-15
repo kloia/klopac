@@ -1,0 +1,35 @@
+---
+
+- name: "[VALIDATOR - RUNNER VALIDATION] Include engine vars"
+  include_vars: /data/vars/engine.yaml
+
+- name: "[VALIDATOR - RUNNER VALIDATION] Get engine type"
+  set_fact:
+    engine_type: "{{ engine.type }}"
+
+- name: "[VALIDATOR - RUNNER VALIDATION] Include default vars"
+  include_vars: 
+    file: /data/vars/defaults/engine-{{engine.type}}.yaml
+    hash_behaviour: merge
+
+- name: "[VALIDATOR - RUNNER VALIDATION] Get default engine version"
+  set_fact:
+    engine_version: "{{hostvars['localhost']['engine'][engine_type].version}}"
+
+- name: "[VALIDATOR - RUNNER VALIDATION] Include repo manifest"
+  include_vars: 
+    file: /data/manifests/repo/{{ engine.type }}-{{ engine_version}}.yaml
+
+- name: "[VALIDATOR - RUNNER VALIDATION] Check if runner yaml exists"
+  ansible.builtin.stat:
+    path: "/data/runner/{{ vars['platform']['repo'][engine_type][engine_version]['runner']['name']}}-runner-{{ hostvars['localhost']['platform']['repo'][engine_type][engine_version]['runner']['version']}}.yaml"
+  register: runner_manifest_file_exists
+
+- name: "[VALIDATOR - RUNNER VALIDATION] Assertion of runner existence"
+  assert:
+    that:
+      - runner_manifest_file_exists
+    fail_msg: "Runner manifest(or specified version) does not exists"
+    success_msg: "Runner manifest is exist"
+  
+  

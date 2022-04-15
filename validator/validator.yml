@@ -1,0 +1,11 @@
+---
+
+- name: Validator Playbook
+  hosts: localhost
+  roles:
+  - name: repo_config_validation
+  - name: runner_validation
+  - name: compatibility_validation
+  - name: pac_input_flow_validation
+  - name: input_output_validation
+  - name: state_validation
