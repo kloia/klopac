@@ -1,0 +1,16 @@
+---
+
+- name: "[VALIDATOR - REQUIRED FIELD VALIDATION] Get Layer Object for {{ layerName }} Layer"
+  set_fact:
+    layer: "{{ obj }}"
+
+- name: "[VALIDATOR - REQUIRED FIELD VALIDATION] Check required fields for {{ layerName }} Layer"
+  assert:
+    that:
+      - layer.{{ item }} is defined
+      - layer.{{ item }} != None
+      - layer.{{ item }} != ""
+    quiet: yes
+    fail_msg: "{{ item }} must be defined"
+  with_items: "{{ layer.required }}"
+  when: layer.enabled == true
