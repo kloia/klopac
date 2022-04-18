@@ -39,3 +39,6 @@
     fail_msg: "Repo does not exist in 'repos' folder"
     success_msg: "Repo is exist"
 
+- name: Check if terraform engine 
+  include: terraform_state_validation.yml
+  when: engine.type == 'terraform' and platform.repo.terraform.state.enabled == true
