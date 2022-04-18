@@ -1,16 +1,32 @@
-# # Repo directory check
-# - name: Check if the directory exists
-#   ansible.builtin.stat:
-#     path: "repos/{{ repo.name }}"
-#   register: repo_dir_exists
+---
 
-# - name: Write repo_dir_exists to outputs
-#   shell: "echo 'repo_dir_exists: {{ repo_dir_exists.stdout }}' >> output.yaml"
+- name: "[VALIDATOR - REPO VALIDATION] Include engine vars"
+  include_vars: /data/vars/engine.yaml
 
-# # Required fields checks
-# - name: Check runner.name is defined
-#   shell: "echo 'required_fields_defined: False' >> output.yaml"
-#   when: runner.name is not defined
+- name: Check if repo manifest file exists
+  ansible.builtin.stat:
+    path: "/data/manifests/repo/{{ engine.type }}.yaml"
+  register: repo_manifest_exists
 
+- name: "[VALIDATOR - REPO VALIDATION] Assertion of repo manifest file existence"
+  assert:
+    that:
+      - repo_manifest_exists
+    fail_msg: "Repo manifest file does not exist in 'manifest/repo' folder"
+    success_msg: "Repo manifest file is exist"
 
+- name: "[VALIDATOR - REPO VALIDATION] include_manifest_file"
+  include_vars: /data/manifests/repo/{{ engine.type }}.yaml
+  
+- name: "[VALIDATOR - REPO VALIDATION] Check if the repo directory exists"
+  ansible.builtin.stat:
+    path: "/data/repos/{{ repo.name }}"
+  register: repo_dir_exists
+
+- name: "[VALIDATOR - REPO VALIDATION] Assertion of repo directory existence"
+  assert:
+    that:
+      - repo_dir_exists
+    fail_msg: "Repo does not exist in 'repos' folder"
+    success_msg: "Repo is exist"
 
