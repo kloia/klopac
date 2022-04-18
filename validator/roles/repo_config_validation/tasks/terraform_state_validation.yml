@@ -1,0 +1,15 @@
+---
+
+- name: "[VALIDATOR - REPO VALIDATION] Check if the terraform state file exists"
+  ansible.builtin.stat:
+    path: "{{ platform.repo.terraform.state.file.path }}"
+  register: state_file_exists
+  when: platform.repo.terraform.state.type == "file"
+
+- name: "[VALIDATOR - REPO VALIDATION] Assertion of terraform state existence"
+  assert:
+    that:
+      - state_file_exists == true
+    fail_msg: "terraform state does not exist"
+    success_msg: "Terraform state is exist"
+  when: platform.repo.terraform.state.type == "file"
