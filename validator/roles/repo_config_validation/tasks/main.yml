@@ -12,7 +12,7 @@
   set_fact:
     engine_version: "{{hostvars['localhost']['engine'][engine.type]['version']}}"
 
-- name: Check if repo manifest file exists
+- name: "[VALIDATOR - REPO VALIDATION] Check if repo manifest file exists"
   ansible.builtin.stat:
     path: "/data/manifests/repo/{{ engine.type }}-{{engine_version}}.yaml"
   register: repo_manifest_exists
@@ -20,8 +20,8 @@
 - name: "[VALIDATOR - REPO VALIDATION] Assertion of repo manifest file existence"
   assert:
     that:
-      - repo_manifest_exists == true
-    fail_msg: "Repo manifest file does not exist in 'manifest/repo' folder"
+      - repo_manifest_exists.stat.exists == true
+    fail_msg: "Repo manifest file does not exist in 'manifests/repo' folder"
     success_msg: "Repo manifest file is exist"
 
 - name: "[VALIDATOR - REPO VALIDATION] include_manifest_file"
@@ -29,13 +29,13 @@
   
 - name: "[VALIDATOR - REPO VALIDATION] Check if the repo directory exists"
   ansible.builtin.stat:
-    path: "/data/repos/{{ hostvars['localhost']['platform']['repo'][engine.type] }}"
+    path: "/data/repos/{{ engine.type }}"
   register: repo_dir_exists
 
 - name: "[VALIDATOR - REPO VALIDATION] Assertion of repo directory existence"
   assert:
     that:
-      - repo_dir_exists == true
+      - repo_dir_exists.stat.exists == true
     fail_msg: "Repo does not exist in 'repos' folder"
     success_msg: "Repo is exist"
 
