@@ -8,7 +8,7 @@ img:
     user: ubuntu
   diskSize: 300g
   enabled: true
-  id: ''
+  id: 'ami-0f61b6498bd5e5bda'
   name: Ubuntu-20.04-klopac
   operation:
     type: create

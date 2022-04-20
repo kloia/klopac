@@ -4,6 +4,7 @@
   roles:
     - engine
   vars_files:
-    - ../../vars/platform.yaml
-    - ../../vars/instance.yaml
-    - ../../vars/engine.yaml
+    - /data/vars/platform.yaml
+    - /data/vars/image.yaml
+    - /data/vars/instance.yaml
+    - /data/vars/engine.yaml

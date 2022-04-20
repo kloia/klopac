@@ -19,7 +19,7 @@
   when: img.enabled == true and img.operation.type == 'delete'
 
 - name: update img.id in yaml file
-  command: "yq -i -y '.img.id = \"{{ vars['img']['id'] }}\"' ../../vars/image.yaml"
+  command: "yq -i -y '.img.id = \"{{ vars['img']['id'] }}\"' /data/vars/image.yaml"
 
 - vars:
     msg: |

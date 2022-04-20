@@ -1,39 +1,138 @@
 ---
-- name: include img defaults
+- name: include provider defaults
   include_vars: 
-    file: ../../../../../vars/defaults/img-{{ img.type }}.yaml
-#    hash_behaviour: merge
+    file: /data/vars/defaults/provider-{{ platform.provider.name }}.yaml
+    hash_behaviour: merge
 
-- name: include repo
+- name: include provider type defaults
   include_vars: 
-    file: ../../../../../manifests/repo/{{ img.type }}-{{ img.packer.version }}.yaml
-#    hash_behaviour: merge
+    file: /data/vars/defaults/provider-{{ platform.provider.name }}-{{ platform.provider.type }}.yaml
+    hash_behaviour: merge
 
-- vars:
-    msg: |
-       Module Variables ("vars"):
-       --------------------------------
-       {{ vars['platform'] | to_nice_yaml }}
-  debug:
-    msg: "{{ msg.split('\n') }}"
+- name: include ins defaults
+  include_vars: 
+    file: /data/vars/defaults/ins-{{ ins.type }}.yaml
+    hash_behaviour: merge
 
-- name: set workplace folder
+- name: set worksplace folder
   set_fact:
-    workspace: '/app'
+    workspace: '/data/repo'
+  when: workspace is not defined
 
-- name: get img type
+- name: get provider name
   set_fact:
-    img_type: "{{ img.type }}"
+    provider_name: "{{ platform.provider.name }}"
+  when: provider_name is not defined
 
-- copy:
-    content: "{{ vars['platform']['repo'][img_type]['dialect']['file']['content'] }}"
-    dest: ../templates/config.j2
+- name: get provider type
+  set_fact:
+    provider_type: "{{ platform.provider.type }}"
+  when: provider_type is not defined
 
-- template:
-    src: ../templates/config.j2
-    dest: "{{ workspace }}/{{ vars['platform']['repo'][img_type]['name'] }}/{{ vars['platform']['repo'][img_type]['dialect']['file']['destination'] }}"
+- name: get provider region
+  set_fact:
+    engine_region: "{{ platform.provider.region1 }}"
+
+- name: get provider auth id 
+  set_fact:
+    provider_auth_id: "{{ vars['platform']['provider']['auth']['id'] }}"
+  when:  vars['platform']['provider']['auth']['type']=='id'
+
+- name: get provider auth key 
+  set_fact:
+    provider_auth_key: "{{ vars['platform']['provider']['auth']['key'] }}"
+  when:  vars['platform']['provider']['auth']['type']=='id'
+
+- name: get public IP
+  ipify_facts:
+  register: ipify_facts
+
+- name: set public IP
+  set_fact:
+    public_ip: "{{ ipify_facts.ansible_facts.ipify_public_ip }}"
+
+- name: output
+  debug: msg="{{ public_ip }}"
+
+# - name: create jump instance
+#   command: "docker run --rm -e name=\"{{ platform.name }}\" -e env=\"{{ platform.environment }}\" -e ami_id=\"{{ img.id }}\" -e key_name=\"{{ platform.name }}-{{ platform.environment }}-key\" -e public_ip=\"{{ public_ip }}\" -e subnet_id=\"{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id1'] }}\" -e region=\"{{ engine_region }}\" -e AWS_ACCESS_KEY_ID=\"{{ provider_auth_id }}\" -e AWS_SECRET_ACCESS_KEY=\"{{ provider_auth_key }}\" kloiadocker/klopac-cloud-runner:latest /bin/bash -c \"sg=`aws ec2 create-security-group --group-name SG-jump-$name-$env --description SG-jump-$name-$env --output text --region $region`; aws ec2 authorize-security-group-ingress --group-id $sg --region $region --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges='[{CidrIp='$public_ip'/32}]'; aws ec2 run-instances --image-id $ami_id --count 1 --instance-type t2.micro --key-name $key_name --security-group-ids $sg --subnet-id $subnet_id --region=$region\""
+#   become: true
+#   register: engine_jump_create_log
+#   when:  vars['platform']['provider']['auth']['type']=='id' and vars['platform']['provider']['name']=='aws'
+
+# - name: command debug
+#   debug: msg="{{ engine_jump_create_log.stdout_lines.Instances[0].InstanceId }}"
+  #when: platform.log.level == 'debug'
+
+# - name: set jump instance id
+#   set_fact:
+#     jump_instance_id: "{{ engine_jump_create_log.stdout_lines.Instances.InstanceId }}"
+
+# - name: command debug
+#   debug: msg="{{ jump_instance_id | ni}}"
+
+# - name: get jump instance ip
+#   command: "docker run --rm -e region=\"{{ engine_region }}\" -e AWS_ACCESS_KEY_ID=\"{{ provider_auth_id }}\" -e AWS_SECRET_ACCESS_KEY=\"{{ provider_auth_key }}\" kloiadocker/klopac-cloud-runner:latest /bin/bash -c \"sg=`aws ec2 create-security-group --group-name SG-jump-$name-$env --description SG-jump-$name-$env --output text --region $region`; aws ec2 authorize-security-group-ingress --group-id $sg --region $region --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges='[{CidrIp='$public_ip'/32}]'; aws ec2 run-instances --image-id $ami_id --count 1 --instance-type t2.micro --key-name $key_name --security-group-ids $sg --subnet-id $subnet_id --region=$region\""
+#   become: true
+#   register: engine_jump_ip_log
+#   when:  vars['platform']['provider']['auth']['type']=='id' and vars['platform']['provider']['name']=='aws'
+
+# - name: command debug
+#   debug: msg="{{ engine_jump_ip_log }}"
+#   when: platform.log.level == 'debug'
+
+- name: create security group
+  ec2_group:
+    name: "SG-jump-{{ platform.name }}-{{ platform.environment }}"
+    description: "SG-jump-{{ platform.name }}-{{ platform.environment }}"
+    vpc_id: "{{ vars['platform']['provider'][provider_name]['vpc']['id'] }}"
+    region: "{{ engine_region }}"
+    aws_secret_key: "{{ provider_auth_key }}"
+    aws_access_key: "{{ provider_auth_id }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: "{{ public_ip }}/32"
+
+- name: launching jump instance
+  ec2:
+    instance_type: t2.micro
+    key_name: "{{ platform.name }}-{{ platform.environment }}-key"
+    image: "{{ img.id }}"
+    region: "{{ engine_region }}"
+    wait: yes
+    count: 1
+    vpc_subnet_id: "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id1'] }}"
+    assign_public_ip: yes
+    aws_access_key: "{{ provider_auth_id }}"
+    aws_secret_key: "{{ provider_auth_key }}"
+    group: "SG-jump-{{ platform.name }}-{{ platform.environment }}"
+    instance_tags:
+      Name: "{{ platform.name }}-{{ platform.environment }}-jump"
+  register: jump
+  when:  vars['platform']['provider']['auth']['type']=='id' and vars['platform']['provider']['name']=='aws'
 
 
-#    dest: "{{ workspace }}/{{ hostvars['localhost']['platform']['repo'][img_type]['name'] }}/{{ hostvars['localhost']['platform']['repo'][img_type]['dialect']['file']['destination'] }}"
-#"/data/runner/{{ hostvars['localhost']['platform']['repo'][engine_type][engine_version]['runner']['name']}}-runner-{{ hostvars['localhost']['platform']['repo'][engine_type][engine_version]['runner']['version']}}.yaml"
-#    when: platform.repo[img.type].dialect.type == 'file'
+- name: add jump to host group
+  add_host:
+    hostname: "{{ item.public_ip }}"
+    groupname: jump
+  loop: "{{ jump.instances }}"
+  when:  vars['platform']['provider']['auth']['type']=='id' and vars['platform']['provider']['name']=='aws'
+
+- name: Wait for SSH to come up
+  delegate_to: "{{ item.public_dns_name }}"
+  wait_for_connection:
+    delay: 60
+    timeout: 320
+  loop: "{{ jump.instances }}"
+  when:  vars['platform']['provider']['auth']['type']=='id' and vars['platform']['provider']['name']=='aws'
+
+- name: install k3sup on jump
+  delegate_to: jump
+  command: "curl -sLS https://get.k3sup.dev | sudo sh "
+  register: jump_log
+
+- name: command debug
+  debug: msg="{{ jump_log }}"
