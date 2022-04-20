@@ -7,10 +7,10 @@
   when: ins.operation.type != 'delete'
 
 - name: clear worker ips
-  shell: "yq -i -y 'del(.ins.worker.net.ip.pool)' ../../vars/instance.yaml"
+  shell: "yq -i -y 'del(.ins.worker.net.ip.pool)' /data/vars/instance.yaml"
 
 - name: set worker ips
-  shell: "yq -i -y '.ins.worker.net.ip.pool += [\"{{ item }}\"]' ../../vars/instance.yaml"
+  shell: "yq -i -y '.ins.worker.net.ip.pool += [\"{{ item }}\"]' /data/vars/instance.yaml"
   loop: '{{ worker_ips.stdout | from_json | list }}'
   when: ins.operation.type != 'delete'
 
@@ -22,15 +22,15 @@
   when: ins.operation.type != 'delete'
 
 - name: clear master ips
-  shell: "yq -i -y 'del(.ins.master.net.ip.pool)' ../../vars/instance.yaml"
+  shell: "yq -i -y 'del(.ins.master.net.ip.pool)' /data/vars/instance.yaml"
 
 - name: set master ips
-  shell: "yq -i -y '.ins.master.net.ip.pool += [\"{{ item }}\"]' ../../vars/instance.yaml"
+  shell: "yq -i -y '.ins.master.net.ip.pool += [\"{{ item }}\"]' /data/vars/instance.yaml"
   loop: '{{ master_ips.stdout | from_json | list }}'
   when: ins.operation.type != 'delete'
 
 - name: clear public lb dns name
-  shell: "yq -i -y 'del(.ins.lb.pub.dnsName)' ../../vars/instance.yaml"
+  shell: "yq -i -y 'del(.ins.lb.pub.dnsName)' /data/vars/instance.yaml"
 
 - name: ins get public lb dns name
   shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['lb']['public']['dnsName'] }}"
@@ -40,10 +40,10 @@
   when: ins.operation.type != 'delete'
 
 - name: ins set public lb dns name
-  shell: "yq -i -y '.ins.lb.pub.dnsName = [\"{{ public_lb_dns.stdout | from_json }}\"]' ../../vars/instance.yaml"
+  shell: "yq -i -y '.ins.lb.pub.dnsName = [\"{{ public_lb_dns.stdout | from_json }}\"]' /data/vars/instance.yaml"
 
 - name: clear priv lb dns name
-  shell: "yq -i -y 'del(.ins.lb.priv.dnsName)' ../../vars/instance.yaml"
+  shell: "yq -i -y 'del(.ins.lb.priv.dnsName)' /data/vars/instance.yaml"
 
 - name: ins get private lb dns name
   shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['lb']['private']['dnsName'] }}"
@@ -53,7 +53,7 @@
   when: ins.operation.type != 'delete'
 
 - name: ins set private lb dns name
-  shell: "yq -i -y '.ins.lb.priv.dnsName = [\"{{ private_lb_dns.stdout | from_json }}\"]' ../../vars/instance.yaml"
+  shell: "yq -i -y '.ins.lb.priv.dnsName = [\"{{ private_lb_dns.stdout | from_json }}\"]' /data/vars/instance.yaml"
   when: ins.operation.type != 'delete'
 
 - name: get pem path

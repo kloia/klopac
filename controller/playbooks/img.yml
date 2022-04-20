@@ -4,5 +4,5 @@
   roles:
     - img
   vars_files:
-    - ../../vars/platform.yaml
-    - ../../vars/image.yaml
+    - /data/vars/platform.yaml
+    - /data/vars/image.yaml

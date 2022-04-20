@@ -4,6 +4,6 @@
   roles:
     - int
   vars_files:
-    - ../../vars/platform.yaml
-    - ../../vars/engine.yaml
-    - ../../vars/integrations.yaml
+    - /data/vars/platform.yaml
+    - /data/vars/engine.yaml
+    - /data/vars/integrations.yaml

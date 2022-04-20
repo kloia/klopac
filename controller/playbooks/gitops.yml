@@ -4,7 +4,7 @@
   roles:
     - gitops
   vars_files:
-    - ../../vars/platform.yaml
-    - ../../vars/engine.yaml
-    - ../../vars/integrations.yaml
-    - ../../vars/gitops.yaml
+    - /data/vars/platform.yaml
+    - /data/vars/engine.yaml
+    - /data/vars/integrations.yaml
+    - /data/vars/gitops.yaml
