@@ -3,24 +3,8 @@ engine:
   enabled: true
   endpoint:
     uri: ''
-  instance:
-    auth:
-      pem.path: img.pem.path
-      pem.type: img.pem.type
-      type: img.auth.type
-      user: img.auth.user
-    master:
-      count: ins.master.count
-      ips: ins.master.net.ip.pool
-    worker:
-      count: ins.master.count
-      ips: ins.master.net.ip.pool
-  kubeconfig:
-    path: /data/sensitive/kubeconfig/
   operation:
     type: create
-    update:
-      policy: apply
   provider:
     enabled: false
     name: aws
@@ -37,11 +21,6 @@ engine:
     - rbac.enabled
     - operation.type
     - runner.type
-    - instance.master.count
-    - instance.master.ips
-    - instance.worker.count
-    - instance.worker.ips
-    - instance.auth.type
   runner:
-    type: repo
+    type: executor
   type: k3s

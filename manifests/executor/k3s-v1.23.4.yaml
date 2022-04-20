@@ -1,6 +1,6 @@
 ---
 platform:
-  repo:
+  executor:
     k3s:
       uri: 'https://github.com/k3s-io/k3s'
       type: git
