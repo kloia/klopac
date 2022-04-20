@@ -1,0 +1,14 @@
+---
+
+- name: Include variables
+  include_vars: 
+    file: "../vars/defaults/img-{{ filename }}.yaml"
+    hash_behaviour: merge
+
+- name: Include Manifest
+  include_vars: 
+    file: "../manifests/{{ vars['img']['runner']['type'] }}/{{ filename }}-{{ vars['img'][filename]['version'] }}.yaml"
+
+- name: Kubeconfig Path
+  debug:
+    var: "vars['platform']['repo']"

@@ -1,4 +1,5 @@
 ---
+
 - name: Create bundle directory
   file:
     state: directory
@@ -6,7 +7,7 @@
     group: 1000
     mode: 0750
     path: "/data/bundle"
-
+    
 - name: Include Image Variables
   include_vars: /data/bundle/output.yaml
 
@@ -16,6 +17,66 @@
     dest: "/data/bundle/output.md"
     mode: u+rw,g-wx,o-rwx
 
-- name: Create bundle from state and config files
-  changed_when: false
-  command: tar -czvf bundle.tar.gz /data/
+#APPLICATIONS
+# - name: Include Applications Variables
+#   include_vars: ../vars/applications.yaml
+
+# - name: Run Subtasks for Applications
+#   include: app-subtasks.yml filename={{ item }}
+#   when: 
+#   - "{{ vars['app'][item]['enabled'] | bool }}"
+#   - vars['app'][item]['runner']['type'] == "repo" 
+#   with_items: "{{ app }}"
+
+#IMAGE
+# - name: Include Image Variables
+#   include_vars: ../vars/image.yaml
+
+# - name: Run Subtasks for Image
+#   include: image-subtasks.yml filename="{{ vars['img']['type'] }}"
+#   when: 
+#   - "{{ vars['img']['enabled'] | bool }}"
+#   - vars['img']['runner']['type'] == "repo" 
+
+- name: Compress Bundle
+  block:
+  #INSTANCE
+  - name: Include Instance Variables
+    include_vars: /data/vars/instance.yaml
+
+  - name: Run Subtasks for Instance
+    include: instance-subtasks.yml filename="{{ vars['ins']['type'] }}"
+    when: 
+    - "{{ vars['ins']['enabled'] | bool }}"
+    - vars['ins']['runner']['type'] == "repo" 
+
+  #ENGINE
+  - name: Include Engine Variables
+    include_vars: /data/vars/engine.yaml
+
+  - name: Run Subtasks for Engine
+    include: engine-subtasks.yml filename="{{ vars['engine']['type'] }}"
+    when: 
+    - "{{ vars['engine']['enabled'] | bool }}"
+    - vars['engine']['runner']['type'] == "repo" 
+
+  - name: Create bundle from state and config files
+    changed_when: false
+    command: tar czf /data/bundle.tar.gz .
+    args:
+      chdir: /data/bundle
+
+  when: COMPRESS_BUNDLE | bool
+
+#INTEGRATIONS
+# - name: Include Applications Variables
+#   include_vars: ../vars/integrations.yaml
+
+# - name: Run Subtasks for Integrations
+#   include: integration-subtasks.yml filename={{ item }}
+#   when: 
+#   - "{{ vars['int'][item]['enabled'] | bool }}"
+#   - vars['int'][item]['runner']['type'] == "repo" 
+#   with_items: "{{ int }}"
+
+

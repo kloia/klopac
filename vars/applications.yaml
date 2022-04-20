@@ -49,7 +49,7 @@ app:
       - operation.type
       - runner.type
     runner:
-      type: repo
+      type: executor
   test:
     dependsOn: sock-shop
     enabled: true
