@@ -1,17 +1,17 @@
 ---
 - name: include provider defaults
   include_vars: 
-    file: ../../vars/defaults/provider-{{ platform.provider.name }}.yaml
+    file: /data/vars/defaults/provider-{{ platform.provider.name }}.yaml
     hash_behaviour: merge
 
 - name: include provider type defaults
   include_vars: 
-    file: ../../vars/defaults/provider-{{ platform.provider.name }}-{{ platform.provider.type }}.yaml
+    file: /data/vars/defaults/provider-{{ platform.provider.name }}-{{ platform.provider.type }}.yaml
     hash_behaviour: merge
 
 - name: include ins defaults
   include_vars: 
-    file: ../../vars/defaults/ins-{{ ins.type }}.yaml
+    file: /data/vars/defaults/ins-{{ ins.type }}.yaml
     hash_behaviour: merge
 
 - name: set worksplace folder
@@ -44,7 +44,7 @@
 
 - name: include repo
   include_vars: 
-    file: ../../manifests/repo/{{ ins.type }}-{{ vars['ins'][ins_type]['version'] }}.yaml
+    file: /data/manifests/repo/{{ ins.type }}-{{ vars['ins'][ins_type]['version'] }}.yaml
     hash_behaviour: merge
 
 - name: get repo path

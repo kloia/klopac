@@ -1,0 +1,26 @@
+# ---
+
+# - name: get runner name
+#   set_fact:
+#     ins_runner_name: "{{ vars['platform']['repo'][ins_type]['runner']['name'] }}"
+
+# - name: get runner version
+#   set_fact:
+#     ins_runner_version: "{{ vars['platform']['repo'][ins_type]['runner']['version'] }}"
+
+# - name: get pre command
+#   set_fact:
+#     ins_pre_command: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['pre'] }}"
+
+# - name: get create command
+#   set_fact:
+#     ins_create_command: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['create'] }}"
+
+# - name: create instances
+#   command: "docker run --rm -v /tmp:/data/repo kloiadocker/klopac-{{ ins_runner_name }}-runner:{{ ins_runner_version }} /bin/bash -c \"cd {{ ins_repo_path }}; {{ ins_pre_command }}; {{ ins_create_command }}\""
+#   become: true
+#   register: ins_create_log
+
+# - debug:
+#     msg: "{{ vars['ins_create_log'] }}"
+#   when: vars['platform']['log']['level']=='debug'
