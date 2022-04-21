@@ -1,25 +1,25 @@
 ---
 
-# # INVENTORY FILE - UPDATE
-# - hosts: localhost
-#   connection: local
-#   roles:
-#     - role: inventory
+# INVENTORY FILE - UPDATE
+- hosts: localhost
+  connection: local
+  roles:
+    - role: inventory
 
-# # INSTANCE TESTS
-# - hosts: servers
-#   gather_facts: false
-#   roles:
-#     - role: instance
+# INSTANCE TESTS
+- hosts: servers
+  gather_facts: false
+  roles:
+    - role: instance
 
-# # LAYER TESTS
-# - hosts: localhost
-#   connection: local
-#   roles:
-#     - role: image
-#     - role: engine
-#     - role: gitops
-#     - role: applications
+# LAYER TESTS
+- hosts: localhost
+  connection: local
+  roles:
+    - role: image
+    - role: engine
+    - role: gitops
+    - role: applications
 
 # FINALIZE
 - hosts: localhost
