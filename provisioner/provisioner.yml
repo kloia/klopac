@@ -3,45 +3,60 @@
   hosts: localhost
   tasks:
   - name: include_engine_file
-    include_vars: ../vars/engine.yaml
+    include_vars: /data/vars/engine.yaml
   - name: include_instance_file
-    include_vars: ../vars/instance.yaml
+    include_vars: /data/vars/instance.yaml
   - name: include_image_file
-    include_vars: ../vars/image.yaml
+    include_vars: /data/vars/image.yaml
   - name: include_engine_defaults_file
     include_vars: 
-      file: ../vars/defaults/engine-{{ engine.type }}.yaml
+      file: /data/vars/defaults/engine-{{ engine.type }}.yaml
       hash_behaviour: merge
   - name: include_image_defaults_file
     include_vars: 
-      file: ../vars/defaults/img-{{ img.type }}.yaml
+      file: /data/vars/defaults/img-{{ img.type }}.yaml
       hash_behaviour: merge
   - name: include_instance_defaults_file
     include_vars: 
-      file: ../vars/defaults/ins-{{ ins.type }}.yaml
+      file: /data/vars/defaults/ins-{{ ins.type }}.yaml
       hash_behaviour: merge
   - name: include_engine_manifest_file
     include_vars: 
-      file: ../manifests/repo/{{ engine.type }}-{{ engine[engine.type]["version"] }}.yaml
+      file: /data/manifests/{{ engine.runner.type }}/{{ engine.type }}-{{ engine[engine.type]["version"] }}.yaml
   - name: include_img_manifest_file
     include_vars: 
-      file: ../manifests/repo/{{ img.type }}-{{ img[img.type]["version"] }}.yaml
+      file: /data/manifests/{{ img.runner.type }}/{{ img.type }}-{{ img[img.type]["version"] }}.yaml
       hash_behaviour: merge
   - name: include_ins_manifest_file
     include_vars: 
-      file: ../manifests/repo/{{ ins.type }}-{{ ins[ins.type]["version"] }}.yaml
+      file: /data/manifests/{{ ins.runner.type }}/{{ ins.type }}-{{ ins[ins.type]["version"] }}.yaml
       hash_behaviour: merge
+  # TODO: Extract clone and copy tasks as subtasks
   - name: clone
     ansible.builtin.git:
       repo: "{{ vars['platform']['repo'][item]['uri'] }}"
-      dest: "data/repos/{{ item }}"
+      dest: "/data/repos/{{ item }}"
       version: "{{ vars['platform']['repo'][item]['tag'] }}"
     with_items: "{{ vars['platform']['repo'].keys() | list }}"
-  # - name: copy
-  #   copy:
-  #     src: "{{ item[1].path }}"
-  #     dest: "/data/repos/{{ item[0] }}-{{vars['platform']['repo'][item[0]]['tag']  }}/"
-  #     mode: u+rw,g-wx,o-rwx
-  #   with_nested: 
-  #     - "{{ vars['platform']['repo'] }}"
-  #   when: item.outputs. == 'file'
+  - name: clone
+    ansible.builtin.git:
+      repo: "{{ vars['platform']['executor'][item]['uri'] }}"
+      dest: "/data/repos/{{ item }}"
+      version: "{{ vars['platform']['executor'][item]['tag'] }}"
+    with_items: "{{ vars['platform']['executor'].keys() | list }}"
+  - name: copy
+    copy:
+      src: "/data/bundle/{{ vars['platform']['repo'][item]['state']['file']['path'] }}"
+      dest: "/data/repos/{{ item }}/"
+      mode: u+rw,g-wx,o-rwx
+    with_items:
+      - "{{ vars['platform']['repo'].keys() | list }}"
+    when: vars['platform']['repo'][item]['state']['enabled'] == true
+  - name: copy
+    copy:
+      src: "/data/bundle/{{ vars['platform']['executor'][item]['state']['file']['path'] }}"
+      dest: "/data/repos/{{ item }}/"
+      mode: u+rw,g-wx,o-rwx
+    with_items:
+      - "{{ vars['platform']['executor'].keys() | list }}"
+    when: vars['platform']['executor'][item]['state']['enabled'] == true
