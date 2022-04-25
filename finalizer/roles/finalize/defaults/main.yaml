@@ -1,5 +1,7 @@
 ---
 
+COMPRESS_BUNDLE: true
+
 image_layer:
   status: Healthy
   id: 123456
@@ -37,3 +39,6 @@ applications_layer:
   - name: test
     status: Unhealthy
     endpoint: localhost:8081
+
+terraformFileCheck: false
+kubeconfigFileCheck: false

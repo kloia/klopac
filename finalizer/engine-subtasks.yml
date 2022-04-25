@@ -1,0 +1,30 @@
+---
+
+- name: Include variables
+  include_vars: 
+    file: "/data/vars/defaults/engine-{{ filename }}.yaml"
+    hash_behaviour: merge
+
+- name: Include Manifest
+  include_vars: 
+    file: "/data/manifests/{{ vars['engine']['runner']['type'] }}/{{ filename }}-{{ vars['engine'][filename]['version'] }}.yaml"
+
+- name: Check that the kubeconfig exists
+  stat:
+    path: "/data/repo/{{ filename }}/{{ vars['platform']['repo'][filename]['outputs']['kubeconfig']['path'] }}"
+  register: stat_result
+
+- name: Write kubeconfig file exists checks to outputs
+  delegate_to: localhost
+  changed_when: false
+  shell: "echo 'kubeconfigFileCheck: false' >> /data/bundle/output.yaml"
+  when: not stat_result.stat.exists
+
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    src: "/data/repo/{{ filename }}/{{ vars['platform']['repo'][filename]['outputs']['kubeconfig']['path'] }}"
+    dest: /data/bundle/kubeconfig
+    owner: 1000
+    group: 1000
+    mode: '0644'
+  when: stat_result.stat.exists

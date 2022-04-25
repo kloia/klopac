@@ -16,4 +16,4 @@ platform:
       outputs:
         kubeconfig:
           type: file
-          path: kubecfg_path
+          path: ./kubeconfig

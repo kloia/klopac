@@ -1,5 +1,6 @@
 ---
 
+#/data/vars
 - name: Include Image Variables
   include_vars: ../vars/image.yaml
 
