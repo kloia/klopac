@@ -9,7 +9,7 @@ FROM ubuntu:20.04
 
 RUN groupadd docker -g 998 && useradd -s /bin/bash -d /app -m -u 1000 -G docker platform && \
 apt-get update -y && \
-apt-get install -y --no-install-recommends curl wget unzip ca-certificates gnupg lsb-release sudo && \
+apt-get install -y --no-install-recommends curl wget unzip ca-certificates gnupg lsb-release sudo git && \
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
 apt-get update && \

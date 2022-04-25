@@ -1,0 +1,30 @@
+---
+# TODO: Extract clone and copy tasks as subtasks
+- name: Clone repos with type "repo"
+  ansible.builtin.git:
+    repo: "{{ vars['platform']['repo'][item]['uri'] }}"
+    dest: "/data/repo/{{ item }}"
+    version: "{{ vars['platform']['repo'][item]['tag'] }}"
+  with_items: "{{ vars['platform']['repo'].keys() | list }}"
+- name: Clone repos with type "executor"
+  ansible.builtin.git:
+    repo: "{{ vars['platform']['executor'][item]['uri'] }}"
+    dest: "/data/repo/{{ item }}"
+    version: "{{ vars['platform']['executor'][item]['tag'] }}"
+  with_items: "{{ vars['platform']['executor'].keys() | list }}"
+- name: Copy states with type "repo"
+  copy:
+    src: "/data/bundle/{{ vars['platform']['repo'][item]['state']['file']['path'] }}"
+    dest: "/data/repo/{{ item }}/"
+    mode: u+rw,g-wx,o-rwx
+  with_items:
+    - "{{ vars['platform']['repo'].keys() | list }}"
+  when: vars['platform']['repo'][item]['state']['enabled'] == true
+- name: Copy states with type "executor"
+  copy:
+    src: "/data/bundle/{{ vars['platform']['executor'][item]['state']['file']['path'] }}"
+    dest: "/data/repo/{{ item }}/"
+    mode: u+rw,g-wx,o-rwx
+  with_items:
+    - "{{ vars['platform']['executor'].keys() | list }}"
+  when: vars['platform']['executor'][item]['state']['enabled'] == true
