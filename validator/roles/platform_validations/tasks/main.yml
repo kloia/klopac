@@ -1,0 +1,54 @@
+---
+
+- name: "Include platform vars"
+  include_vars: /data/vars/platform.yaml
+
+- name: "Auth type should be id or user"
+  assert:
+    that:
+      - platform.provider.auth.type == 'id' or platform.provider.auth.type == 'user'
+    fail_msg: "Platform provider auth type should be id or user"
+
+- name: "Provider name should be aws or azure"
+  assert:
+    that:
+      - platform.provider.name == 'azure' or platform.provider.name == 'aws'
+    fail_msg: "Platform provider name should be azure or aws"
+
+- name: "Provider type should be eks or ec2 for aws"
+  assert:
+    that:
+      - platform.provider.type == 'ec2' or platform.provider.type == 'eks'
+    fail_msg: "Platform provider type should be ec2 or eks for aws"
+  when: platform.provider.name == 'aws'
+
+- name: "Provider type should be vm or vmss for azure"
+  assert:
+    that:
+      - platform.provider.type == 'vm' or platform.provider.type == 'vmss'
+    fail_msg: "Platform provider type should be vm or vmss for azure"
+  when: platform.provider.name == 'azure'
+
+- name: "For azure tenant and subscription is required"
+  assert:
+    that:
+      - platform.provider.auth.subscription is defined
+      - platform.provider.auth.subscription != None
+      - platform.provider.auth.subscription != ""
+      - platform.provider.auth.tenant is defined
+      - platform.provider.auth.tenant != None
+      - platform.provider.auth.tenant != ""
+    fail_msg: "Tenant and subscription should be defined for azure"
+  when: platform.provider.name == 'azure'
+
+- name: "For aws key and password is required"
+  assert:
+    that:
+      - platform.provider.auth.key is defined
+      - platform.provider.auth.key != None
+      - platform.provider.auth.key != ""
+      - platform.provider.auth.password is defined
+      - platform.provider.auth.password != None
+      - platform.provider.auth.password != ""
+    fail_msg: "Key and password should be defined for aws"
+  when: platform.provider.name == 'aws'
