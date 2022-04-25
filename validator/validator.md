@@ -1,3 +1,11 @@
+## Name: platform_validations
+
+1. Check platform provider auth type
+2. Check provider name (azure or aws)
+3. Check provider type (eks or ec2 for aws, vm or vmss for azure)
+4. Check if access key and secret key are defined for aws
+5. Check if tenant and subscription are defined for azure
+
 ## Name: repo_config_validation
 
   1. Check repo folder
