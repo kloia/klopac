@@ -19,7 +19,7 @@ $ go version: go version go1.18
   go build cmd/main.go
   mv main ..
   cd -
-  ./main --valuesFile ./values.yaml --vars ./vars
+  ./main --valuesFile ./values.yaml --varsPath ./vars
 ```
 
 ### Configuration Options
