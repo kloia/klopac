@@ -18,11 +18,11 @@
 
 - name: "[VALIDATOR - RUNNER VALIDATION] Include repo manifest"
   include_vars: 
-    file: /data/manifests/repo/{{ engine.type }}-{{ engine_version}}.yaml
+    file: /data/manifests/{{ engine.runner.type }}/{{ engine.type }}-{{ engine_version}}.yaml
 
 - name: "[VALIDATOR - RUNNER VALIDATION] Check if runner yaml exists"
   ansible.builtin.stat:
-    path: "/data/runner/{{ vars['platform']['repo'][engine_type][engine_version]['runner']['name']}}-runner-{{ hostvars['localhost']['platform']['repo'][engine_type][engine_version]['runner']['version']}}.yaml"
+    path: "/data/runner/{{ vars['platform'][engine.runner.type][engine_type]['runner']['name']}}-runner-{{ hostvars['localhost']['platform'][engine.runner.type][engine_type]['runner']['version']}}.yaml"
   register: runner_manifest_file_exists
 
 - name: "[VALIDATOR - RUNNER VALIDATION] Assertion of runner existence"
