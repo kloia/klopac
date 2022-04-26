@@ -25,9 +25,10 @@ func (p flowService) ExecuteCommand(command string) {
 	replacer := strings.NewReplacer("\n", "", "\t", " ")
 	command = replacer.Replace(command)
 	log.Info("Running command", zap.String("command", command))
-	err, out, errout := p.shell.Run(command)
+	err, out, _ := p.shell.Run(command)
 	if err != nil {
-		log.Panic(errout)
+		log.Info(out)
+		log.Panic(fmt.Sprint(err))
 	}
 	log.Info(out)
 }
