@@ -1,6 +1,8 @@
 package shell
 
 import (
+  "io"
+  "os"
 	"bytes"
 	cmdService "entrypoint/pkg/command"
 )
@@ -15,13 +17,15 @@ type shellService struct {
 
 // It runs the command string and return its result as output
 func (s shellService) Run(command string) (error, string, string) {
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
 	cmd := s.command.Exec(command)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+
+  var stdoutBuf, stderrBuf bytes.Buffer
+	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
+	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
+
 	err := cmd.Run()
-	return err, stdout.String(), stderr.String()
+
+  return err, string(stdoutBuf.Bytes()), string(stderrBuf.Bytes())
 }
 
 func NewShellService(c cmdService.Command) Shell {
