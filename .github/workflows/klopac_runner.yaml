@@ -3,8 +3,7 @@ name: Klopac Runner Image Build and Publish
 on:
   push:
     branches: [ 0.1-alpha ]
-    paths:
-      - 'docker/runner/klopac/Dockerfile'
+
 jobs:
 
   build:
