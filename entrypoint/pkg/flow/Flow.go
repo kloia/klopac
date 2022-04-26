@@ -27,15 +27,8 @@ func (p flowService) ExecuteCommand(command string) {
 	log.Info("Running command", zap.String("command", command))
 	err, out, errout := p.shell.Run(command)
 	if err != nil {
-		log.Info(out)
-		log.Info(errout)
-		log.Error("Error while executing command", zap.String("command", command))
+		log.Panic(errout)
 	}
-	// fmt.Println(out)
-	// log.Debug("Streams",
-	// 	zap.String("command", command),
-	// 	zap.String("stdout", out),
-	// 	zap.String("stderr", errout))
 	log.Info(out)
 }
 
@@ -43,42 +36,42 @@ func (p flowService) ExecuteCommand(command string) {
 func (p flowService) Run(provision, validate, healthCheck bool, logLevel string) {
 	log := logger.GetLogger()
 	if !healthCheck || validate || provision {
-		log.Info("START: PROVISIONER")
+		log.Info("[PROVISIONER - START]")
 		p.ExecuteCommand(fmt.Sprintf(`
 		export LOGLEVEL=%v;
 		cd provisioner;
 		ansible-playbook provisioner.yml;
 	`, logLevel))
-		log.Info("END: PROVISIONER")
+		log.Info("[PROVISIONER - END]")
 	}
 	if !provision && !healthCheck || validate {
-		log.Info("START: VALIDATOR")
+		log.Info("[VALIDATOR - START]")
 		p.ExecuteCommand(fmt.Sprintf(`
 		export LOGLEVEL=%v;
 		cd validator;
 		ansible-playbook validator.yml;
 	`, logLevel))
-		log.Info("END: VALIDATOR")
+		log.Info("[VALIDATOR - END]")
 	}
 	if !provision && !validate && !healthCheck {
-		log.Info("START: CONTROLLER")
+		log.Info("[CONTROLLER - START]")
 		p.ExecuteCommand(fmt.Sprintf(`
 		export LOGLEVEL=%v;
 		export HEALTHCHECK=%v;
 		cd controller;
 		sh controller.sh
 		`, logLevel, healthCheck))
-		log.Info("END: CONTROLLER")
+		log.Info("[CONTROLLER - END]")
 	}
 	if !provision && !validate || healthCheck {
-		log.Info("START: FINALIZER")
+		log.Info("[FINALIZER - START]")
 		p.ExecuteCommand(fmt.Sprintf(`
 		export LOGLEVEL=%v;
 		export HEALTHCHECK=%v
 		cd finalizer;
 		ansible-playbook finalizer.yml;
 	`, logLevel, healthCheck))
-		log.Info("END: FINALIZER")
+		log.Info("[FINALIZER - END]")
 	}
 }
 
