@@ -2,10 +2,7 @@
 
 #/data/vars
 - name: Include Image Variables
-  include_vars: ../vars/image.yaml
-
-- name: Include Image Variables
-  include_vars: ../vars/instance.yaml
+  include_vars: /data/vars/image.yaml
 
 - name: "Remove inventory file if it exists"
   file:
@@ -20,8 +17,8 @@
   ini_file:
     dest: "./inventory"
     section: "servers"
-    option: "{{ item }} ansible_ssh_private_key_file={{ img.auth.pem.path }} ansible_ssh_user"
-    values: "{{ img.auth.user }}"
+    option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_ssh_user"
+    values: "{{ ins.image.auth.user }}"
     no_extra_spaces: true
     mode: 0666
     state: present
@@ -32,8 +29,8 @@
   ini_file:
     dest: "./inventory"
     section: "servers"
-    option: "{{ item }} ansible_ssh_private_key_file={{ img.auth.pem.path }} ansible_ssh_user"
-    values: "{{ img.auth.user }}"
+    option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_ssh_user"
+    values: "{{ ins.image.auth.user }}"
     no_extra_spaces: true
     mode: 0666
     state: present

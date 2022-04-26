@@ -1,6 +1,7 @@
 ---
 
 - name: Create bundle directory
+  delegate_to: localhost
   file:
     state: directory
     owner: 1000
@@ -8,14 +9,18 @@
     mode: 0750
     path: "/data/bundle"
 
+- name: "Create inventory file"
+  changed_when: false
+  delegate_to: localhost
+  shell: echo "instance_layer:" > /data/bundle/output.yaml
+
 - name: Include Image Variables
-  include_vars: ../vars/image.yaml
+  include_vars: /data/vars/image.yaml
 
 - name: Get OS Information
   set_fact:
     OS_NAME: '{{ img.os.split(":")[0] | lower }}'
     OS_VERSION: '{{ img.os.split(":")[1] | lower }}'
-
 
 - name: Get OS Name
   changed_when: false
@@ -38,18 +43,19 @@
 - name: Write os_name checks to outputs
   delegate_to: localhost
   changed_when: false
-  shell: "echo 'os_name: {{ os_name.stdout | lower == OS_NAME }}' >> /data/bundle/output.yaml"
+  shell: "yq -i '.instance_layer.os.name.value = \"{{ os_name.stdout | lower }}\"' /data/bundle/output.yaml -y"
+
+- name: Write os_name checks to outputs
+  delegate_to: localhost
+  changed_when: false
+  shell: "yq -i '.instance_layer.os.name.match = \"{{ os_name.stdout | lower == OS_NAME }}\"' /data/bundle/output.yaml -y"
 
 - name: Write os_version checks to outputs
   delegate_to: localhost
   changed_when: false
-  shell: "echo 'os_version: {{ os_version.stdout | lower == OS_VERSION | lower }}' >> /data/bundle/output.yaml"
+  shell: "yq -i '.instance_layer.os.version.value = \"{{ os_version.stdout | lower }}\"' /data/bundle/output.yaml -y"
 
-# instance_layer:
-#   os:
-#     name: ubuntu
-#     version: 20.04.4
-#   utilization:
-#     disk: "%20"
-#     mem: "%30"
-#     cpu: "%40"
+- name: Write os_name checks to outputs
+  delegate_to: localhost
+  changed_when: false
+  shell: "yq -i '.instance_layer.os.version.match = \"{{ os_version.stdout | lower == OS_NAME }}\"' /data/bundle/output.yaml -y"

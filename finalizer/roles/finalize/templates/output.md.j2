@@ -18,12 +18,8 @@
 ## INSTANCE LAYER
 
 
-* OS Name   : {{ instance_layer.os.name }}
-* OS Version:   {{ instance_layer.os.version }}
-* Disk Utilization:  {{ instance_layer.utilization.disk }}
-* Memory Utilization : {{ instance_layer.utilization.mem }}
-* CPU Utilization : {{ instance_layer.utilization.cpu }}
-
+* OS Name   : {{ instance_layer.os.name.value }} - [{{ instance_layer.os.name.match }}]
+* OS Version:   {{ instance_layer.os.version.value }} - [{{ instance_layer.os.version.match }}]
 
 {% endif %}
 
@@ -78,6 +74,3 @@
 
 
 {% endif %}
-
-terraformFileCheck: {{ terraformFileCheck }}
-kubeconfigFileCheck: {{ kubeconfigFileCheck }}
