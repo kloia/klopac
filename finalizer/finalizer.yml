@@ -3,23 +3,32 @@
 # INVENTORY FILE - UPDATE
 - hosts: localhost
   connection: local
-  roles:
-    - role: inventory
+  tasks:
+  - name: Include Image Variables
+    include_vars: /data/vars/instance.yaml
+  - name: Include inventory role 
+    include_role:
+      name: inventory
+    when: vars['ins']['enabled'] == true
 
 # INSTANCE TESTS
 - hosts: servers
   gather_facts: false
-  roles:
-    - role: instance
+  tasks:
+  - name: Include Image Variables
+    include_vars: /data/vars/instance.yaml
+  - name: Include instance role 
+    include_role:
+      name: instance
+    when: vars['ins']['enabled'] == true
 
-# LAYER TESTS
-- hosts: localhost
-  connection: local
-  roles:
-    - role: image
-    - role: engine
-    - role: gitops
-    - role: applications
+# # LAYER TESTS
+# - hosts: localhost
+#   connection: local
+#   roles:
+#     - role: engine
+#     - role: gitops
+#     - role: applications
 
 # FINALIZE
 - hosts: localhost
