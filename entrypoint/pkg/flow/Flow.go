@@ -25,12 +25,10 @@ func (p flowService) ExecuteCommand(command string) {
 	replacer := strings.NewReplacer("\n", "", "\t", " ")
 	command = replacer.Replace(command)
 	log.Info("Running command", zap.String("command", command))
-	err, out, _ := p.shell.Run(command)
+	err, _, _ := p.shell.Run(command)
 	if err != nil {
-		log.Info(out)
 		log.Panic(fmt.Sprint(err))
 	}
-	log.Info(out)
 }
 
 // It basically take some sort of args like (provision, validate, healthCheck, logLevel) and depending to its value it execute relative yaml files.
