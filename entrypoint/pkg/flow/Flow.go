@@ -68,7 +68,7 @@ func (p flowService) Run(provision, validate, healthCheck bool, logLevel string)
 		log.Info("[FINALIZER - START]")
 		p.ExecuteCommand(fmt.Sprintf(`
 		export LOGLEVEL=%v;
-		export HEALTHCHECK=%v
+		export HEALTHCHECK=%v;
 		cd finalizer;
 		ansible-playbook finalizer.yml;
 	`, logLevel, healthCheck))
