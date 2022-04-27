@@ -41,14 +41,26 @@
     fail_msg: "Tenant and subscription should be defined for azure"
   when: platform.provider.name == 'azure'
 
-- name: "For aws key and password is required"
+- name: "ID and Key required for Auth Type 'id'"
   assert:
     that:
       - platform.provider.auth.key is defined
       - platform.provider.auth.key != None
       - platform.provider.auth.key != ""
+      - platform.provider.auth.id is defined
+      - platform.provider.auth.id != None
+      - platform.provider.auth.id != ""
+    fail_msg: "Key and id should be defined"
+  when: platform.provider.auth.type == 'id'
+
+- name: "User and password required for Auth Type 'user'"
+  assert:
+    that:
+      - platform.provider.auth.user is defined
+      - platform.provider.auth.user != None
+      - platform.provider.auth.user != ""
       - platform.provider.auth.password is defined
       - platform.provider.auth.password != None
       - platform.provider.auth.password != ""
-    fail_msg: "Key and password should be defined for aws"
-  when: platform.provider.name == 'aws'
+    fail_msg: "User and password should be defined"
+  when: platform.provider.auth.type == 'user'
