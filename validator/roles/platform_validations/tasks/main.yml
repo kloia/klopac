@@ -1,7 +1,7 @@
 ---
 
 - name: "Include platform vars"
-  include_vars: ../vars/platform.yaml
+  include_vars: /data/vars/platform.yaml
 
 - name: "Auth type should be id or user"
   assert:
