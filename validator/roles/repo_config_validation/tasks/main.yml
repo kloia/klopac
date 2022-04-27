@@ -29,14 +29,14 @@
   
 - name: "[VALIDATOR - REPO VALIDATION] Check if the repo directory exists"
   ansible.builtin.stat:
-    path: "/data/repos/{{ engine.type }}"
+    path: "/data/repo/{{ engine.type }}"
   register: repo_dir_exists
 
 - name: "[VALIDATOR - REPO VALIDATION] Assertion of repo directory existence"
   assert:
     that:
       - repo_dir_exists.stat.exists == true
-    fail_msg: "Repo does not exist in 'repos' folder"
+    fail_msg: "Repo does not exist in 'repo' folder"
     success_msg: "Repo is exist"
 
 - name: Check if terraform engine 
