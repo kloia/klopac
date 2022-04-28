@@ -1,5 +1,8 @@
 ---
 
+# TODO: stop creating multiple instance_layer keys in output.yaml
+# TODO: should yq tasks be with a loop or not?
+
 - name: Create bundle directory
   delegate_to: localhost
   file:
@@ -12,10 +15,7 @@
 - name: "Create inventory file"
   changed_when: false
   delegate_to: localhost
-  shell: echo "instance_layer:" > /data/bundle/output.yaml
-
-- name: Include Image Variables
-  include_vars: /data/vars/image.yaml
+  shell: echo "instance_layer:" >> /data/bundle/output.yaml
 
 - name: Get OS Information
   set_fact:

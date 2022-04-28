@@ -3,36 +3,49 @@
 # INVENTORY FILE - UPDATE
 - hosts: localhost
   connection: local
+  pre_tasks:
+    - name: Include Image Variables
+      include_vars: /data/vars/image.yaml
+    - name: Include Instance Variables
+      include_vars: /data/vars/instance.yaml
   tasks:
-  - name: Include Image Variables
-    include_vars: /data/vars/instance.yaml
-  - name: Include inventory role 
-    include_role:
-      name: inventory
-    when: vars['ins']['enabled'] == true
+    - block:
+      - name: Include inventory role 
+        include_role:
+          name: inventory
+      when: vars['ins']['enabled'] == true
 
 # INSTANCE TESTS
 - hosts: servers
   gather_facts: false
+  pre_tasks:
+    - name: Include Image Variables
+      include_vars: /data/vars/image.yaml
+    - name: Include Instance Variables
+      include_vars: /data/vars/instance.yaml
   tasks:
-  - name: Include Image Variables
-    include_vars: /data/vars/instance.yaml
-  - name: Include instance role 
-    include_role:
-      name: instance
-    when: vars['ins']['enabled'] == true
+    - block:
+      - name: Include instance role 
+        include_role:
+          name: instance
+      when: vars['ins']['enabled'] == true
 
 # # LAYER TESTS
-# - hosts: localhost
-#   connection: local
-#   roles:
-#     - role: engine
-#     - role: gitops
-#     - role: applications
-
-# FINALIZE
 - hosts: localhost
   connection: local
-  gather_facts: false
-  roles:
-    - role: finalize
+  pre_tasks:
+    - name: Include Engine Variables
+      include_vars: /data/vars/engine.yaml
+  tasks:
+    - block:
+      - name: Include engine role
+        include_role:
+          name: engine
+      when: vars['engine']['enabled'] == true
+
+# FINALIZE
+# - hosts: localhost
+#   connection: local
+#   gather_facts: false
+#   roles:
+#     - role: finalize

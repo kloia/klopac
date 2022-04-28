@@ -1,9 +1,5 @@
 ---
 
-#/data/vars
-- name: Include Image Variables
-  include_vars: /data/vars/image.yaml
-
 - name: "Remove inventory file if it exists"
   file:
     path: inventory

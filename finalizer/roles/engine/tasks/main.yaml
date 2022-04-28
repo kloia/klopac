@@ -1,9 +1,42 @@
 ---
 
-- name: Engine Tests
-  debug:
-    msg: Engine tests
+# TODO: stop creating multiple engine_layer keys in /data/bundle/output.yaml
 
-# engine_layer:
-#   version: v1.21.6
-#   type: rke2
+- name: "Create /data/bundle/output file"
+  changed_when: false
+  shell: echo "engine_layer:" >> /data/bundle/output.yaml
+
+- name: Set fact for kubeconfig path
+  set_fact:
+    kubeconfig_path: "{{ vars['engine']['kubeconfig']['path'] }}"
+
+- name: Include engine variables
+  include_vars:
+    file: "/data/vars/defaults/engine-{{ vars['engine']['type'] }}.yaml"
+    hash_behaviour: merge
+
+- name: Set fact for engine version
+  set_fact:
+    engine_version: "{{ vars['engine'][vars['engine']['type']]['version'] }}"
+
+- name: Engine Tests
+  shell: "kubectl get nodes --no-headers | awk '{ print $1, $NF }'"
+  register: nodes
+
+- name: Write node name to outputs
+  shell: "yq -i '.engine_layer[{{ index }}].name = \"{{ item.split()[0] | lower }}\"' /data/bundle/output.yaml -y"
+  loop: "{{ nodes.stdout_lines }}"
+  loop_control:
+    index_var: index
+
+- name: Write node's engine version to outputs
+  shell: "yq -i '.engine_layer[{{ index }}].value = \"{{ item.split()[1] | lower }}\"' /data/bundle/output.yaml -y"
+  loop: "{{ nodes.stdout_lines }}"
+  loop_control:
+    index_var: index
+
+- name: Write node's engine version check to outputs
+  shell: "yq -i '.engine_layer[{{ index }}].match = \"{{ item.split()[1] | lower == engine_version }}\"' /data/bundle/output.yaml -y"
+  loop: "{{ nodes.stdout_lines }}"
+  loop_control:
+    index_var: index
