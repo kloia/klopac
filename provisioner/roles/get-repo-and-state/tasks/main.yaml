@@ -1,16 +1,24 @@
 ---
 # TODO: Extract clone and copy tasks as subtasks
+- name: Create repo names list
+  set_fact:
+    repo_names: "{{ repo_names | default([]) + [vars['platform']['repo'][item]['uri'] | split('/') | last | split('.') | first ] }}"
+  with_items: 
+    - "{{ vars['platform']['repo'].keys() | list }}"
 - name: Clone repos with type "repo"
   ansible.builtin.git:
     repo: "{{ vars['platform']['repo'][item]['uri'] }}"
-    dest: "/data/repo/{{ item }}"
+    dest: "/data/repo/{{ repo_names[index] }}"
     version: "{{ vars['platform']['repo'][item]['tag'] }}"
-  with_items: "{{ vars['platform']['repo'].keys() | list }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
 - name: Copy states with type "repo"
   copy:
     src: "/data/bundle/{{ vars['platform']['repo'][item]['state']['file']['path'] }}"
-    dest: "/data/repo/{{ item }}/"
+    dest: "/data/repo/{{ repo_names[index] }}/"
     mode: u+rw,g-wx,o-rwx
-  with_items:
-    - "{{ vars['platform']['repo'].keys() | list }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
   when: vars['platform']['repo'][item]['state']['enabled'] == true
