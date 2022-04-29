@@ -9,10 +9,22 @@
   ansible.builtin.git:
     repo: "{{ vars['platform']['repo'][item]['uri'] }}"
     dest: "/data/repo/{{ repo_names[index] }}"
+    version: "{{ vars['platform']['repo'][item]['branch'] }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
+  when: vars['platform']['repo'][item]['branch'] | default("") | length > 0
+- name: Clone repos with type "repo"
+  ansible.builtin.git:
+    repo: "{{ vars['platform']['repo'][item]['uri'] }}"
+    dest: "/data/repo/{{ repo_names[index] }}"
     version: "{{ vars['platform']['repo'][item]['tag'] }}"
   loop: "{{ vars['platform']['repo'].keys() | list }}"
   loop_control: 
     index_var: index
+  when: 
+    - vars['platform']['repo'][item]['tag'] | default("") | length > 0
+    - vars['platform']['repo'][item]['branch'] | default("") | length == 0
 - name: Copy states with type "repo"
   copy:
     src: "/data/bundle/{{ vars['platform']['repo'][item]['state']['file']['path'] }}"
