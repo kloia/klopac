@@ -1,30 +1,36 @@
 ---
 # TODO: Extract clone and copy tasks as subtasks
+- name: Create repo names list
+  set_fact:
+    repo_names: "{{ repo_names | default([]) + [vars['platform']['repo'][item]['uri'] | split('/') | last | split('.') | first ] }}"
+  with_items: 
+    - "{{ vars['platform']['repo'].keys() | list }}"
 - name: Clone repos with type "repo"
   ansible.builtin.git:
     repo: "{{ vars['platform']['repo'][item]['uri'] }}"
-    dest: "/data/repo/{{ item }}"
-    version: "{{ vars['platform']['repo'][item]['tag'] }}"
-  with_items: "{{ vars['platform']['repo'].keys() | list }}"
-- name: Clone repos with type "executor"
+    dest: "/data/repo/{{ repo_names[index] }}"
+    version: "{{ vars['platform']['repo'][item]['branch'] }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
+  when: vars['platform']['repo'][item]['branch'] | default("") | length > 0
+- name: Clone repos with type "repo"
   ansible.builtin.git:
-    repo: "{{ vars['platform']['executor'][item]['uri'] }}"
-    dest: "/data/repo/{{ item }}"
-    version: "{{ vars['platform']['executor'][item]['tag'] }}"
-  with_items: "{{ vars['platform']['executor'].keys() | list }}"
+    repo: "{{ vars['platform']['repo'][item]['uri'] }}"
+    dest: "/data/repo/{{ repo_names[index] }}"
+    version: "{{ vars['platform']['repo'][item]['tag'] }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
+  when: 
+    - vars['platform']['repo'][item]['tag'] | default("") | length > 0
+    - vars['platform']['repo'][item]['branch'] | default("") | length == 0
 - name: Copy states with type "repo"
   copy:
     src: "/data/bundle/{{ vars['platform']['repo'][item]['state']['file']['path'] }}"
-    dest: "/data/repo/{{ item }}/"
+    dest: "/data/repo/{{ repo_names[index] }}/"
     mode: u+rw,g-wx,o-rwx
-  with_items:
-    - "{{ vars['platform']['repo'].keys() | list }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
   when: vars['platform']['repo'][item]['state']['enabled'] == true
-- name: Copy states with type "executor"
-  copy:
-    src: "/data/bundle/{{ vars['platform']['executor'][item]['state']['file']['path'] }}"
-    dest: "/data/repo/{{ item }}/"
-    mode: u+rw,g-wx,o-rwx
-  with_items:
-    - "{{ vars['platform']['executor'].keys() | list }}"
-  when: vars['platform']['executor'][item]['state']['enabled'] == true
