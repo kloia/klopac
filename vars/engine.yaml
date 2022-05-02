@@ -1,5 +1,7 @@
 ---
 engine:
+  kubeconfig:
+    path: ./cluster.conf
   enabled: true
   endpoint:
     uri: ''

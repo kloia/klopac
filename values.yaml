@@ -1,6 +1,20 @@
----
-int:
-  ingress:
-    enabled: true
-  certManager:
-    version: v1.5.1
+ins:
+  enabled: true
+  image:
+    auth:
+      type: password/pem
+      password: fakepassword
+      user: ubuntu
+      pem.path: private_key_path
+  master:
+    net:
+      ip:
+        pool: ["10.10.10.10"]
+  worker:
+    net:
+      ip:
+        pool: []
+engine:
+  enabled: true
+  kubeconfig:
+    path: ./cluster.conf

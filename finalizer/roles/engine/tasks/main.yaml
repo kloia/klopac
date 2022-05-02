@@ -1,35 +1,41 @@
 ---
 
-# TODO: stop creating multiple engine_layer keys in /data/bundle/output.yaml
+- name: "[ENGINE-TESTS] - Ensure Output File Exists"
+  copy:
+    content: "engine_layer: []"
+    dest: "/data/bundle/output.yaml"
+    force: no
+    group: 1000
+    owner: 1000
+    mode: 0750
 
-- name: "Create /data/bundle/output file"
-  changed_when: false
-  shell: echo "engine_layer:" >> /data/bundle/output.yaml
-
-- name: Set fact for kubeconfig path
+- name: "[ENGINE-TESTS] - Set Fact For Kubeconfig Path"
   set_fact:
     kubeconfig_path: "{{ vars['engine']['kubeconfig']['path'] }}"
 
-- name: Include engine variables
+- name: "[ENGINE-TESTS] - Import Engine Information from Vars"
   include_vars:
     file: "/data/vars/defaults/engine-{{ vars['engine']['type'] }}.yaml"
     hash_behaviour: merge
 
-- name: Set fact for engine version
+- name: "[ENGINE-TESTS] - Set Fact For Engine Version"
   set_fact:
     engine_version: "{{ vars['engine'][vars['engine']['type']]['version'] }}"
 
-- name: Engine Tests
-  shell: "kubectl get nodes --no-headers | awk '{ print $1, $NF }'"
+- name: "[ENGINE-TESTS] - Register Nodes"
+  shell: "KUBECONFIG={{ kubeconfig_path }} kubectl get nodes --no-headers | awk '{ print $1, $NF }'"
   register: nodes
 
-- name: Write node name to outputs
+- debug:
+    var: nodes
+
+- name: "[ENGINE-TESTS] - Write Node Name to outputs"
   shell: "yq -i '.engine_layer[{{ index }}].name = \"{{ item.split()[0] | lower }}\"' /data/bundle/output.yaml -y"
   loop: "{{ nodes.stdout_lines }}"
   loop_control:
     index_var: index
 
-- name: Write node's engine version to outputs
+- name: "[ENGINE-TESTS] - Write Node's Engine Version to outputs"
   shell: "yq -i '.engine_layer[{{ index }}].value = \"{{ item.split()[1] | lower }}\"' /data/bundle/output.yaml -y"
   loop: "{{ nodes.stdout_lines }}"
   loop_control:

@@ -9,14 +9,14 @@
     - name: Include Instance Variables
       include_vars: /data/vars/instance.yaml
   tasks:
-    - block:
-      - name: Include inventory role 
-        include_role:
-          name: inventory
+    - name: "[INVENTORY-REFRESH] - START"
+      include_role:
+        name: inventory
       when: vars['ins']['enabled'] == true
 
 # INSTANCE TESTS
-- hosts: servers
+- hosts: jump
+  connection: local
   gather_facts: false
   pre_tasks:
     - name: Include Image Variables
@@ -24,28 +24,25 @@
     - name: Include Instance Variables
       include_vars: /data/vars/instance.yaml
   tasks:
-    - block:
-      - name: Include instance role 
-        include_role:
-          name: instance
+    - name: "[INSTANCE-TESTS] - START"
+      include_role:
+        name: instance
       when: vars['ins']['enabled'] == true
 
-# # LAYER TESTS
+# ENGINE TESTS & FINALIZE
 - hosts: localhost
   connection: local
   pre_tasks:
     - name: Include Engine Variables
       include_vars: /data/vars/engine.yaml
+    - name: Include Instance Variables
+      include_vars: /data/vars/instance.yaml
   tasks:
-    - block:
-      - name: Include engine role
-        include_role:
-          name: engine
+    - name: "[ENGINE-TESTS] - START"
+      include_role:
+        name: engine
       when: vars['engine']['enabled'] == true
-
-# FINALIZE
-# - hosts: localhost
-#   connection: local
-#   gather_facts: false
-#   roles:
-#     - role: finalize
+    - name: "[FINALIZE] - START"
+      include_role:
+        name: finalize
+      

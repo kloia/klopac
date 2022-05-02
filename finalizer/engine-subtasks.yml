@@ -1,26 +1,26 @@
 ---
 
-- name: Include variables
+- name: "[ENGINE-SUBTASK] - Include Default Engine Variables"
   include_vars: 
     file: "/data/vars/defaults/engine-{{ filename }}.yaml"
     hash_behaviour: merge
 
-- name: Include Manifest
+- name: "[ENGINE-SUBTASK] - Include Manifest File for Engine"
   include_vars: 
     file: "/data/manifests/{{ vars['engine']['runner']['type'] }}/{{ filename }}-{{ vars['engine'][filename]['version'] }}.yaml"
 
-- name: Check that the kubeconfig exists
+- name: "[ENGINE-SUBTASK] - Check that the kubeconfig exists"
   stat:
     path: "/data/repo/{{ filename }}/{{ vars['platform']['repo'][filename]['outputs']['kubeconfig']['path'] }}"
   register: stat_result
 
-- name: Write kubeconfig file exists checks to outputs
-  delegate_to: localhost
-  changed_when: false
-  shell: "echo 'kubeconfigFileCheck: false' >> /data/bundle/output.yaml"
-  when: not stat_result.stat.exists
+# - name: "[ENGINE-SUBTASK] - Write kubeconfig file exists checks to outputs"
+#   delegate_to: localhost
+#   changed_when: false
+#   shell: "echo 'kubeconfigFileCheck: false' >> /data/bundle/output.yaml"
+#   when: not stat_result.stat.exists
 
-- name: Copy file with owner and permissions
+- name: "[ENGINE-SUBTASK] - Copy Kubeconfig file with owner and permissions to the Bundle Directory"
   ansible.builtin.copy:
     src: "/data/repo/{{ filename }}/{{ vars['platform']['repo'][filename]['outputs']['kubeconfig']['path'] }}"
     dest: /data/bundle/kubeconfig
