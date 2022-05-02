@@ -1,76 +1,18 @@
-
 # KLOPAC ORCHESTRATOR RESULTS
 
-{% if image_layer is defined %}
-<hr/>
-
-## IMAGE LAYER
-
-* Provider: {{ image_layer.provider }}
-* Image ID: {{ image_layer.id }}
-* Healthcheck: {{ image_layer.status }}
-{% endif %}
-
-
 {% if instance_layer is defined %}
-<hr/>
-
 ## INSTANCE LAYER
-
-
-* OS Name   : {{ instance_layer.os.name.value }} - [{{ instance_layer.os.name.match }}]
-* OS Version:   {{ instance_layer.os.version.value }} - [{{ instance_layer.os.version.match }}]
-
+{% for item in instance_layer %}
+    * {{ item.ip }}
+        * OS Name: {{ item.os.name.value }} - [{{ item.os.name.match }}]
+        * OS Version: {{ item.os.version.value }} - [{{ item.os.version.match }}]
+{% endfor %}
 {% endif %}
-
 
 {% if engine_layer is defined %}
-<hr/>
-
 ## ENGINE LAYER
-
-* Kubernetes Engine Type  : {{ engine_layer.type }}
-* Kubernetes Engine Version  : {{ engine_layer.version }}
-
-
-
-{% endif %}
-
-{% if integrations_layer is defined %}
-<hr/>
-
-## INTEGRATIONS LAYER
-
-
-
-{% endif %}
-
-{% if gitops_layer is defined %}
-<hr/>
-
-## GITOPS LAYER
-
-* Type: {{ gitops_layer.type }}
-* Status: {{ gitops_layer.status }}
-* Applications:
-{% for item in gitops_layer.apps %}
+{% for item in engine_layer %}
     * {{ item.name }}
-        * {{ item.status }}
-        * {{ item.endpoint }}
+        * Kubernetes Engine Type: {{ item.value }} - [{{ item.match }}]
 {% endfor %}
-
-{% endif %}
-
-
-{% if applications_layer is defined %}
-<hr/>
-
-## APPLICATIONS LAYER
-{% for item in applications_layer %}
-* {{ item.name }}
-    * {{ item.status }}
-    * {{ item.endpoint }}
-{% endfor %}
-
-
 {% endif %}

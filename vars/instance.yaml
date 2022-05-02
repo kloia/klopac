@@ -6,6 +6,7 @@ ins:
       pem.path: img.pem.path
       pem.type: img.pem.type
       type: img.auth.type
+      password: img.password
       user: img.auth.user
     id: img.id
     name: img.name
@@ -33,8 +34,7 @@ ins:
       ip:
         gw: 10.0.0.1
         subnet: 24
-        pool:
-          - ''
+        pool: []
   operation:
     type: delete
   required:
@@ -73,4 +73,4 @@ ins:
         gw: 10.0.0.1
         subnet: 24
         pool:
-          - ''
+          - '10.41.5.58'

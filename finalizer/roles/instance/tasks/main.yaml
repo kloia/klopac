@@ -1,61 +1,119 @@
 ---
 
-- name: Create bundle directory
-  delegate_to: localhost
-  file:
-    state: directory
-    owner: 1000
-    group: 1000
-    mode: 0750
-    path: "/data/bundle"
+- block:
+  - name: "[INSTANCE-TESTS] - Create Bundle Directory"
+    delegate_to: localhost
+    file:
+      state: directory
+      owner: 1000
+      group: 1000
+      mode: 0750
+      path: "/data/bundle"
 
-- name: "Create inventory file"
-  changed_when: false
-  delegate_to: localhost
-  shell: echo "instance_layer:" > /data/bundle/output.yaml
+  - name: "[INSTANCE-TESTS] - Ensure Output File Exists"
+    copy:
+      content: "instance_layer: []"
+      dest: "/data/bundle/output.yaml"
+      force: no
+      group: 1000
+      owner: 1000
+      mode: 0750
 
-- name: Include Image Variables
-  include_vars: /data/vars/image.yaml
-
-- name: Get OS Information
+- name: "[INSTANCE-TESTS] - Import OS Information from Vars"
   set_fact:
     OS_NAME: '{{ img.os.split(":")[0] | lower }}'
     OS_VERSION: '{{ img.os.split(":")[1] | lower }}'
 
-- name: Get OS Name
-  changed_when: false
-  shell: |
-    set -o pipefail
-    cat /etc/*release* | grep -E "^NAME" | awk -F"=" '{ print $2 }' | sed 's/"//g'
-  args:
-    executable: /bin/bash
-  register: os_name
+- block:
+  - name: "[INSTANCE-TESTS] - Get Host's OS Name - PASSWORD"
+    changed_when: false
+    shell: |
+      sshpass -p {{ hostvars[groups['servers'][item | int]]['ansible_ssh_pass'] }} ssh -o StrictHostKeyChecking=no {{ hostvars[groups['servers'][item | int]]['ansible_user'] }}@{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }} "cat /etc/*release* | grep -E "^NAME" | cut -d '=' -f 2 | sed 's/\"//g' "
+    args:
+      executable: /bin/bash
+    register: os_name_results
+    with_sequence: start=0 end={{ groups.servers | length -1 }}
 
-- name: Get OS Version
-  changed_when: false
-  shell: |
-    set -o pipefail
-    cat /etc/*release* | grep -E "^VERSION=" | awk -F"=" '{ print $2 }' | sed 's/"//g' | awk '{ print $1}'
-  args:
-    executable: /bin/bash
-  register: os_version
+  - name: "[INSTANCE-TESTS] - Get Host's OS Version - PASSWORD"
+    changed_when: false
+    shell: |
+      sshpass -p {{ hostvars[groups['servers'][item | int]]['ansible_ssh_pass'] }} ssh -o StrictHostKeyChecking=no {{ hostvars[groups['servers'][item | int]]['ansible_user'] }}@{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }} "cat /etc/*release* | grep -E "^VERSION=" | cut -d '=' -f 2 | sed 's/\"//g' | cut -d ' ' -f 1 "
+    args:
+      executable: /bin/bash
+    register: os_version_results
+    with_sequence: start=0 end={{ groups.servers | length -1 }}
+  
+  - name: SET FACT
+    set_fact:
+      OS_NAME_RESULTS: "{{ os_name_results }}"
+      OS_VERSION_RESULTS: "{{ os_version_results }}"
 
-- name: Write os_name checks to outputs
-  delegate_to: localhost
-  changed_when: false
-  shell: "yq -i '.instance_layer.os.name.value = \"{{ os_name.stdout | lower }}\"' /data/bundle/output.yaml -y"
+  when: vars['ins']['image']['auth']['type'] == 'password'
 
-- name: Write os_name checks to outputs
-  delegate_to: localhost
-  changed_when: false
-  shell: "yq -i '.instance_layer.os.name.match = \"{{ os_name.stdout | lower == OS_NAME }}\"' /data/bundle/output.yaml -y"
+- block:
+  - name: "[INSTANCE-TESTS] - Get Host's OS Name - PEM"
+    changed_when: false
+    shell: |
+      ssh -o StrictHostKeyChecking=no -i {{ vars['ins']['image']['auth']['type'] }} {{ hostvars[groups['servers'][item | int]]['ansible_user'] }}@{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }} "cat /etc/*release* | grep -E "^NAME" | cut -d '=' -f 2 | sed 's/\"//g' "
+    args:
+      executable: /bin/bash
+    register: os_name_results
+    with_sequence: start=0 end={{ groups.servers | length -1 }}
 
-- name: Write os_version checks to outputs
-  delegate_to: localhost
-  changed_when: false
-  shell: "yq -i '.instance_layer.os.version.value = \"{{ os_version.stdout | lower }}\"' /data/bundle/output.yaml -y"
+  - name: "[INSTANCE-TESTS] - Get Host's OS Version - PEM"
+    changed_when: false
+    shell: |
+      ssh -o StrictHostKeyChecking=no -i {{ vars['ins']['image']['auth']['type'] }} {{ hostvars[groups['servers'][item | int]]['ansible_user'] }}@{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }} "cat /etc/*release* | grep -E "^VERSION=" | cut -d '=' -f 2 | sed 's/\"//g' | cut -d ' ' -f 1 "
+    args:
+      executable: /bin/bash
+    register: os_version_results
+    with_sequence: start=0 end={{ groups.servers | length -1 }}
 
-- name: Write os_name checks to outputs
-  delegate_to: localhost
-  changed_when: false
-  shell: "yq -i '.instance_layer.os.version.match = \"{{ os_version.stdout | lower == OS_NAME }}\"' /data/bundle/output.yaml -y"
+  - name: SET FACT
+    set_fact:
+      OS_NAME_RESULTS: "{{ os_name_results }}"
+      OS_VERSION_RESULTS: "{{ os_version_results }}"
+
+  when: vars['ins']['image']['auth']['type'] == 'pem'
+
+- block:
+
+  - name: "[INSTANCE-TESTS] - Write host's IP address to outputs"
+    delegate_to: localhost
+    changed_when: false
+    shell: "yq -i '.instance_layer[{{ index }}].ip = \"{{ hostvars[groups['servers'][item.item | int]]['inventory_hostname'] }}\"' /data/bundle/output.yaml -y"
+    loop: "{{OS_NAME_RESULTS.results}}"
+    loop_control:
+      index_var: index
+
+  - name: "[INSTANCE-TESTS] - Write host's OS Name to outputs"
+    delegate_to: localhost
+    changed_when: false
+    shell: "yq -i '.instance_layer[{{ index }}].os.name.value = \"{{ item.stdout | lower }}\"' /data/bundle/output.yaml -y"
+    loop: "{{OS_NAME_RESULTS.results}}"
+    loop_control:
+      index_var: index
+
+  - name: "[INSTANCE-TESTS] - Write Host's OS Version to outputs"
+    delegate_to: localhost
+    changed_when: false
+    shell: "yq -i '.instance_layer[{{ index }}].os.version.value = \"{{ item.stdout | lower }}\"' /data/bundle/output.yaml -y"
+    loop: "{{OS_VERSION_RESULTS.results}}"
+    loop_control:
+      index_var: index
+
+  - name: "[INSTANCE-TESTS] - Write Host's OS Name Checks with Imported OS_NAME Variable to outputs"
+    delegate_to: localhost
+    changed_when: false
+    shell: "yq -i '.instance_layer[{{ index }}].os.name.match = \"{{ item.stdout | lower == OS_NAME }}\"' /data/bundle/output.yaml -y"
+    loop: "{{OS_NAME_RESULTS.results}}"
+    loop_control:
+      index_var: index
+
+  - name: "[INSTANCE-TESTS] - Write Host's OS Version Checks with Imported OS_VERSION Variable to outputs"
+    delegate_to: localhost
+    changed_when: false
+    shell: "yq -i '.instance_layer[{{ index }}].os.version.match = \"{{ item.stdout | lower == OS_VERSION }}\"' /data/bundle/output.yaml -y"
+    loop: "{{OS_VERSION_RESULTS.results}}"
+    loop_control:
+      index_var: index

@@ -1,41 +1,66 @@
 ---
 
-#/data/vars
-- name: Include Image Variables
-  include_vars: /data/vars/image.yaml
+- name: "[INVENTORY-REFRESH] - Ensure 'servers' section exists in inventory file"
+  community.general.ini_file:
+    path: ./inventory
+    section: servers
+    mode: '0666'
+    allow_no_value: true
 
-- name: "Remove inventory file if it exists"
-  file:
-    path: inventory
-    state: absent
+- block:
+  - name: "[INVENTORY-REFRESH] - Update inventory file with Master list"
+    ini_file:
+      dest: "./inventory"
+      section: "servers"
+      option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_ssh_user"
+      values: "{{ ins.image.auth.user }}"
+      no_extra_spaces: true
+      mode: 0666
+      state: present
+      backup: false
+    with_items: "{{ ins.master.net.ip.pool }}"
 
-- name: "Create inventory file"
-  changed_when: false
-  shell: echo "[servers]" > inventory
+  - name: "[INVENTORY-REFRESH] - Update inventory file with Worker list"
+    ini_file:
+      dest: "./inventory"
+      section: "servers"
+      option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_ssh_user"
+      values: "{{ ins.image.auth.user }}"
+      no_extra_spaces: true
+      mode: 0666
+      state: present
+      backup: false
+    with_items: "{{ ins.worker.net.ip.pool }}"
 
-- name: "Update inventory file with Master list"
-  ini_file:
-    dest: "./inventory"
-    section: "servers"
-    option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_ssh_user"
-    values: "{{ ins.image.auth.user }}"
-    no_extra_spaces: true
-    mode: 0666
-    state: present
-    backup: false
-  with_items: "{{ ins.master.net.ip.pool }}"
+  when: vars['ins']['image']['auth']['type'] == 'pem'
 
-- name: "Update inventory file with Worker list"
-  ini_file:
-    dest: "./inventory"
-    section: "servers"
-    option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_ssh_user"
-    values: "{{ ins.image.auth.user }}"
-    no_extra_spaces: true
-    mode: 0666
-    state: present
-    backup: false
-  with_items: "{{ ins.worker.net.ip.pool }}"
+- block:
+  - name: "[INVENTORY-REFRESH] - Update inventory file with Master list"
+    ini_file:
+      dest: "./inventory"
+      section: "servers"
+      option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_user"
+      values: "{{ ins.image.auth.user }}"
+      no_extra_spaces: true
+      mode: 0666
+      state: present
+      backup: false
+    with_items: "{{ ins.master.net.ip.pool }}"
 
-- name: Refresh inventory
+  - name: "[INVENTORY-REFRESH] - Update inventory file with Worker list"
+    ini_file:
+      dest: "./inventory"
+      section: "servers"
+      option: "{{ item }} ansible_ssh_pass={{ ins.image.auth['password'] }} ansible_user"
+      values: "{{ ins.image.auth.user }}"
+      no_extra_spaces: true
+      mode: 0666
+      state: present
+      backup: false
+    with_items: "{{ ins.worker.net.ip.pool }}"
+
+  when: vars['ins']['image']['auth']['type'] == 'password'
+
+
+- name: "[INVENTORY-REFRESH] - Meta Refresh inventory"
   meta: refresh_inventory
