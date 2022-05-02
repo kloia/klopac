@@ -24,9 +24,12 @@ func Run() {
 		log.Info("[WEBSOCKET CONNECTION - END]")
 	} else {
 		bundleFile := helper.GetParam[string]("bundleFile")
+		bundleFileExists := false
 		if _, err := os.Stat(bundleFile); !errors.Is(err, os.ErrNotExist) {
+			bundleFileExists = true
 			log.Info("[BUNDLE FILE UNTAR - START]")
 			err := helper.Untar(bundleFile, helper.GetParam[string]("dataPath"))
+			log.Debug(bundleFile)
 			if err != nil {
 				log.Panic("Error while untarring bundle file, please check whether you have correct named bundlefile ")
 			}
@@ -46,7 +49,7 @@ func Run() {
 			zap.Bool("provision", provision),
 			zap.Bool("validate", validate),
 			zap.Bool("healthcheck", healthCheck))
-		helper.GetFlowService().Run(provision, validate, healthCheck, logLevel)
+		helper.GetFlowService().Run(provision, validate, healthCheck, logLevel, bundleFileExists)
 		log.Info("[KLOPAC FLOW - END]")
 	}
 }

@@ -20,7 +20,7 @@ func (o *OptionService) setFlags() {
 		"username":    o.flag.String("username", "", "username for websocket connection"),
 		"password":    o.flag.String("password", "", "password for websocket connection"),
 		"logLevel":    o.flag.String("logLevel", "INFO", "It sets the level of the producing logs"),
-		"logFile":     o.flag.String("logFile", "entrypoint.log", "Log file of entrypoint"),
+		"logFile":     o.flag.String("logFile", "/data/entrypoint.log", "Log file of entrypoint"),
 		"valuesFile":  o.flag.String("valuesFile", "/data/values.yaml", "Value File"),
 		"dataPath":    o.flag.String("dataPath", "/data/", "Data File Path"),
 		"varsPath":    o.flag.String("varsPath", "/data/vars", "Variable File"),

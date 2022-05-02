@@ -39,7 +39,7 @@
     ini_file:
       dest: "./inventory"
       section: "servers"
-      option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_user"
+      option: "{{ item }} ansible_ssh_pass={{ ins.image.auth['password'] }} ansible_user"
       values: "{{ ins.image.auth.user }}"
       no_extra_spaces: true
       mode: 0666

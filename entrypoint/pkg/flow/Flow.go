@@ -11,7 +11,7 @@ import (
 
 type Flow interface {
 	ExecuteCommand(command string)
-	Run(provision, validate, healthCheck bool, logLevel string)
+	Run(provision, validate, healthCheck bool, logLevel string, file bool)
 }
 
 type flowService struct {
@@ -32,7 +32,7 @@ func (p flowService) ExecuteCommand(command string) {
 }
 
 // It basically take some sort of args like (provision, validate, healthCheck, logLevel) and depending to its value it execute relative yaml files.
-func (p flowService) Run(provision, validate, healthCheck bool, logLevel string) {
+func (p flowService) Run(provision, validate, healthCheck bool, logLevel string, file bool) {
 	log := logger.GetLogger()
 	if !healthCheck || validate || provision {
 		log.Info("[PROVISIONER - START]")
@@ -68,8 +68,8 @@ func (p flowService) Run(provision, validate, healthCheck bool, logLevel string)
 		export LOGLEVEL=%v;
 		export HEALTHCHECK=%v;
 		cd finalizer;
-		ansible-playbook finalizer.yml;
-	`, logLevel, healthCheck))
+		ansible-playbook finalizer.yml -e COMPRESS_BUNDLE=%v;
+	`, logLevel, healthCheck, !file))
 		log.Info("[FINALIZER - END]")
 	}
 }

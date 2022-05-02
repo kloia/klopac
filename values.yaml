@@ -17,4 +17,4 @@ ins:
 engine:
   enabled: true
   kubeconfig:
-    path: ./cluster.conf
+    path: /data/cluster.conf
