@@ -1,0 +1,16 @@
+---
+- name: set jump ip
+  shell: "yq -i -y '.platform.jump.ip = \"{{ jump_ip }}\"' /data/vars/platform.yaml"
+  when: vars['engine']['operation']['type']!='delete' and vars['platform']['jump']['ip'] != ''
+
+- name: set jump ip
+  shell: "yq -i -y '.platform.jump.ip = \"\" ' /data/vars/platform.yaml"
+  when: vars['engine']['operation']['type']=='delete'
+
+- name: set auth state
+  shell: "yq -i -y '.platform.jump.auth = true' /data/vars/platform.yaml"
+  when: vars['engine']['operation']['type']!='delete' and jump_auth is defined
+
+- name: set auth state
+  shell: "yq -i -y '.platform.jump.auth = false' /data/vars/platform.yaml"
+  when: vars['engine']['operation']['type']=='delete'

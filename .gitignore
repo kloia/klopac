@@ -3,3 +3,8 @@ tls.key
 ca.crt
 id_rsa
 .DS_Store
+.bash_history
+.cache
+.local
+.ansible
+.ssh

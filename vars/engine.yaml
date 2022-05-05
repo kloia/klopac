@@ -1,24 +1,18 @@
----
 engine:
   enabled: true
   endpoint:
-    uri: ''
+    uri: https://lb-public-klopac-test-f4a8d3416f3eca63.elb.eu-west-1.amazonaws.com:6443
+  kubeconfig:
+    path: /data/sensitive/klopac-test.kubeconfig
   operation:
     type: create
   provider:
     enabled: false
     name: aws
-  rbac:
-    enabled: false
-    pass: pass
-    protocol: ldap
-    type: ldap
-    user: usename
   required:
     - enabled
     - type
     - prodiver.enabled
-    - rbac.enabled
     - operation.type
     - runner.type
   runner:

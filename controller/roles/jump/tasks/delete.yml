@@ -1,0 +1,10 @@
+---
+- name: Terminate jump instance
+  amazon.aws.ec2_instance:
+    state: absent
+    region: "{{ engine_region }}"
+    aws_access_key: "{{ provider_auth_id }}"
+    aws_secret_key: "{{ provider_auth_key }}"
+    filters:
+      ip-address: "{{ platform.jump.ip }}"
+  when:  vars['platform']['provider']['name']=='aws' and vars['engine']['operation']['type']=='delete'

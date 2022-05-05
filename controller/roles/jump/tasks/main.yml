@@ -1,0 +1,16 @@
+---
+- name: pre
+  include: pre.yml
+  when: engine.enabled == true
+
+- name: create
+  include: create.yml
+  when: engine.enabled == true and engine.operation.type == 'create'
+
+- name: delete
+  include: delete.yml
+  when: engine.enabled == true and engine.operation.type == 'delete'
+
+- name: post
+  include: post.yml
+  when: engine.enabled == true
