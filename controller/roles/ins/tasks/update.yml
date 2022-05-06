@@ -15,9 +15,10 @@
     ins_update_command: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['update'] }}"
 
 - name: update instances
-  command: "docker run --rm -v /tmp:/data/repo kloiadocker/klopac-{{ ins_runner_name }}-runner:{{ ins_runner_version }} /bin/bash -c \"cd {{ ins_repo_path }}; {{ ins_update_command }}\""
+  command: "docker run --rm -v /tmp:/data/repo -e AWS_ACCESS_KEY_ID={{ ins_auth_id }} -e AWS_SECRET_ACCESS_KEY={{ ins_auth_key }} kloiadocker/klopac-{{ ins_runner_name }}-runner:{{ ins_runner_version }} /bin/bash -c \"cd {{ ins_repo_path }}; {{ ins_update_command }}\""
   become: true
   register: ins_update_log
+  when: vars['platform']['provider']['name'] == 'aws'
 
 - debug:
     msg: "{{ vars['ins_update_log'] }}"

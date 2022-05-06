@@ -1,4 +1,3 @@
----
 img:
   auth:
     pem:
@@ -8,7 +7,7 @@ img:
     user: ubuntu
   diskSize: 300g
   enabled: true
-  id: 'ami-0f61b6498bd5e5bda'
+  id: ami-06c1a7cc5705fc226
   name: Ubuntu-20.04-klopac
   operation:
     type: create

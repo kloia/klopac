@@ -2,4 +2,10 @@ tls.crt
 tls.key
 ca.crt
 id_rsa
+sensitive
 .DS_Store
+.bash_history
+.cache
+.local
+.ansible
+.ssh

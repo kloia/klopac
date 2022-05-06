@@ -7,13 +7,9 @@
   include: create.yml
   when: engine.enabled == true and engine.operation.type == 'create'
 
-- name: update
-  include: update.yml
-  when: engine.enabled == true and engine.operation.type == 'update'
-
-- name: clean
-  include: clean.yml
-  when: engine.enabled == true and engine.operation.type == 'clean'
+- name: delete
+  include: delete.yml
+  when: engine.enabled == true and engine.operation.type == 'delete'
 
 - name: post
   include: post.yml

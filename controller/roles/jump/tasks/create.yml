@@ -1,0 +1,59 @@
+---
+- name: create jump instance
+  ec2:
+    instance_type: t2.micro
+    key_name: "{{ platform.name }}-{{ platform.environment }}-key"
+    image: "{{ img.id }}"
+    region: "{{ engine_region }}"
+    wait: yes
+    count: 1
+    vpc_subnet_id: "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id1'] }}"
+    assign_public_ip: yes
+    aws_access_key: "{{ provider_auth_id }}"
+    aws_secret_key: "{{ provider_auth_key }}"
+    group: "SG-jump-{{ platform.name }}-{{ platform.environment }}"
+    instance_tags:
+      Name: "{{ platform.name }}-{{ platform.environment }}-jump"
+  register: jump
+  when:  vars['platform']['provider']['name']=='aws' and vars['platform']['jump']['ip']==''
+
+- name: set jump ip
+  set_fact:
+    jump_ip: "{{ item.public_ip }}"
+  loop: "{{ jump.instances }}"
+  when: jump_ip is not defined and vars['platform']['jump']['ip']==''
+
+- name: get jump ip
+  set_fact:
+    jump_ip: "{{ platform.jump.ip }}"
+  when: jump_ip is not defined and vars['platform']['jump']['ip']!=''
+
+- name: add jump to host group
+  add_host:
+    hostname: "{{ jump_ip }}"
+    groupname: jump
+    ssh_private_key_file: "{{ engine_pem_path }}"
+    ssh_user: "{{ img.auth.user }}"
+    remote_user: "{{ img.auth.user }}"
+    connection: ssh
+  when: vars['platform']['provider']['name']=='aws' and jump_ip is defined
+
+- name: Wait for SSH to come up
+  delegate_to: "{{ item.public_dns_name }}"
+  wait_for_connection:
+    delay: 60
+    timeout: 320
+  loop: "{{ jump.instances }}"
+  when: 
+    - jump_ip is defined
+    - vars['platform']['jump']['ip']==''
+
+- name: create ssh key for jump
+  openssh_keypair:
+    path: "~/.ssh/id_rsa"
+  when: vars['platform']['jump']['auth'] == false and jump_ip is defined
+
+- name: authorize ssh key on jump
+  shell: "scp -i {{ engine_pem_path }} -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub ubuntu@{{ jump_ip }}:/tmp/id_rsa.pub; ssh -i /data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem -o StrictHostKeyChecking=no ubuntu@{{ jump_ip }} 'cat /tmp/id_rsa.pub >> ~/.ssh/authorized_keys'"
+  register: jump_auth
+  when: vars['platform']['jump']['auth'] == false and jump_ip is defined

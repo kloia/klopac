@@ -2,9 +2,21 @@
 - hosts: localhost
   connection: local
   roles:
+    - jump
+  vars_files:
+    - /data/vars/platform.yaml
+    - /data/vars/image.yaml
+    - /data/vars/instance.yaml
+    - /data/vars/engine.yaml
+  
+- hosts: jump
+  connection: ssh
+  remote_user: "{{ img.auth.user }}"
+  roles:
     - engine
   vars_files:
     - /data/vars/platform.yaml
     - /data/vars/image.yaml
     - /data/vars/instance.yaml
     - /data/vars/engine.yaml
+

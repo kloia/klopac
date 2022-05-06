@@ -51,6 +51,20 @@
   set_fact:
     ins_repo_path: "{{ workspace }}/{{ vars['platform']['repo'][ins_type]['name'] }}"
 
+- name: get auth id
+  set_fact:
+    ins_auth_id: "{{ vars['platform']['provider']['auth']['id'] }}"
+  when: vars['platform']['provider']['auth']['type'] == 'id'
+
+- name: get auth key
+  set_fact:
+    ins_auth_key: "{{ vars['platform']['provider']['auth']['key'] }}"
+  when: vars['platform']['provider']['auth']['type'] == 'id'
+
+- name: get pem name
+  set_fact:
+    ins_pem_name: "{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+
 - copy:
     content: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['file']['content'] }}"
     dest: ../templates/ins_config.j2

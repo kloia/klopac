@@ -15,14 +15,17 @@ platform:
             delete: "terraform destroy -auto-approve -var-file=vars.hcl"
             output:
               pem:
-                path: "{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+                path: "./{{ ins_pem_name }}-key.pem"
               master: 
-                ips: "jq '.outputs.\"master-public-ips\".\"value\"' terraform.tfstate"
+                publicIps: "jq '.outputs.\"master-public-ips\".\"value\"' terraform.tfstate"
+                privateIps: "jq '.outputs.\"master-private-ips\".\"value\"' terraform.tfstate"
               worker:
-                ips: "jq '.outputs.\"worker-public-ips\".\"value\"' terraform.tfstate"
+                publicIps: "jq '.outputs.\"worker-public-ips\".\"value\"' terraform.tfstate"
+                privateIps: "jq '.outputs.\"worker-private-ips\".\"value\"' terraform.tfstate"
               lb:
                 private:
                   dnsName: "jq '.outputs.\"private-lb-dns\".\"value\"' terraform.tfstate"
+                  ips: "jq '.outputs.\"private-lb-private-ips\".\"value\"' terraform.tfstate"
                 public:
                   dnsName: "jq '.outputs.\"public-lb-dns\".\"value\"' terraform.tfstate"
           type: file

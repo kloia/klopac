@@ -1,0 +1,62 @@
+---
+- name: set kubeconfig path fact
+  set_fact:
+    engine_kubeconfig_path: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}.kubeconfig"
+
+- name: copy kubeconfig
+  fetch:
+    src: "{{ vars['platform'][engine_runner_type][engine_type]['kubeconfig']['path'] }}"
+    dest: "{{ engine_kubeconfig_path }}"
+    flat: yes
+  when: 
+    - vars['engine']['operation']['type']!='delete'
+    - vars['engine']['operation']['type']!='clean'
+
+- name: replace server name on kubeconfig
+  delegate_to: localhost
+  connection: local
+  shell: "sed -i 's/{{ mgmt_ip }}/{{ vars['ins']['lb']['pub']['dnsName'] }}/g' {{ engine_kubeconfig_path }}"
+  when: 
+    - vars['engine']['operation']['type']!='delete'
+    - vars['engine']['operation']['type']!='clean'
+
+- name: delete kubeconfig
+  delegate_to: localhost
+  connection: local
+  shell: "rm -rf {{ engine_kubeconfig_path }}"
+  when: vars['engine']['operation']['type']=='delete' or vars['engine']['operation']['type']=='clean'
+
+- name: set kubeconfig path variable
+  delegate_to: localhost
+  connection: local
+  shell: "yq -i -y '.engine.kubeconfig.path = \"{{ engine_kubeconfig_path }}\"' /data/vars/engine.yaml"
+  when: 
+    - vars['engine']['operation']['type']!='delete'
+    - vars['engine']['operation']['type']!='clean'
+
+- name: clear path variable
+  delegate_to: localhost
+  connection: local
+  shell: "yq -i -y '.engine.kubeconfig.path = \"\"' /data/vars/engine.yaml"
+  when: vars['engine']['operation']['type']=='delete' or vars['engine']['operation']['type']=='clean'
+
+- name: generate endpoint uri
+  set_fact:
+    engine_endpoint_uri: "https://{{ vars['ins']['lb']['pub']['dnsName'] }}:6443"
+  when: 
+    - vars['engine']['operation']['type']!='delete'
+    - vars['engine']['operation']['type']!='clean'
+
+- name: set endpoint uri variable
+  delegate_to: localhost
+  connection: local
+  shell: "yq -i -y '.engine.endpoint.uri = \"{{ engine_endpoint_uri }}\"' /data/vars/engine.yaml"
+  when: 
+    - vars['engine']['operation']['type']!='delete'
+    - vars['engine']['operation']['type']!='clean'
+
+- name: clear uri variable
+  delegate_to: localhost
+  connection: local
+  shell: "yq -i -y '.engine.endpoint.uri = \"\"' /data/vars/engine.yaml"
+  when: vars['engine']['operation']['type']=='delete' or vars['engine']['operation']['type']=='clean'

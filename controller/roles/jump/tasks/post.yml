@@ -1,0 +1,37 @@
+---
+- name: set jump ip
+  shell: "yq -i -y '.platform.jump.ip = \"{{ jump_ip }}\"' /data/vars/platform.yaml"
+  when: 
+    - vars['engine']['operation']['type'] != 'delete' 
+    - vars['platform']['jump']['ip'] ==  ''
+
+- name: clear jump ip
+  shell: "yq -i -y '.platform.jump.ip = \"\" ' /data/vars/platform.yaml"
+  when: vars['engine']['operation']['type']=='delete'
+
+- name: set auth state
+  shell: "yq -i -y '.platform.jump.auth = true' /data/vars/platform.yaml"
+  when: vars['engine']['operation']['type']!='delete' and jump_auth is defined
+
+- name: clear auth state
+  shell: "yq -i -y '.platform.jump.auth = false' /data/vars/platform.yaml"
+  when: vars['engine']['operation']['type']=='delete'
+
+- name: get jump ip
+  set_fact:
+    jump_ip: "{{ platform.jump.ip }}"
+  when: 
+    - jump_ip is not defined
+    - vars['engine']['operation']['type']=='clean'
+
+- name: add jump to host group
+  add_host:
+    hostname: "{{ jump_ip }}"
+    groupname: jump
+    ssh_private_key_file: "{{ engine_pem_path }}"
+    ssh_user: "{{ img.auth.user }}"
+    remote_user: "{{ img.auth.user }}"
+    connection: ssh
+  when: 
+    - vars['engine']['operation']['type']=='clean'
+    - jump_ip is defined

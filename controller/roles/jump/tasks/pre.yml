@@ -1,0 +1,77 @@
+---
+- name: include provider defaults
+  include_vars: 
+    file: /data/vars/defaults/provider-{{ platform.provider.name }}.yaml
+    hash_behaviour: merge
+
+- name: include provider type defaults
+  include_vars: 
+    file: /data/vars/defaults/provider-{{ platform.provider.name }}-{{ platform.provider.type }}.yaml
+    hash_behaviour: merge
+
+- name: include ins defaults
+  include_vars: 
+    file: /data/vars/defaults/ins-{{ ins.type }}.yaml
+    hash_behaviour: merge
+
+- name: set worksplace folder
+  set_fact:
+    workspace: '/data/repo'
+  when: workspace is not defined
+
+- name: get provider name
+  set_fact:
+    provider_name: "{{ platform.provider.name }}"
+  when: provider_name is not defined
+
+- name: get provider type
+  set_fact:
+    provider_type: "{{ platform.provider.type }}"
+  when: provider_type is not defined
+
+- name: get provider region
+  set_fact:
+    engine_region: "{{ platform.provider.region1 }}"
+  when: engine_region is not defined
+
+- name: get provider auth id 
+  set_fact:
+    provider_auth_id: "{{ vars['platform']['provider']['auth']['id'] }}"
+  when:  vars['platform']['provider']['auth']['type']=='id' and provider_auth_id is not defined
+
+- name: get provider auth key 
+  set_fact:
+    provider_auth_key: "{{ vars['platform']['provider']['auth']['key'] }}"
+  when:  vars['platform']['provider']['auth']['type']=='id' and provider_auth_key is not defined
+
+- name: get public IP
+  ipify_facts:
+  register: ipify_facts
+
+- name: set public IP
+  set_fact:
+    public_ip: "{{ ipify_facts.ansible_facts.ipify_public_ip }}"
+
+- name: output
+  debug: msg="{{ public_ip }}"
+  when: platform.log.level == 'debug'
+
+- name: set pem path
+  set_fact:
+    engine_pem_path: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+  when: engine_pem_path is not defined
+
+- name: create or update security group
+  ec2_group:
+    name: "SG-jump-{{ platform.name }}-{{ platform.environment }}"
+    description: "SG-jump-{{ platform.name }}-{{ platform.environment }}"
+    vpc_id: "{{ vars['platform']['provider'][provider_name]['vpc']['id'] }}"
+    region: "{{ engine_region }}"
+    aws_secret_key: "{{ provider_auth_key }}"
+    aws_access_key: "{{ provider_auth_id }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: "{{ public_ip }}/32"
+  when:  vars['platform']['provider']['name']=='aws' and vars['engine']['operation']['type']!='delete'

@@ -1,32 +1,62 @@
 ---
-- name: get worker ips
-  shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['worker']['ips'] }}"
+- name: get worker public ips
+  shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['worker']['publicIps'] }}"
   args:
     chdir:  "{{ ins_repo_path }}"
-  register: worker_ips
+  register: worker_public_ips
   when: ins.operation.type != 'delete'
 
-- name: clear worker ips
-  shell: "yq -i -y 'del(.ins.worker.net.ip.pool)' /data/vars/instance.yaml"
-
-- name: set worker ips
-  shell: "yq -i -y '.ins.worker.net.ip.pool += [\"{{ item }}\"]' /data/vars/instance.yaml"
-  loop: '{{ worker_ips.stdout | from_json | list }}'
-  when: ins.operation.type != 'delete'
-
-- name: get master ips
-  shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['master']['ips'] }}"
+- name: get worker private ips
+  shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['worker']['privateIps'] }}"
   args:
     chdir:  "{{ ins_repo_path }}"
-  register: master_ips
+  register: worker_private_ips
   when: ins.operation.type != 'delete'
 
-- name: clear master ips
-  shell: "yq -i -y 'del(.ins.master.net.ip.pool)' /data/vars/instance.yaml"
+- name: clear worker public ips
+  shell: "yq -i -y 'del(.ins.worker.net.ip.public.pool)' /data/vars/instance.yaml"
 
-- name: set master ips
-  shell: "yq -i -y '.ins.master.net.ip.pool += [\"{{ item }}\"]' /data/vars/instance.yaml"
-  loop: '{{ master_ips.stdout | from_json | list }}'
+- name: clear worker private ips
+  shell: "yq -i -y 'del(.ins.worker.net.ip.private.pool)' /data/vars/instance.yaml"
+
+- name: set worker public ips
+  shell: "yq -i -y '.ins.worker.net.ip.public.pool += [\"{{ item }}\"]' /data/vars/instance.yaml"
+  loop: '{{ worker_public_ips.stdout | from_json | list }}'
+  when: ins.operation.type != 'delete'
+
+- name: set worker private ips
+  shell: "yq -i -y '.ins.worker.net.ip.private.pool += [\"{{ item }}\"]' /data/vars/instance.yaml"
+  loop: '{{ worker_private_ips.stdout | from_json | list }}'
+  when: ins.operation.type != 'delete'
+
+- name: get master public ips
+  shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['master']['publicIps'] }}"
+  args:
+    chdir:  "{{ ins_repo_path }}"
+  register: master_public_ips
+  when: ins.operation.type != 'delete'
+
+- name: get master private ips
+  shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['master']['privateIps'] }}"
+  args:
+    chdir:  "{{ ins_repo_path }}"
+  register: master_private_ips
+  when: ins.operation.type != 'delete'
+
+- name: clear master public ips
+  shell: "yq -i -y 'del(.ins.master.net.ip.public.pool)' /data/vars/instance.yaml"
+
+- name: clear master private ips
+  shell: "yq -i -y 'del(.ins.master.net.ip.private.pool)' /data/vars/instance.yaml"
+
+- name: set master public ips
+  shell: "yq -i -y '.ins.master.net.ip.public.pool += [\"{{ item }}\"]' /data/vars/instance.yaml"
+  loop: '{{ master_public_ips.stdout | from_json | list }}'
+  when: ins.operation.type != 'delete'
+
+- name: set master private ips
+  shell: "yq -i -y '.ins.master.net.ip.private.pool += [\"{{ item }}\"]' /data/vars/instance.yaml"
+  loop: '{{ master_private_ips.stdout | from_json | list }}'
   when: ins.operation.type != 'delete'
 
 - name: clear public lb dns name
@@ -40,10 +70,14 @@
   when: ins.operation.type != 'delete'
 
 - name: ins set public lb dns name
-  shell: "yq -i -y '.ins.lb.pub.dnsName = [\"{{ public_lb_dns.stdout | from_json }}\"]' /data/vars/instance.yaml"
+  shell: "yq -i -y '.ins.lb.pub.dnsName = \"{{ public_lb_dns.stdout | from_json }}\"' /data/vars/instance.yaml"
+  when: ins.operation.type != 'delete'
 
-- name: clear priv lb dns name
+- name: clear private lb dns name
   shell: "yq -i -y 'del(.ins.lb.priv.dnsName)' /data/vars/instance.yaml"
+
+- name: clear private lb private ips
+  shell: "yq -i -y 'del(.ins.lb.priv.ip)' /data/vars/instance.yaml"
 
 - name: ins get private lb dns name
   shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['lb']['private']['dnsName'] }}"
@@ -53,15 +87,35 @@
   when: ins.operation.type != 'delete'
 
 - name: ins set private lb dns name
-  shell: "yq -i -y '.ins.lb.priv.dnsName = [\"{{ private_lb_dns.stdout | from_json }}\"]' /data/vars/instance.yaml"
+  shell: "yq -i -y '.ins.lb.priv.dnsName = \"{{ private_lb_dns.stdout | from_json }}\"' /data/vars/instance.yaml"
   when: ins.operation.type != 'delete'
+
+- name: ins get private lb private ips
+  shell: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['lb']['private']['ips'] }}"
+  args:
+    chdir:  "{{ ins_repo_path }}"
+  register: private_lb_private_ips
+  when: ins.operation.type != 'delete'
+
+- name: ins set private lb private ips
+  shell: "yq -i -y '.ins.lb.priv.ip += [\"{{ item }}\"]' /data/vars/instance.yaml"
+  loop: '{{ private_lb_private_ips.stdout | from_json | list }}'
+  when: ins.operation.type != 'delete'
+
+# - name: get pem name
+#   set_fact:
+#     ins_pem_name: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['pem']['path'] }}"
+#   when: ins.operation.type != 'delete'
 
 - name: get pem path
   set_fact:
-    ins_pem_path: "{{ ins_repo_path }}/{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['pem']['path'] }}"
+    ins_pem_path: "{{ ins_repo_path }}/{{ ins_pem_name }}"
+  when: ins.operation.type != 'delete'
 
 - name: copy pem file
   copy:
-    content: "{{ ins_pem_path }}"
+    src: "{{ ins_pem_path }}"
     dest: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+    force: yes
+    mode: '400'
   when: ins.operation.type != 'delete'

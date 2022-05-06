@@ -1,26 +1,44 @@
-# ---
+---
 
-# - name: get runner name
-#   set_fact:
-#     ins_runner_name: "{{ vars['platform']['repo'][ins_type]['runner']['name'] }}"
+- name: run commands for prerequsites
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['pre'] }}"
+  when: vars['platform']['executor'][engine_type]['type']=='shell'
 
-# - name: get runner version
-#   set_fact:
-#     ins_runner_version: "{{ vars['platform']['repo'][ins_type]['runner']['version'] }}"
+- name: set mgmt ip
+  set_fact:
+    mgmt_ip: "{{ vars['ins']['master']['net']['ip']['private']['pool'][0] }}"
+    #mgmt_ip: "{{ vars['ins']['lb']['priv']['ip'][0] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell' 
+ 
+- name: create cluster
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['create'] }}"
+  register: engine_cluster_create_log
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+    cluster_user: "{{ vars['img']['auth']['user'] }}"
+    engine_version: "{{ vars['engine'][engine_type]['version'] }}"
+  when: vars['platform'][engine_runner_type][engine_type]['type'] == 'shell' and engine_runner_type == 'executor'
 
-# - name: get pre command
-#   set_fact:
-#     ins_pre_command: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['pre'] }}"
+- debug: msg="{{ engine_cluster_create_log }}"
 
-# - name: get create command
-#   set_fact:
-#     ins_create_command: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['create'] }}"
+- name: join master nodes to cluster
+  shell: "export item={{ item }}; {{ vars['platform']['executor'][engine_type]['dialect']['command']['master_join'] }}"
+  with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+    cluster_user: "{{ vars['img']['auth']['user'] }}"
+    engine_version: "{{ vars['engine'][engine_type]['version'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type']=='shell'
+    - vars['ins']['master']['net']['ip']['private']['pool']| length > 1
+    - item != mgmt_ip
 
-# - name: create instances
-#   command: "docker run --rm -v /tmp:/data/repo kloiadocker/klopac-{{ ins_runner_name }}-runner:{{ ins_runner_version }} /bin/bash -c \"cd {{ ins_repo_path }}; {{ ins_pre_command }}; {{ ins_create_command }}\""
-#   become: true
-#   register: ins_create_log
-
-# - debug:
-#     msg: "{{ vars['ins_create_log'] }}"
-#   when: vars['platform']['log']['level']=='debug'
+- name: join worker nodes to cluster
+  shell: "export item={{ item }}; {{ vars['platform']['executor'][engine_type]['dialect']['command']['worker_join'] }}"
+  with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+    cluster_user: "{{ vars['img']['auth']['user'] }}"
+    engine_version: "{{ vars['engine'][engine_type]['version'] }}"
+  when: vars['platform']['executor'][engine_type]['type']=='shell'

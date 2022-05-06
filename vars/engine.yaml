@@ -1,24 +1,18 @@
----
 engine:
   enabled: true
   endpoint:
     uri: ''
+  kubeconfig:
+    path: ''
   operation:
-    type: create
+    type: delete
   provider:
     enabled: false
     name: aws
-  rbac:
-    enabled: false
-    pass: pass
-    protocol: ldap
-    type: ldap
-    user: usename
   required:
     - enabled
     - type
     - prodiver.enabled
-    - rbac.enabled
     - operation.type
     - runner.type
   runner:
