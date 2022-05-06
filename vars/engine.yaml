@@ -1,11 +1,11 @@
 engine:
   enabled: true
   endpoint:
-    uri: https://lb-public-klopac-test-f4a8d3416f3eca63.elb.eu-west-1.amazonaws.com:6443
+    uri: ''
   kubeconfig:
-    path: /data/sensitive/klopac-test.kubeconfig
+    path: ''
   operation:
-    type: create
+    type: delete
   provider:
     enabled: false
     name: aws

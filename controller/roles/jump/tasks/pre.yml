@@ -56,6 +56,11 @@
   debug: msg="{{ public_ip }}"
   when: platform.log.level == 'debug'
 
+- name: set pem path
+  set_fact:
+    engine_pem_path: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+  when: engine_pem_path is not defined
+
 - name: create or update security group
   ec2_group:
     name: "SG-jump-{{ platform.name }}-{{ platform.environment }}"

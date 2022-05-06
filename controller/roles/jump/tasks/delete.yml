@@ -7,4 +7,6 @@
     aws_secret_key: "{{ provider_auth_key }}"
     filters:
       ip-address: "{{ platform.jump.ip }}"
-  when:  vars['platform']['provider']['name']=='aws' and vars['engine']['operation']['type']=='delete'
+  when:  
+    - vars['platform']['provider']['name']=='aws'
+    - vars['engine']['operation']['type']=='delete'

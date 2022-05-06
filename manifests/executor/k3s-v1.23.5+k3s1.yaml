@@ -12,6 +12,8 @@ platform:
           create:  "k3sup install --ip $mgmt_ip --user $cluster_user --cluster --k3s-version $engine_version"
           master_join: "k3sup join --ip $item --user $cluster_user --server-user $cluster_user --server-ip $mgmt_ip --server --k3s-version $engine_version"
           worker_join: "k3sup join --ip $item --user $cluster_user --server-user $cluster_user --server-ip $mgmt_ip --k3s-version $engine_version"
+          worker_clean: "k3s-killall.sh; k3s-agent-uninstall.sh"
+          master_clean: "k3s-killall.sh; k3s-uninstall.sh"
       runner:
         name: klopac
         version: 5.2.0

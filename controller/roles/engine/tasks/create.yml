@@ -11,34 +11,34 @@
   when: 
     - vars['platform']['executor'][engine_type]['type'] == 'shell' 
  
-# - name: create cluster
-#   shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['create'] }}"
-#   register: engine_cluster_create_log
-#   environment:
-#     mgmt_ip: "{{ mgmt_ip }}"
-#     cluster_user: "{{ vars['img']['auth']['user'] }}"
-#     engine_version: "{{ vars['engine'][engine_type]['version'] }}"
-#   when: vars['platform'][engine_runner_type][engine_type]['type'] == 'shell' and engine_runner_type == 'executor'
+- name: create cluster
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['create'] }}"
+  register: engine_cluster_create_log
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+    cluster_user: "{{ vars['img']['auth']['user'] }}"
+    engine_version: "{{ vars['engine'][engine_type]['version'] }}"
+  when: vars['platform'][engine_runner_type][engine_type]['type'] == 'shell' and engine_runner_type == 'executor'
 
-# - debug: msg="{{ engine_cluster_create_log }}"
+- debug: msg="{{ engine_cluster_create_log }}"
 
-# - name: join master nodes to cluster
-#   shell: "export item={{ item }}; {{ vars['platform']['executor'][engine_type]['dialect']['command']['master_join'] }}"
-#   with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
-#   environment:
-#     mgmt_ip: "{{ mgmt_ip }}"
-#     cluster_user: "{{ vars['img']['auth']['user'] }}"
-#     engine_version: "{{ vars['engine'][engine_type]['version'] }}"
-#   when: 
-#     - vars['platform']['executor'][engine_type]['type']=='shell'
-#     - vars['ins']['master']['net']['ip']['private']['pool']| length > 1
-#     - item != mgmt_ip
+- name: join master nodes to cluster
+  shell: "export item={{ item }}; {{ vars['platform']['executor'][engine_type]['dialect']['command']['master_join'] }}"
+  with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+    cluster_user: "{{ vars['img']['auth']['user'] }}"
+    engine_version: "{{ vars['engine'][engine_type]['version'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type']=='shell'
+    - vars['ins']['master']['net']['ip']['private']['pool']| length > 1
+    - item != mgmt_ip
 
-# - name: join worker nodes to cluster
-#   shell: "export item={{ item }}; {{ vars['platform']['executor'][engine_type]['dialect']['command']['worker_join'] }}"
-#   with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
-#   environment:
-#     mgmt_ip: "{{ mgmt_ip }}"
-#     cluster_user: "{{ vars['img']['auth']['user'] }}"
-#     engine_version: "{{ vars['engine'][engine_type]['version'] }}"
-#   when: vars['platform']['executor'][engine_type]['type']=='shell'
+- name: join worker nodes to cluster
+  shell: "export item={{ item }}; {{ vars['platform']['executor'][engine_type]['dialect']['command']['worker_join'] }}"
+  with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+    cluster_user: "{{ vars['img']['auth']['user'] }}"
+    engine_version: "{{ vars['engine'][engine_type]['version'] }}"
+  when: vars['platform']['executor'][engine_type]['type']=='shell'

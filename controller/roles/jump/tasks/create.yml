@@ -17,16 +17,6 @@
   register: jump
   when:  vars['platform']['provider']['name']=='aws' and vars['platform']['jump']['ip']==''
 
-- name: set pem path
-  set_fact:
-    engine_pem_path: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
-  when: engine_pem_path is not defined
-
-# - name: set ssh key file
-#   set_fact:
-#     ansible_ssh_private_key_file: "{{ engine_pem_path }}"
-#   when: ansible_ssh_private_key_file is not defined
-
 - name: set jump ip
   set_fact:
     jump_ip: "{{ item.public_ip }}"
@@ -54,7 +44,9 @@
     delay: 60
     timeout: 320
   loop: "{{ jump.instances }}"
-  when:  vars['platform']['provider']['name']=='aws' and jump_ip == ''
+  when: 
+    - jump_ip is defined
+    - vars['platform']['jump']['ip']==''
 
 - name: create ssh key for jump
   openssh_keypair:
