@@ -6,6 +6,7 @@ ins:
       pem.path: img.pem.path
       pem.type: img.pem.type
       type: img.auth.type
+      password: img.password
       user: img.auth.user
     id: img.id
     name: img.name
@@ -31,6 +32,7 @@ ins:
         - 10.0.0.101
       domain: pac.local
       ip:
+<<<<<<< HEAD
         public:
           gw: 10.0.0.1
           subnet: 24
@@ -41,6 +43,11 @@ ins:
           subnet: 24
           pool:
             - 172.31.1.31
+=======
+        gw: 10.0.0.1
+        subnet: 24
+        pool: []
+>>>>>>> aa008fc921172c304f5b947e5ae084d166746fb4
   operation:
     type: create
   required:
@@ -76,6 +83,7 @@ ins:
         - 10.0.0.101
       domain: pac.local
       ip:
+<<<<<<< HEAD
         public:
           gw: 10.0.0.1
           subnet: 24
@@ -88,3 +96,9 @@ ins:
           pool:
             - 172.31.8.36
             - 172.31.18.36
+=======
+        gw: 10.0.0.1
+        subnet: 24
+        pool:
+          - '10.41.5.58'
+>>>>>>> aa008fc921172c304f5b947e5ae084d166746fb4

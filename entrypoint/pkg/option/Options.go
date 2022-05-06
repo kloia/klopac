@@ -22,8 +22,8 @@ func (o *OptionService) setFlags() {
 		"logLevel":    o.flag.String("logLevel", "INFO", "It sets the level of the producing logs"),
 		"logFile":     o.flag.String("logFile", "/data/entrypoint.log", "Log file of entrypoint"),
 		"valuesFile":  o.flag.String("valuesFile", "/data/values.yaml", "Value File"),
-		"dataPath":    o.flag.String("files", "/data/", "Data File Path"),
-		"varsPath":    o.flag.String("vars", "/data/vars", "Variable File"),
+		"dataPath":    o.flag.String("dataPath", "/data/", "Data File Path"),
+		"varsPath":    o.flag.String("varsPath", "/data/vars", "Variable File"),
 		"bundleFile":  o.flag.String("bundleFile", "/data/bundle.tar.gz", "Bundle File"),
 	}
 	o.flag.Parse()

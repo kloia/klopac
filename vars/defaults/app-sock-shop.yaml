@@ -1,4 +1,4 @@
 ---
 app:
-  sockShop:
-    version: 0.0.12
+  sock-shop:
+    version: latest

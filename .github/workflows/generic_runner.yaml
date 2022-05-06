@@ -6,7 +6,6 @@ on:
     paths:
       - 'docker/runner/generic/Dockerfile'
 jobs:
-
   build:
     runs-on: ubuntu-20.04
     steps:
@@ -20,7 +19,7 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKER_HUB }}
           password: ${{ secrets.DOCKER_HUB_KEY }}
-          dockerfile: Docker/runner/generic/Dockerfile
+          dockerfile: docker/runner/generic/Dockerfile
   test:
     runs-on: ubuntu-20.04
     needs: build

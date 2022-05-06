@@ -83,7 +83,7 @@ func Enable(uri, username, password string) {
 			validate := message["validate"].(bool)
 			healthCheck := message["healthCheck"].(bool)
 			logLevel := message["logLevel"].(string)
-			helper.GetFlowService().Run(provision, validate, healthCheck, logLevel)
+			helper.GetFlowService().Run(provision, validate, healthCheck, logLevel, false)
 
 			//RESPONSE
 			output := Output{Deneme: "123"}

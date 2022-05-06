@@ -3,6 +3,7 @@
 - name: Validator Playbook
   hosts: localhost
   roles:
+  - name: platform_validations
   - name: repo_config_validation
   - name: runner_validation
   - name: compatibility_validation

@@ -19,7 +19,7 @@ $ go version: go version go1.18
   go build cmd/main.go
   mv main ..
   cd -
-  ./main --valuesFile ./values.yaml --vars ./vars
+  ./main --valuesFile ./values.yaml --varsPath ./vars
 ```
 
 ### Configuration Options
@@ -38,7 +38,7 @@ $ go version: go version go1.18
 | valuesFile  | /data/values.yaml    | Value File                                                                      |   
 | dataPath    | /data/               | Data File Path                                                                  |   
 | varsPath    | /data/vars           | Variable File                                                                   |   
-| bundleFile  | bundle.tar.gz        | Bundle File                                                                     |   
+| bundleFile  | /data/bundle.tar.gz        | Bundle File                                                                     |   
 
 
 <!-- TABLE OF CONTENTS -->

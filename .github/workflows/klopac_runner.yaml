@@ -3,8 +3,7 @@ name: Klopac Runner Image Build and Publish
 on:
   push:
     branches: [ 0.1-alpha ]
-    paths:
-      - 'docker/runner/klopac/Dockerfile'
+
 jobs:
 
   build:
@@ -16,8 +15,8 @@ jobs:
         uses: mr-smithers-excellent/docker-build-push@v4
         with:
           image: "${{ secrets.DOCKER_HUB }}/klopac-runner"
-          tag: 0.1
+          tag: 0.1-alpha
           registry: docker.io
           username: ${{ secrets.DOCKER_HUB }}
           password: ${{ secrets.DOCKER_HUB_KEY }}
-          dockerfile: Docker/runner/klopac/Dockerfile
+          dockerfile: docker/runner/klopac/Dockerfile

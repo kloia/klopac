@@ -17,17 +17,17 @@ jobs:
         uses: mr-smithers-excellent/docker-build-push@v4
         with:
           image: "${{ secrets.DOCKER_HUB }}/klopac-pulumi-runner"
-          tag: 0.1
+          tag: 3.22.1
           registry: docker.io
           username: ${{ secrets.DOCKER_HUB }}
           password: ${{ secrets.DOCKER_HUB_KEY }}
-          dockerfile: Docker/runner/pulumi/Dockerfile
+          dockerfile: docker/runner/pulumi/Dockerfile
           buildArgs: PULUMI_VERSION=3.22.1
   test:
     runs-on: ubuntu-20.04
     needs: build
     container: 
-      image: "docker.io/kloiadocker/klopac-pulumi-runner:0.1"
+      image: "docker.io/kloiadocker/klopac-pulumi-runner:3.22.1"
       credentials:
         username: ${{ secrets.DOCKER_HUB }}
         password: ${{ secrets.DOCKER_HUB_KEY }}

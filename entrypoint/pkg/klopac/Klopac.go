@@ -5,8 +5,9 @@ import (
 	"entrypoint/pkg/logger"
 	"entrypoint/pkg/websocket"
 	"errors"
-	"go.uber.org/zap"
 	"os"
+
+	"go.uber.org/zap"
 )
 
 // It might be considered as main function. It will execute some sort of code blocks depending to whether we are going to access klopac via a websocket or from command-line
@@ -15,37 +16,40 @@ func Run() {
 	log := logger.GetLogger()
 	webSocketEnabled := helper.GetParam[bool]("websocket")
 	if webSocketEnabled == true {
-		log.Info("START: WEBSOCKET ENABLING")
+		log.Info("[WEBSOCKET CONNECTION - START]")
 		uri := helper.GetParam[string]("uri")
 		username := helper.GetParam[string]("username")
 		password := helper.GetParam[string]("password")
 		websocket.Enable(uri, username, password)
-		log.Info("END: WEBSOCKET ENABLING")
+		log.Info("[WEBSOCKET CONNECTION - END]")
 	} else {
 		bundleFile := helper.GetParam[string]("bundleFile")
+		bundleFileExists := false
 		if _, err := os.Stat(bundleFile); !errors.Is(err, os.ErrNotExist) {
-			log.Info("START: BUNDLE FILE UNTAR")
+			bundleFileExists = true
+			log.Info("[BUNDLE FILE UNTAR - START]")
 			err := helper.Untar(bundleFile, helper.GetParam[string]("dataPath"))
+			log.Debug(bundleFile)
 			if err != nil {
-				log.Error("Error while untarring bundle file, please check whether you have correct named bundlefile ")
+				log.Panic("Error while untarring bundle file, please check whether you have correct named bundlefile ")
 			}
-			log.Info("END: BUNDLE FILE UNTAR")
+			log.Info("[BUNDLE FILE UNTAR - END]")
 		} else {
 			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
 			err := helper.UpdateValuesFile(valuesModel, helper.GetParam[string]("varsPath"))
 			if err != nil {
-				log.Error("Error while patching default values", zap.Error(err))
+				log.Panic("Error while patching default values", zap.Error(err))
 			}
 		}
 		provision := helper.GetParam[bool]("provision")
 		validate := helper.GetParam[bool]("validate")
 		logLevel := helper.GetParam[string]("logLevel")
 		healthCheck := helper.GetParam[bool]("healthcheck")
-		log.Info("START: KLOPAC FLOW",
+		log.Info("[KLOPAC FLOW - START]",
 			zap.Bool("provision", provision),
 			zap.Bool("validate", validate),
 			zap.Bool("healthcheck", healthCheck))
-		helper.GetFlowService().Run(provision, validate, healthCheck, logLevel)
-		log.Info("END: KLOPAC FLOW")
+		helper.GetFlowService().Run(provision, validate, healthCheck, logLevel, bundleFileExists)
+		log.Info("[KLOPAC FLOW - END]")
 	}
 }
