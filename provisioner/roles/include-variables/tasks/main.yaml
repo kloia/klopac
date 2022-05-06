@@ -5,6 +5,8 @@
   include_vars: /data/vars/instance.yaml
 - name: Include Image File
   include_vars: /data/vars/image.yaml
+- name: Include Platform File
+  include_vars: /data/vars/platform.yaml
 
 - name: Include Engine Defaults File
   include_vars: 
@@ -22,6 +24,7 @@
 - name: Include Engine Manifest File
   include_vars: 
     file: /data/manifests/{{ engine.runner.type }}/{{ engine.type }}-{{ engine[engine.type]["version"] }}.yaml
+    hash_behaviour: merge
 - name: Include Image Manifest File
   include_vars: 
     file: /data/manifests/{{ img.runner.type }}/{{ img.type }}-{{ img[img.type]["version"] }}.yaml
