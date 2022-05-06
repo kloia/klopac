@@ -21,15 +21,51 @@
     file: /data/vars/defaults/ins-{{ ins.type }}.yaml
     hash_behaviour: merge
 
-- name: Include Engine Manifest File
+- name: Include Engine Manifest File with Branch
+  include_vars: 
+    file: /data/manifests/{{ engine.runner.type }}/{{ engine.type }}@{{ engine[engine.type]["branch"] }}.yaml
+    hash_behaviour: merge
+  when: 
+  - engine[engine.type]["branch"] | default("") | length > 0
+
+- name: Include Engine Manifest File with Version
   include_vars: 
     file: /data/manifests/{{ engine.runner.type }}/{{ engine.type }}-{{ engine[engine.type]["version"] }}.yaml
     hash_behaviour: merge
-- name: Include Image Manifest File
+  when: 
+  - engine[engine.type]["version"] | default("") | length > 0
+  - engine[engine.type]["branch"] | default("") | length == 0
+
+- name: Include Image Manifest File with Branch
+  include_vars: 
+    file: /data/manifests/{{ img.runner.type }}/{{ img.type }}@{{ img[img.type]["branch"] }}.yaml
+    hash_behaviour: merge
+  when: 
+  - img[img.type]["branch"] | default("") | length > 0
+
+- name: Include Image Manifest File with Version
   include_vars: 
     file: /data/manifests/{{ img.runner.type }}/{{ img.type }}-{{ img[img.type]["version"] }}.yaml
     hash_behaviour: merge
-- name: Include Instance Manifest File
+  when: 
+  - img[img.type]["version"] | default("") | length > 0
+  - img[img.type]["branch"] | default("") | length == 0
+
+- name: Include Instance Manifest File with Branch
+  include_vars: 
+    file: /data/manifests/{{ ins.runner.type }}/{{ ins.type }}@{{ ins[ins.type]["branch"] }}.yaml
+    hash_behaviour: merge
+  when: 
+  - ins[ins.type]["branch"] | default("") | length > 0
+
+- name: Include Instance Manifest File with Version
   include_vars: 
     file: /data/manifests/{{ ins.runner.type }}/{{ ins.type }}-{{ ins[ins.type]["version"] }}.yaml
     hash_behaviour: merge
+  when: 
+  - ins[ins.type]["version"] | default("") | length > 0
+  - ins[ins.type]["branch"] | default("") | length == 0
+
+- name: dibag
+  debug:
+    var: vars['platform']
