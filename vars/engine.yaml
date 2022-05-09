@@ -1,3 +1,4 @@
+---
 engine:
   kubeconfig:
     path: /data/sensitive/klopac-test.kubeconfig
