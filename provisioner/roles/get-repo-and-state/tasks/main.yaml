@@ -5,6 +5,13 @@
     repo_names: "{{ repo_names | default([]) + [vars['platform']['repo'][item]['uri'] | split('/') | last | split('.') | first ] }}"
   with_items: 
     - "{{ vars['platform']['repo'].keys() | list }}"
+- name: Make sure the mandatory uri value is defined
+  fail:
+    msg: "Repository URI is a mandatory value to execute the playbook."
+  when: vars['platform']['repo'][item]['uri'] == ""
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
 - name: Clone repos with type "repo"
   ansible.builtin.git:
     repo: "{{ vars['platform']['repo'][item]['uri'] }}"
