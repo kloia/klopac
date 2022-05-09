@@ -1,11 +1,10 @@
 ---
 int:
-  certManager:
-    enabled: false
-    name: cert-manager
+  certmanager:
+    enabled: true
     namespace: cert-manager
     operation:
-      type: create
+      type: delete
       update:
         policy: apply
     required:
@@ -16,7 +15,7 @@ int:
       - runner.type
     runner:
       type: executor
-  clusterAutoscaler:
+  clusterautoscaler:
     enabled: false
     logLevel: platform.log.level
     master:
@@ -49,9 +48,8 @@ int:
       group: ins.worker.group
       max: ins.worker.count * 1.5
       min: ins.worker.count
-  cpi:
+  vspherecpi:
     enabled: false
-    name: vsphere
     namespace: kube-system
     operation:
       type: create
@@ -65,10 +63,9 @@ int:
       - runner.type
     runner:
       type: executor
-  csi:
+  vspherecsi:
     dependsOn: cpi
     enabled: false
-    name: vsphere
     namespace: kube-system
     operation:
       type: create
@@ -87,9 +84,8 @@ int:
       default: true
       name: vsphere-sc
   enabled: true
-  ingress:
+  nginxingress:
     enabled: false
-    name: nginx
     namespace: ingress-nginx
     operation:
       type: create
@@ -105,9 +101,8 @@ int:
     runner:
       type: executor
     type: daemonset
-  logging:
-    enabled: true
-    name: efk
+  efk:
+    enabled: false
     namespace: logging
     operation:
       type: create
@@ -124,9 +119,8 @@ int:
       type: executor
     uri: ''
     user: ''
-  monitoring:
-    enabled: true
-    name: pgaStack
+  pgaStack:
+    enabled: false
     namespace: monitoring
     operation:
       type: create
@@ -145,13 +139,8 @@ int:
     serviceType: NodePort
     uri: ''
     user: ''
-  required:
-    - enabled
-    - endpoint.uri
-    - kubeconfig.path
-  vault:
-    enabled: true
-    name: hashicorp
+  hashicorpvault:
+    enabled: false
     namespace: vault
     operation:
       type: create
