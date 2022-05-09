@@ -1,5 +1,5 @@
 ins:
-  enabled: false
+  enabled: true
   image:
     auth:
       type: pem
@@ -20,6 +20,3 @@ engine:
   enabled: true
   kubeconfig:
     path: /app/cluster.conf
-platform:
-  jump:
-    ip: localhost

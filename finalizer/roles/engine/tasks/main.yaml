@@ -22,27 +22,28 @@
   set_fact:
     kubeconfig_path: "{{ vars['engine']['kubeconfig']['path'] }}"
 
-- name: COPY Kubeconfig to Jump
-  delegate_to: jump
-  copy:
-    src: "{{ kubeconfig_path }}"
-    dest: "{{ kubeconfig_path }}-2"
-
 - name: "[ENGINE-TESTS] - Import Engine Information from Vars"
   include_vars:
     file: "/data/vars/defaults/engine-{{ vars['engine']['type'] }}.yaml"
     hash_behaviour: merge
 
-- name: "[ENGINE-TESTS] - Set Fact For Engine Version"
-  set_fact:
-    engine_version: "{{ vars['engine'][vars['engine']['type']]['version'] }}"
+- block:
+  - name: "[ENGINE-TESTS] Copy Kubeconfig to Jump"
+    delegate_to: jump
+    copy:
+      src: "{{ kubeconfig_path }}"
+      dest: "{{ kubeconfig_path }}"
 
-- name: "[ENGINE-TESTS] - Register Nodes"
-  delegate_to: jump
-  shell: "KUBECONFIG={{ kubeconfig_path }}-2 kubectl get nodes --no-headers | awk '{ print $1, $NF }'"
-  register: nodes
+  - name: "[ENGINE-TESTS] - Set Fact For Engine Version"
+    set_fact:
+      engine_version: "{{ vars['engine'][vars['engine']['type']]['version'] }}"
 
-- name: SET FACT
+  - name: "[ENGINE-TESTS] - Register Nodes"
+    delegate_to: jump
+    shell: "KUBECONFIG={{ kubeconfig_path }} kubectl get nodes --no-headers | awk '{ print $1, $NF }'"
+    register: nodes
+
+- name: "[ENGINE-TESTS] Set Fact for Nodes"
   delegate_to: jump
   set_fact:
     NODES: "{{ nodes }}"
@@ -59,7 +60,7 @@
   loop_control:
     index_var: index
 
-- name: Write node's engine version check to outputs
+- name: "[ENGINE-TESTS] Write node's engine version check to outputs"
   shell: "yq -i '.engine_layer[{{ index }}].match = \"{{ item.split()[1] | lower == engine_version }}\"' /data/bundle/output.yaml -y"
   loop: "{{ NODES.stdout_lines }}"
   loop_control:
