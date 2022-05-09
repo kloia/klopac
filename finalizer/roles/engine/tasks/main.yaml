@@ -1,13 +1,22 @@
 ---
 
-- name: "[ENGINE-TESTS] - Ensure Output File Exists"
-  copy:
-    content: "engine_layer: []"
-    dest: "/data/bundle/output.yaml"
-    force: no
-    group: 1000
-    owner: 1000
-    mode: 0750
+- block:
+  - name: "[ENGINE-TESTS] - Create Bundle Directory"
+    file:
+      state: directory
+      owner: 1000
+      group: 1000
+      mode: 0750
+      path: "/data/bundle"
+
+  - name: "[ENGINE-TESTS] - Ensure Output File Exists"
+    copy:
+      content: "engine_layer: []"
+      dest: "/data/bundle/output.yaml"
+      force: no
+      group: 1000
+      owner: 1000
+      mode: 0750
 
 - name: "[ENGINE-TESTS] - Set Fact For Kubeconfig Path"
   set_fact:
@@ -26,7 +35,8 @@
   shell: "KUBECONFIG={{ kubeconfig_path }} kubectl get nodes --no-headers | awk '{ print $1, $NF }'"
   register: nodes
 
-- debug:
+- name: dibag
+  debug:
     var: nodes
 
 - name: "[ENGINE-TESTS] - Write Node Name to outputs"
