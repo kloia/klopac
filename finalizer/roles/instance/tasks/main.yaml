@@ -11,6 +11,7 @@
       path: "/data/bundle"
 
   - name: "[INSTANCE-TESTS] - Ensure Output File Exists"
+    delegate_to: localhost
     copy:
       content: "instance_layer: []"
       dest: "/data/bundle/output.yaml"
@@ -81,10 +82,8 @@
   - name: "[INSTANCE-TESTS] - Write host's IP address to outputs"
     delegate_to: localhost
     changed_when: false
-    shell: "yq -i '.instance_layer[{{ index }}].ip = \"{{ hostvars[groups['servers'][item.item | int]]['inventory_hostname'] }}\"' /data/bundle/output.yaml -y"
-    loop: "{{OS_NAME_RESULTS.results}}"
-    loop_control:
-      index_var: index
+    shell: "yq -i '.instance_layer[{{ item | int }}].ip = \"{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }}\"' /data/bundle/output.yaml -y"
+    with_sequence: start=0 end={{ groups.servers | length -1 }}
 
   - name: "[INSTANCE-TESTS] - Write host's OS Name to outputs"
     delegate_to: localhost

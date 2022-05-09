@@ -6,6 +6,8 @@
   pre_tasks:
     - name: Include Image Variables
       include_vars: /data/vars/image.yaml
+    - name: Include Platform Variables
+      include_vars: /data/vars/platform.yaml
     - name: Include Instance Variables
       include_vars: /data/vars/instance.yaml
   tasks:
@@ -16,7 +18,6 @@
 
 # INSTANCE TESTS
 - hosts: jump
-  connection: local
   gather_facts: false
   pre_tasks:
     - name: Include Image Variables
