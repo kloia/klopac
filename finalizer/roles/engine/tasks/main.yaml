@@ -35,9 +35,6 @@
   shell: "KUBECONFIG={{ kubeconfig_path }} kubectl get nodes --no-headers | awk '{ print $1, $NF }'"
   register: nodes
 
-- name: dibag
-  debug:
-    var: nodes
 
 - name: "[ENGINE-TESTS] - Write Node Name to outputs"
   shell: "yq -i '.engine_layer[{{ index }}].name = \"{{ item.split()[0] | lower }}\"' /data/bundle/output.yaml -y"

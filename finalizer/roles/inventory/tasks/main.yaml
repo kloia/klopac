@@ -1,11 +1,25 @@
 ---
 
-- name: "[INVENTORY-REFRESH] - Ensure 'servers' section exists in inventory file"
+- name: "[INVENTORY-REFRESH] - Ensure 'servers & jump' section exists in inventory file"
   community.general.ini_file:
     path: ./inventory
-    section: servers
+    section: "{{ item }}"
     mode: '0666'
     allow_no_value: true
+  with_items: 
+  - servers
+  - jump
+
+- name: "[INVENTORY-REFRESH] - Update inventory file with Jump IP"
+  ini_file:
+    dest: "./inventory"
+    section: "jump"
+    option: "{{ platform.jump.ip }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_user"
+    values: "{{ ins.image.auth.user }}"
+    no_extra_spaces: true
+    mode: 0666
+    state: present
+    backup: false
 
 - block:
   - name: "[INVENTORY-REFRESH] - Update inventory file with Master list"
@@ -18,7 +32,7 @@
       mode: 0666
       state: present
       backup: false
-    with_items: "{{ ins.master.net.ip.pool }}"
+    with_items: "{{ ins.master.net.ip.private.pool }}"
 
   - name: "[INVENTORY-REFRESH] - Update inventory file with Worker list"
     ini_file:
@@ -30,7 +44,7 @@
       mode: 0666
       state: present
       backup: false
-    with_items: "{{ ins.worker.net.ip.pool }}"
+    with_items: "{{ ins.worker.net.ip.private.pool }}"
 
   when: vars['ins']['image']['auth']['type'] == 'pem'
 
@@ -45,7 +59,7 @@
       mode: 0666
       state: present
       backup: false
-    with_items: "{{ ins.master.net.ip.pool }}"
+    with_items: "{{ ins.master.net.ip.private.pool }}"
 
   - name: "[INVENTORY-REFRESH] - Update inventory file with Worker list"
     ini_file:
@@ -57,7 +71,7 @@
       mode: 0666
       state: present
       backup: false
-    with_items: "{{ ins.worker.net.ip.pool }}"
+    with_items: "{{ ins.worker.net.ip.private.pool }}"
 
   when: vars['ins']['image']['auth']['type'] == 'password'
 
