@@ -18,7 +18,6 @@
 
 # INSTANCE TESTS
 - hosts: jump
-  connection: local
   gather_facts: false
   pre_tasks:
     - name: Include Image Variables

@@ -1,20 +1,25 @@
 ins:
-  enabled: true
+  enabled: false
   image:
     auth:
-      type: password/pem
-      password: fakepassword
+      type: pem
+      password: password
       user: ubuntu
       pem.path: private_key_path
   master:
     net:
       ip:
-        pool: ["10.10.10.10"]
+        private: 
+          pool: ["10.10.10.10"]
   worker:
     net:
       ip:
-        pool: []
+        private: 
+          pool: []
 engine:
   enabled: true
   kubeconfig:
-    path: /data/cluster.conf
+    path: /app/cluster.conf
+platform:
+  jump:
+    ip: localhost
