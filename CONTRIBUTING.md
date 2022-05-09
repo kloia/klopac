@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to KloPaC! 
 
-KloPaC is MIT licensed and accepts contributions via GitHub pull requests. There are many areas we can use contributions - ranging from code, documentation, feature proposals, issue triage, samples, and content creation. This document outlines some conventions on development workflow and other resources to make it easier to get your contribution accepted.
+KloPaC is [MIT](https://github.com/kloia/klopac/blob/0.1-alpha/LICENSE) licensed and accepts contributions via GitHub pull requests. There are many areas we can use contributions - ranging from code, documentation, feature proposals, issue triage, samples, and content creation. This document outlines some conventions on development workflow and other resources to make it easier to get your contribution accepted.
 
 We aim to build a vibrant and inclusive ecosystem. We want to make contributing to this project as easy and transparent as possible. 
 
@@ -17,15 +17,19 @@ Pull requests are the best way to propose changes to the codebase.
 
 ### Prerequisites
 
-1. Install Go
+1. For the Entrypoint Layer development, KloPaC requires:
 
-    KloPaC requires Go 1.18
+- **Go 1.18**
+
+2. For the other layers development, KloPaC requires:
+
+- **Ansible 5.2.0**
 
 ### Use a Consistent Coding Style 
 
 1. The coding style suggested by the Golang community is used in KloPaC. See the [style doc](https://github.com/golang/go/wiki/CodeReviewComments) for details.
 1. Use two spaces for indentation rather than tabs in YAML files.
-1. On the Dockerfile side, we mainly use Ubuntu 20.04 as the base image. We try not to use the root user and keep the number of layers and image size as low as possible.
+1. On the Dockerfile side, we mainly use Ubuntu 20.04, SUSE Linux and Red Hat Enterprise Linux as the base image. We try not to use the root user and keep the number of layers and image size as low as possible.
 
 ## Getting Started 
 
