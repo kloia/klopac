@@ -1,6 +1,6 @@
 ---
 int:
-  csiVsphere:
+  vspherecsi:
     storageclass:
       datastoreuri: ''
       name: klopac-sc

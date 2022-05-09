@@ -1,0 +1,16 @@
+---
+- name: install "{{ item }}" helm chart
+  include_tasks: ../roles/int/tasks/update_obj.yml
+  with_items: "{{ int_obj }}"
+  register: helm_update_log
+  loop_control:
+    loop_var: int_exe_obj
+  when:
+    - vars['int'][int_exe_obj]['enabled'] == true
+    - vars['int'][int_exe_obj]['runner']['type'] == 'executor'
+    - vars['int'][int_exe_obj]['operation']['type'] == 'update'
+    - vars['platform']['executor'][int_exe_obj]['helm'] is defined
+
+- debug:
+    msg: "{{ helm_update_log }}"
+  when: vars['platform']['log']['level']=='debug'

@@ -1,0 +1,20 @@
+---
+- name: pre
+  include: pre.yml
+  when: int.enabled == true
+
+- name: create
+  include: create.yml
+  when: int.enabled == true
+
+- name: update
+  include: update.yml
+  when: int.enabled == true
+
+- name: delete
+  include: delete.yml
+  when: int.enabled == true
+
+- name: post
+  include: post.yml
+  when: int.enabled == true

@@ -1,0 +1,29 @@
+---
+- name: get facts
+  set_fact:
+    int_obj: "{{ int_obj | default([]) + [item] }}"
+  with_items: "{{ vars['int'] }}"
+  when: 
+    - item != 'enabled' 
+    - item != 'required'
+
+
+- include_tasks: ../roles/int/tasks/vars.yaml
+  with_items: "{{ int_obj }}"
+  loop_control:
+    loop_var: int_sub_obj
+  
+
+- vars:
+    msg: |
+       {{ vars['int'] | to_nice_yaml }}
+  debug:
+    msg: "{{ msg.split('\n') }}"
+  when: vars['platform']['log']['level']=='debug'
+
+- vars:
+    msg: |
+       {{ vars['platform'] | to_nice_yaml }}
+  debug:
+    msg: "{{ msg.split('\n') }}"
+  when: vars['platform']['log']['level']=='debug'

@@ -1,0 +1,44 @@
+- name: include default vars "{{ int_sub_obj }}"
+  include_vars: 
+    file: "/data/vars/defaults/int-{{ int_sub_obj }}.yaml"
+    hash_behaviour: merge
+  when: vars['int'][int_sub_obj]['enabled'] == true
+
+- name: include executor "{{ int_sub_obj }}" version vars
+  include_vars: 
+    file: "/data/manifests/executor/{{ int_sub_obj }}-{{ vars['int'][int_sub_obj]['version'] }}.yaml"
+    hash_behaviour: merge
+  when:
+    - vars['int'][int_sub_obj]['runner']['type'] == 'executor' 
+    - vars['int'][int_sub_obj]['version'] is defined
+    - vars['int'][int_sub_obj]['branch'] is not defined
+    - vars['int'][int_sub_obj]['enabled'] == true
+
+
+- name: include executor vars "{{ int_sub_obj }}" branch vars
+  include_vars: 
+    file: "/data/manifests/executor/{{ int_sub_obj }}@{{ vars['int'][int_sub_obj]['branch'] }}.yaml"
+    hash_behaviour: merge
+  when: 
+    - vars['int'][int_sub_obj]['runner']['type'] == 'executor' 
+    - vars['int'][int_sub_obj]['branch'] is defined
+    - vars['int'][int_sub_obj]['enabled'] == true
+
+- name: include repo "{{ int_sub_obj }}" version vars
+  include_vars: 
+    file: "/data/manifests/repo/{{ int_sub_obj }}-{{ vars['int'][int_sub_obj]['version'] }}.yaml"
+    hash_behaviour: merge
+  when:
+    - vars['int'][int_sub_obj]['runner']['type'] == 'repo' 
+    - vars['int'][int_sub_obj]['version'] is defined
+    - vars['int'][int_sub_obj]['branch'] is not defined
+    - vars['int'][int_sub_obj]['enabled'] == true
+
+- name: include repo vars "{{ int_sub_obj }}" branch vars
+  include_vars: 
+    file: "/data/manifests/repo/{{ int_sub_obj }}@{{ vars['int'][int_sub_obj]['branch'] }}.yaml"
+    hash_behaviour: merge
+  when: 
+    - vars['int'][int_sub_obj]['runner']['type'] == 'repo' 
+    - vars['int'][int_sub_obj]['branch'] is defined
+    - vars['int'][int_sub_obj]['enabled'] == true

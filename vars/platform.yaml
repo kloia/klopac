@@ -19,8 +19,8 @@ platform:
     name: aws
     type: ec2
   jump:
-    ip: ''
-    auth: false
+    ip: 3.249.242.85
+    auth: true
   required:
     - environment
     - provider.name
