@@ -2,7 +2,7 @@ gitops:
   enabled: true
   type: argocd
   operation:
-    type: delete
+    type: create
   password: ''
   required:
     - enabled
