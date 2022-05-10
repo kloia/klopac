@@ -112,7 +112,7 @@
   - name: "[INSTANCE-TESTS] - Write Host's OS Version Checks with Imported OS_VERSION Variable to outputs"
     delegate_to: localhost
     changed_when: false
-    shell: "yq -i '.instance_layer[{{ index }}].os.version.match = \"{{ item.stdout | lower == OS_VERSION }}\"' /data/bundle/output.yaml -y"
+    shell: "yq -i '.instance_layer[{{ index }}].os.version.match = \"{{ item.stdout | lower in OS_VERSION }}\"' /data/bundle/output.yaml -y"
     loop: "{{OS_VERSION_RESULTS.results}}"
     loop_control:
       index_var: index
