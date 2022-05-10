@@ -88,3 +88,7 @@
     src: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}.kubeconfig"
     dest: /tmp/kubeconfig
     mode: 400
+
+- name: change socket file mode
+  delegate_to: "klopac-{{ gitops_type }}"
+  shell: "chmod 777 /var/run/docker.sock"

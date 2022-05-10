@@ -55,7 +55,7 @@
   - name: "[INSTANCE-TESTS] - Get Host's OS Name - PEM"
     changed_when: false
     shell: |
-      ssh -o StrictHostKeyChecking=no -i {{ vars['ins']['image']['auth']['pem.path'] }} {{ hostvars[groups['servers'][item | int]]['ansible_user'] }}@{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }} "cat /etc/*release* | grep -E "^NAME" | cut -d '=' -f 2 | sed 's/\"//g' "
+      ssh -o StrictHostKeyChecking=no {{ hostvars[groups['servers'][item | int]]['ansible_user'] }}@{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }} "cat /etc/*release* | grep -E "^NAME" | cut -d '=' -f 2 | sed 's/\"//g' "
     args:
       executable: /bin/bash
     register: os_name_results
@@ -64,7 +64,7 @@
   - name: "[INSTANCE-TESTS] - Get Host's OS Version - PEM"
     changed_when: false
     shell: |
-      ssh -o StrictHostKeyChecking=no -i {{ vars['ins']['image']['auth']['pem.path'] }} {{ hostvars[groups['servers'][item | int]]['ansible_user'] }}@{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }} "cat /etc/*release* | grep -E "^VERSION=" | cut -d '=' -f 2 | sed 's/\"//g' | cut -d ' ' -f 1 "
+      ssh -o StrictHostKeyChecking=no  {{ hostvars[groups['servers'][item | int]]['ansible_user'] }}@{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }} "cat /etc/*release* | grep -E "^VERSION=" | cut -d '=' -f 2 | sed 's/\"//g' | cut -d ' ' -f 1 "
     args:
       executable: /bin/bash
     register: os_version_results

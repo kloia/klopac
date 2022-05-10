@@ -25,7 +25,7 @@ rm -rf /var/lib/apt/lists/* && \
 echo '%docker ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
 mkdir -p /data/repo /data/outputs /data/sensitive && \
 chown -R 1000:1000 /data && \
-pip3 --no-cache-dir install ansible==5.2.0 yq && \
+pip3 --no-cache-dir install ansible==5.2.0 yq boto3 botocore boto docker && \
 apt-get update && \
 apt-get install -y sshpass
 

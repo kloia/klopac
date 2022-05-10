@@ -27,17 +27,17 @@
 - name: "[VALIDATOR - REPO VALIDATION] include_manifest_file"
   include_vars: /data/manifests/{{ engine.runner.type }}/{{ engine.type }}-{{engine_version}}.yaml
   
-- name: "[VALIDATOR - REPO VALIDATION] Check if the repo directory exists"
-  ansible.builtin.stat:
-    path: "/data/repo/{{ engine.type }}"
-  register: repo_dir_exists
+# - name: "[VALIDATOR - REPO VALIDATION] Check if the repo directory exists"
+#   ansible.builtin.stat:
+#     path: "/data/repo/{{ vars['platform']['repo'][engine.type]['name'] }}"
+#   register: repo_dir_exists
 
-- name: "[VALIDATOR - REPO VALIDATION] Assertion of repo directory existence"
-  assert:
-    that:
-      - repo_dir_exists.stat.exists == true
-    fail_msg: "Repo does not exist in 'repo' folder"
-    success_msg: "Repo is exist"
+# - name: "[VALIDATOR - REPO VALIDATION] Assertion of repo directory existence"
+#   assert:
+#     that:
+#       - repo_dir_exists.stat.exists == true
+#     fail_msg: "Repo does not exist in 'repo' folder"
+#     success_msg: "Repo is exist"
 
 - name: Check if terraform engine 
   include: terraform_state_validation.yml

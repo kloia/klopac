@@ -1,22 +1,21 @@
----
 platform:
   provider:
     vsphere:
       master:
-        datastore: ''
-        network: ''
-        resourcePool: ''
-        template: ''
+        datastore: ""
+        network: ""
+        resourcePool: ""
+        template: ""
       vcenter:
-        cluster: ''
-        datacenter: ''
-        folder: ''
-        host: ''
-        password: ''
-        uri: ''
-        username: ''
+        cluster: ""
+        datacenter: ""
+        folder: ""
+        host: ""
+        password: ""
+        uri: ""
+        username: ""
       worker:
-        datastore: ''
-        network: ''
-        resourcePool: ''
-        template: ''
+        datastore: ""
+        network: ""
+        resourcePool: ""
+        template: ""

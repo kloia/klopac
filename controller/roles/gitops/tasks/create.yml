@@ -18,7 +18,7 @@
 
 - name: install gitops "{{ gitops_type }}"
   delegate_to: "klopac-{{ gitops_type }}"
-  shell: "export KUBECONFIG=/tmp/kubeconfig; export lbdnsname={{ gitops_lb_dnsname }}; helm upgrade -i --create-namespace --repo {{ gitops_runner_helm_repo }} -n {{ gitops_runner_helm_namespace }} --version {{ gitops_version }} {{ gitops_runner_helm_name }} {{ gitops_runner_helm_name }} {{ gitops_runner_helm_params }}; kubectl apply -f /tmp/traefik.yaml;"
+  shell: "export KUBECONFIG=/tmp/kubeconfig; export lbdnsname={{ gitops_lb_dnsname }}; helm upgrade -i --wait --create-namespace --repo {{ gitops_runner_helm_repo }} -n {{ gitops_runner_helm_namespace }} --version {{ gitops_version }} {{ gitops_runner_helm_name }} {{ gitops_runner_helm_name }} {{ gitops_runner_helm_params }}; kubectl apply -f /tmp/traefik.yaml;"
   register: gitops_create_log
   when: gitops_runner_helm_name is defined and vars['platform'][gitops_runner_type][gitops_type]['dialect']['traefik'] is defined
 

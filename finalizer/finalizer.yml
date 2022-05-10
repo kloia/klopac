@@ -38,6 +38,8 @@
       include_vars: /data/vars/engine.yaml
     - name: Include Instance Variables
       include_vars: /data/vars/instance.yaml
+    - name: Include Platform Variables
+      include_vars: /data/vars/platform.yaml
   tasks:
     - name: "[ENGINE-TESTS] - START"
       include_role:

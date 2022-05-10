@@ -36,6 +36,10 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+- name: change socket file mode
+  delegate_to: "klopac-{{ int_exe_obj }}"
+  shell: "sudo chmod 777 /var/run/docker.sock"
+
 - name: add container to inventory
   add_host:
     name: "klopac-{{ int_exe_obj }}"

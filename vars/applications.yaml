@@ -1,5 +1,4 @@
 ---
-
 app:
   example:
     basedOn: gitops

@@ -3,9 +3,11 @@ tls.key
 ca.crt
 id_rsa
 sensitive
+bundle
 .DS_Store
 .bash_history
 .cache
 .local
 .ansible
 .ssh
+.kube

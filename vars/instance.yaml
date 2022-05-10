@@ -1,30 +1,29 @@
----
 ins:
-  enabled: true
+  enabled: false
   image:
     auth:
-      pem.path: img.pem.path
+      password: password
+      pem.path: private_key_path
       pem.type: img.pem.type
-      type: img.auth.type
-      password: img.password
-      user: img.auth.user
+      type: pem
+      user: ubuntu
     id: img.id
     name: img.name
     os: img.os
   lb:
     priv:
-      dnsName: lb-priv-klopac-test-6a5a54b6d529c2a5.elb.eu-west-1.amazonaws.com
+      dnsName: lb-priv-klopac-tst-1cec20319b7aa891.elb.eu-west-2.amazonaws.com
       ip:
-        - 172.31.5.247
-        - 172.31.17.149
+        - 172.31.12.191
+        - 172.31.44.227
     pub:
-      dnsName: lb-public-klopac-test-d8d62cf98663b9e4.elb.eu-west-1.amazonaws.com
+      dnsName: lb-public-klopac-tst-17dc523d12297797.elb.eu-west-2.amazonaws.com
   master:
-    min: 1
-    max: 1
     cpu: 4
     diskSize: 200g
+    max: 1
     mem: 8g
+    min: 1
     net:
       dhcp: true
       dns:
@@ -32,16 +31,16 @@ ins:
         - 10.0.0.101
       domain: pac.local
       ip:
-        public:
-          gw: 10.0.0.1
-          subnet: 24
-          pool:
-            - 34.247.57.207
         private:
           gw: 10.0.0.1
-          subnet: 24
           pool:
-            - 172.31.29.82
+            - 10.10.10.10
+          subnet: 24
+        public:
+          gw: 10.0.0.1
+          pool:
+            - 13.40.146.13
+          subnet: 24
   operation:
     type: create
   required:
@@ -64,12 +63,12 @@ ins:
     type: repo
   type: terraform
   worker:
-    min: 2
-    max: 2
     cpu: 12
     diskSize: 300g
     group: asgWorker
+    max: 3
     mem: 128g
+    min: 2
     net:
       dhcp: true
       dns:
@@ -77,15 +76,13 @@ ins:
         - 10.0.0.101
       domain: pac.local
       ip:
-        public:
-          gw: 10.0.0.1
-          subnet: 24
-          pool:
-            - 54.154.237.150
-            - 34.243.39.216
         private:
           gw: 10.0.0.1
+          pool: []
           subnet: 24
+        public:
+          gw: 10.0.0.1
           pool:
-            - 172.31.13.55
-            - 172.31.29.106
+            - 18.170.43.132
+            - 13.40.68.60
+          subnet: 24

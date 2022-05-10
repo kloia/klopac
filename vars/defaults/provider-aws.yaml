@@ -1,15 +1,14 @@
----
 platform:
   provider:
     aws:
-      role:
-        arn: 'arn:aws:iam::417732881703:role/eks-admin'
       iam:
-        policy: 'eks-all'
+        policy: eks-all
+      role:
+        arn: arn:aws:iam::417732881703:role/eks-admin
       vpc:
-        cidrBlock: "172.31.0.0/16"
+        cidrBlock: 172.31.0.0/16
+        id: vpc-7fcc6416
         name: klopac-default
-        id: 'vpc-024f3e66'
         subnet:
-          id1: 'subnet-f9b3fb9d'
-          id2: 'subnet-ec04449a'
+          id1: subnet-1dde0366
+          id2: subnet-f555989c

@@ -3,9 +3,9 @@ platform:
   repo:
     terraform:
       name: terraform-instances
-      uri: ''
+      uri: 'https://github.com/kloia/terraform-instances.git'
       type: git
-      branch: platform.provider.name
+      branch: aws
       aws:
         dialect:
           command:

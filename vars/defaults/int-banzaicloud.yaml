@@ -1,4 +1,3 @@
----
 int:
   loggingBanzaicloud:
     version: 3.17.2

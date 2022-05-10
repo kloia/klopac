@@ -23,19 +23,14 @@
   - name: "[FINALIZE] - Run Subtasks for Instance Output Files"
     include: instance-subtasks.yml filename="{{ vars['ins']['type'] }}"
     when: 
-    - vars['ins']['enabled'] | bool
-    - vars['ins']['runner']['type'] == "repo" 
+    - vars['ins']['enabled'] == true
 
   - name: "[FINALIZE] - Run Subtasks for Engine Output Files"
     include: engine-subtasks.yml filename="{{ vars['engine']['type'] }}"
     when: 
-    - vars['engine']['enabled'] | bool
-    - vars['engine']['runner']['type'] == "repo" 
+    - vars['engine']['enabled'] == true
   
   - name: "[FINALIZE] - Tar Bundle"
-    changed_when: false
-    command: tar czf /data/bundle.tar.gz .
-    args:
-      chdir: /data/bundle
- 
-  when: COMPRESS_BUNDLE | bool
+    #changed_when: false
+    shell: tar czf /tmp/bundle.tar.gz /data/bundle /data/vars /data/manifests /data/sensitive ; mv /tmp/bundle.tar.gz /data/bundle/bundle.tar.gz
+  when: COMPRESS_BUNDLE | bool == true

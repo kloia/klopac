@@ -1,4 +1,8 @@
 ---
+- name: "[ENGINE-SUBTASK] - Include Platform Variables"
+  include_vars: 
+    file: "/data/vars/platform.yaml"
+    hash_behaviour: merge
 
 - name: "[ENGINE-SUBTASK] - Include Default Engine Variables"
   include_vars: 
@@ -8,10 +12,11 @@
 - name: "[ENGINE-SUBTASK] - Include Manifest File for Engine"
   include_vars: 
     file: "/data/manifests/{{ vars['engine']['runner']['type'] }}/{{ filename }}-{{ vars['engine'][filename]['version'] }}.yaml"
+    hash_behaviour: merge
 
 - name: "[ENGINE-SUBTASK] - Check that the kubeconfig exists"
   stat:
-    path: "/data/repo/{{ filename }}/{{ vars['platform']['repo'][filename]['outputs']['kubeconfig']['path'] }}"
+    path: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}.kubeconfig"
   register: stat_result
 
 # - name: "[ENGINE-SUBTASK] - Write kubeconfig file exists checks to outputs"
@@ -22,8 +27,8 @@
 
 - name: "[ENGINE-SUBTASK] - Copy Kubeconfig file with owner and permissions to the Bundle Directory"
   ansible.builtin.copy:
-    src: "/data/repo/{{ filename }}/{{ vars['platform']['repo'][filename]['outputs']['kubeconfig']['path'] }}"
-    dest: /data/bundle/kubeconfig
+    src:  "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}.kubeconfig"
+    dest: /data/bundle/
     owner: 1000
     group: 1000
     mode: '0644'

@@ -11,7 +11,7 @@
 
 - name: "[INSTANCE-SUBTASK] - Check that the terraform.tfstate exists"
   stat:
-    path: "/data/repo/{{ filename }}/{{ vars['platform']['repo'][filename]['outputs']['file']['path'] }}"
+    path: "/data/repo/{{ vars['platform']['repo'][filename]['name'] }}/{{ vars['platform']['repo'][filename]['outputs']['file']['path'] }}"
   register: stat_result
 
 # - name: Write terraform state file exists checks to outputs
@@ -22,8 +22,8 @@
 
 - name: "[INSTANCE-SUBTASK] - Copy State File with owner and permissions to the Bundle Directory"
   ansible.builtin.copy:
-    src: "/data/repo/{{ filename }}/{{ vars['platform']['repo'][filename]['outputs']['file']['path'] }}"
-    dest: /data/bundle/terraform.tfstate
+    src: "/data/repo/{{ vars['platform']['repo'][filename]['name'] }}/{{ vars['platform']['repo'][filename]['outputs']['file']['path'] }}"
+    dest: /data/bundle/
     owner: 1000
     group: 1000
     mode: '0644'

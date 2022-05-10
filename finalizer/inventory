@@ -1,0 +1,7 @@
+
+[servers]
+172.31.42.152 ansible_ssh_private_key_file=/data/sensitive/klopac-tst-key.pem ansible_user=ubuntu
+172.31.34.218 ansible_ssh_private_key_file=/data/sensitive/klopac-tst-key.pem ansible_user=ubuntu
+172.31.8.72 ansible_ssh_private_key_file=/data/sensitive/klopac-tst-key.pem ansible_user=ubuntu
+[jump]
+13.40.94.103 ansible_ssh_private_key_file=/data/sensitive/klopac-tst-key.pem ansible_user=ubuntu

@@ -1,9 +1,8 @@
 gitops:
-  enabled: true
-  type: argocd
+  enabled: false
   operation:
     type: create
-  password: ''
+  password: yATnZrW540hFs5TG
   required:
     - enabled
     - type
@@ -11,5 +10,6 @@ gitops:
     - runner.type
   runner:
     type: executor
-  uri: ''
-  user: ''
+  type: argocd
+  uri: https://lb-public-klopac-tst-17dc523d12297797.elb.eu-west-2.amazonaws.com
+  user: admin

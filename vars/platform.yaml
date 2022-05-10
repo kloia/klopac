@@ -1,27 +1,26 @@
----
 platform:
-  name: klopac
-  environment: test
+  environment: tst
+  jump:
+    auth: true
+    ip: 13.40.94.103
   log:
     level: error
+  name: klopac
   operation:
     type: create
   provider:
-    region1: eu-west-1
-    region2: eu-west-2
     auth:
       id: ''
       key: ''
-      password: ''
-      subscription: ''
-      tenant: ''
+      password: ""
+      subscription: ""
+      tenant: ""
       type: id
-      user: ''
+      user: ""
     name: aws
+    region1: eu-west-2
+    region2: eu-west-2
     type: ec2
-  jump:
-    ip: 3.249.242.85
-    auth: true
   required:
     - environment
     - provider.name

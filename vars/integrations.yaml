@@ -1,10 +1,9 @@
----
 int:
   certmanager:
     enabled: true
     namespace: cert-manager
     operation:
-      type: delete
+      type: create
       update:
         policy: apply
     required:
@@ -48,6 +47,80 @@ int:
       group: ins.worker.group
       max: ins.worker.count * 1.5
       min: ins.worker.count
+  efk:
+    enabled: false
+    namespace: logging
+    operation:
+      type: create
+      update:
+        policy: apply
+    password: ""
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    uri: ""
+    user: ""
+  enabled: false
+  hashicorpvault:
+    enabled: false
+    namespace: vault
+    operation:
+      type: create
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    rootKeys:
+      - ""
+    runner:
+      type: executor
+    uri: ""
+  nginxingress:
+    enabled: false
+    namespace: ingress-nginx
+    operation:
+      type: create
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - type
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    type: daemonset
+  pgaStack:
+    enabled: false
+    namespace: monitoring
+    operation:
+      type: create
+      update:
+        policy: apply
+    password: ""
+    required:
+      - enabled
+      - name
+      - namespace
+      - serviceType
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    serviceType: NodePort
+    uri: ""
+    user: ""
   vspherecpi:
     enabled: false
     namespace: kube-system
@@ -83,77 +156,3 @@ int:
     storageClass:
       default: true
       name: vsphere-sc
-  enabled: true
-  nginxingress:
-    enabled: false
-    namespace: ingress-nginx
-    operation:
-      type: create
-      update:
-        policy: apply
-    required:
-      - enabled
-      - name
-      - namespace
-      - type
-      - operation.type
-      - runner.type
-    runner:
-      type: executor
-    type: daemonset
-  efk:
-    enabled: false
-    namespace: logging
-    operation:
-      type: create
-      update:
-        policy: apply
-    password: ''
-    required:
-      - enabled
-      - name
-      - namespace
-      - operation.type
-      - runner.type
-    runner:
-      type: executor
-    uri: ''
-    user: ''
-  pgaStack:
-    enabled: false
-    namespace: monitoring
-    operation:
-      type: create
-      update:
-        policy: apply
-    password: ''
-    required:
-      - enabled
-      - name
-      - namespace
-      - serviceType
-      - operation.type
-      - runner.type
-    runner:
-      type: executor
-    serviceType: NodePort
-    uri: ''
-    user: ''
-  hashicorpvault:
-    enabled: false
-    namespace: vault
-    operation:
-      type: create
-      update:
-        policy: apply
-    required:
-      - enabled
-      - name
-      - namespace
-      - operation.type
-      - runner.type
-    rootKeys:
-      - ''
-    runner:
-      type: executor
-    uri: ''

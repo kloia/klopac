@@ -1,10 +1,9 @@
----
 int:
   vspherecsi:
     storageclass:
-      datastoreuri: ''
+      datastoreuri: ""
       name: klopac-sc
-      storagepolicyname: ''
+      storagepolicyname: ""
     vcenter:
       datacenter: vsphere.vcenter.datacenter
       host: vsphere.vcenter.host

@@ -41,17 +41,17 @@
     fail_msg: "Tenant and subscription should be defined for azure"
   when: platform.provider.name == 'azure'
 
-- name: "ID and Key required for Auth Type 'id'"
-  assert:
-    that:
-      - platform.provider.auth.key is defined
-      - platform.provider.auth.key != None
-      - platform.provider.auth.key != ""
-      - platform.provider.auth.id is defined
-      - platform.provider.auth.id != None
-      - platform.provider.auth.id != ""
-    fail_msg: "Key and id should be defined"
-  when: platform.provider.auth.type == 'id'
+# - name: "ID and Key required for Auth Type 'id'"
+#   assert:
+#     that:
+#       - platform.provider.auth.key is defined
+#       - platform.provider.auth.key != None
+#       - platform.provider.auth.key != ''
+#       - platform.provider.auth.id is defined
+#       - platform.provider.auth.id != None
+#       - platform.provider.auth.id != ""
+#     fail_msg: "Key and id should be defined"
+#   when: platform.provider.auth.type == 'id'
 
 - name: "User and password required for Auth Type 'user'"
   assert:

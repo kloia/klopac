@@ -1,23 +1,22 @@
----
 platform:
   provider:
     aws:
       ec2:
         master:
-          az: eu-central-1a
-          iamRole: ''
-          instanceType: 't3.large'
-          keyPair: ''
-          securityGroup: ''
-          subnet: ''
+          az: eu-west-2a
+          iamRole: ""
+          instanceType: t2.large
+          keyPair: ""
+          securityGroup: ""
+          subnet: ""
           tag: klopac-master
-          vpc: ''
+          vpc: ""
         worker:
-          az: eu-central-1a
-          iamRole: ''
-          instanceType: 't3.large'
-          keyPair: ''
-          securityGroup: ''
-          subnet: ''
+          az: eu-west-3a
+          iamRole: ""
+          instanceType: t2.2xlarge
+          keyPair: ""
+          securityGroup: ""
+          subnet: ""
           tag: klopac-worker
-          vpc: ''
+          vpc: ""

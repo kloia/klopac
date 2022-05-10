@@ -1,19 +1,18 @@
----
 platform:
   provider:
     azure:
       vmss:
         master:
-          keyPair: ''
-          resourceGroup: ''
-          size: ''
+          keyPair: ""
+          resourceGroup: ""
+          size: ""
           user: img.auth.user
-          vmss: ''
-          vnet: ''
+          vmss: ""
+          vnet: ""
         worker:
-          keyPair: ''
-          resourceGroup: ''
-          size: ''
+          keyPair: ""
+          resourceGroup: ""
+          size: ""
           user: img.auth.user
-          vmss: ''
-          vnet: ''
+          vmss: ""
+          vnet: ""

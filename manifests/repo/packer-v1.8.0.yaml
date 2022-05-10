@@ -4,9 +4,9 @@ platform:
       uri: 'https://github.com/kloia/packer-images'
       name: packer-images
       type: git
-      branch: platform.provider.name
+      branch: aws
       aws:
-        sourceAmi: 'ami-08ca3fed11864d6bb'
+        sourceAmi: ami-00826bd51e68b1487
         dialect:
           command:
             create: "packer build -var-file ./vars/vars.hcl ."

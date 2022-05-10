@@ -7,12 +7,10 @@
     - item != 'enabled' 
     - item != 'required'
 
-
 - include_tasks: ../roles/int/tasks/vars.yaml
   with_items: "{{ int_obj }}"
   loop_control:
     loop_var: int_sub_obj
-  
 
 - vars:
     msg: |

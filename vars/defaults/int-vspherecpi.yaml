@@ -1,4 +1,3 @@
----
 int:
   cpiVsphere:
     vcenter:
