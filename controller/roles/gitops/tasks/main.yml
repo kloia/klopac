@@ -1,0 +1,20 @@
+---
+- name: pre
+  include: pre.yml
+  when: gitops.enabled == true
+
+- name: create
+  include: create.yml
+  when: gitops.enabled == true and gitops.operation.type == 'create'
+
+- name: update
+  include: update.yml
+  when: gitops.enabled == true and gitops.operation.type == 'update'
+
+- name: delete
+  include: delete.yml
+  when: gitops.enabled == true and gitops.operation.type == 'delete'
+
+- name: post
+  include: post.yml
+  when: gitops.enabled == true

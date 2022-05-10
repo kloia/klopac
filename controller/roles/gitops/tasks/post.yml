@@ -1,0 +1,39 @@
+---
+- name: clear gitops user variable
+  shell: "yq -i -y '.gitops.user = \"\"' /data/vars/gitops.yaml"
+  when: gitops.operation.type == 'delete'
+
+- name: set gitops user variable
+  shell: "yq -i -y '.gitops.user = \"{{ vars['platform'][gitops_runner_type][gitops_type]['dialect']['command']['output']['user'] }}\"' /data/vars/gitops.yaml"
+  when: gitops.operation.type != 'delete'
+
+- name: clear gitops password variable
+  shell: "yq -i -y '.gitops.password = \"\"' /data/vars/gitops.yaml"
+  when: gitops.operation.type == 'delete'
+
+- name: get gitops user password
+  delegate_to: "klopac-{{ gitops_type }}"
+  shell: "export KUBECONFIG=/tmp/kubeconfig; export namespace={{ gitops_runner_helm_namespace }};  {{ vars['platform'][gitops_runner_type][gitops_type]['dialect']['command']['output']['password'] }}"
+  register: gitops_password
+
+- debug:
+    msg: "{{ gitops_password }}"
+  when: vars['platform']['log']['level']=='debug'
+
+- name: set gitops user password
+  shell: "yq -i -y '.gitops.password = \"{{ gitops_password.stdout_lines[0] }}\"' /data/vars/gitops.yaml"
+  when: gitops.operation.type != 'delete'
+
+- name: clear gitops uri variable
+  shell: "yq -i -y '.gitops.uri = \"\"' /data/vars/gitops.yaml"
+  when: gitops.operation.type == 'delete'
+
+- name: set gitops uri variable
+  shell: "yq -i -y '.gitops.uri = \"https://{{ vars['ins']['lb']['pub']['dnsName'] }}\"' /data/vars/gitops.yaml"
+  when: gitops.operation.type != 'delete'
+
+- name: destroy container
+  become: true
+  docker_container:
+    name: "klopac-{{ gitops_type }}"
+    state: absent

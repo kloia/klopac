@@ -1,0 +1,27 @@
+---
+- copy:
+    content: "{{ vars['platform'][gitops_runner_type][gitops_type]['dialect']['traefik']['content'] }}"
+    dest: ../templates/gitops_traefik_config.j2
+  when:  vars['platform'][gitops_runner_type][gitops_type]['dialect']['traefik'] is defined
+
+- template:
+    src: ../templates/gitops_traefik_config.j2
+    dest: "/tmp/traefik.yaml"
+  when:  vars['platform'][gitops_runner_type][gitops_type]['dialect']['traefik'] is defined
+
+- name: copy traefik manifest to runner
+  delegate_to: "klopac-{{ gitops_type }}"
+  copy:
+    src: "/tmp/traefik.yaml"
+    dest: "/tmp/traefik.yaml"
+  when:  vars['platform'][gitops_runner_type][gitops_type]['dialect']['traefik'] is defined
+
+- name: update gitops "{{ gitops_type }}"
+  delegate_to: "klopac-{{ gitops_type }}"
+  shell: "export KUBECONFIG=/tmp/kubeconfig; export lbdnsname={{ gitops_lb_dnsname }}; helm upgrade -i --update-namespace --repo {{ gitops_runner_helm_repo }} -n {{ gitops_runner_helm_namespace }} --version {{ gitops_version }} {{ gitops_runner_helm_name }} {{ gitops_runner_helm_name }} {{ gitops_runner_helm_params }}; kubectl apply -f /tmp/traefik.yaml;"
+  register: gitops_update_log
+  when: gitops_runner_helm_name is defined and vars['platform'][gitops_runner_type][gitops_type]['dialect']['traefik'] is defined
+
+- debug:
+    msg: "{{ vars['gitops_update_log'] }}"
+  when: vars['platform']['log']['level']=='debug'

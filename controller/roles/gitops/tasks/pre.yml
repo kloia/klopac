@@ -1,0 +1,90 @@
+---
+- name: include provider defaults
+  include_vars: 
+    file: /data/vars/defaults/provider-{{ platform.provider.name }}.yaml
+    hash_behaviour: merge
+
+- name: include provider type defaults
+  include_vars: 
+    file: /data/vars/defaults/provider-{{ platform.provider.name }}-{{ platform.provider.type }}.yaml
+    hash_behaviour: merge
+
+- name: include gitops defaults
+  include_vars:
+    file: /data/vars/defaults/gitops-{{ gitops.type }}.yaml
+    hash_behaviour: merge
+
+- name: get gitops type
+  set_fact:
+    gitops_type: "{{ vars['gitops']['type'] }}"
+
+- name: get gitops runner type
+  set_fact:
+    gitops_runner_type: "{{ vars['gitops']['runner']['type'] }}"
+
+- name: get gitops version
+  set_fact:
+    gitops_version: "{{ vars['gitops'][gitops_type]['version'] }}"
+
+- name: include gitops variables
+  include_vars:
+    file: "/data/manifests/{{ gitops_runner_type }}/{{ gitops_type }}-{{ gitops_version }}.yaml"
+    hash_behaviour: merge
+
+- name: get gitops runner name
+  set_fact:
+    gitops_runner_name: "{{ vars['platform'][gitops_runner_type][gitops_type]['runner']['name'] }}"
+
+- name: get gitops runner version
+  set_fact:
+    gitops_runner_version: "{{ vars['platform'][gitops_runner_type][gitops_type]['runner']['version'] }}"
+
+- name: get runner command for helm "{{ gitops_runner_type }}"
+  set_fact:
+    gitops_runner_helm_repo: "{{ vars['platform'][gitops_runner_type][gitops_type]['helm']['repo'] }}"
+    gitops_runner_helm_namespace: "{{ vars['platform'][gitops_runner_type][gitops_type]['helm']['namespace'] }}"
+    gitops_runner_helm_name: "{{ vars['platform'][gitops_runner_type][gitops_type]['helm']['name'] }}"
+  when: vars['platform'][gitops_runner_type][gitops_type]['runner']['command'] == 'helm'
+
+- name: get params for helm "{{ gitops_runner_type }}"
+  set_fact:
+    gitops_runner_helm_params: "--set {{ vars['platform'][gitops_runner_type][gitops_type]['helm']['params'] | join(' --set ') }}"
+  when: vars['platform'][gitops_runner_type][gitops_type]['runner']['command'] == 'helm'
+
+- name: get lb dnsName
+  set_fact:
+    gitops_lb_dnsname: "{{ vars['ins']['lb']['pub']['dnsName'] }}"
+
+- vars:
+    msg: |
+       {{ gitops_runner_helm_params }}
+  debug:
+    msg: "{{ msg }}"
+  when: vars['platform']['log']['level']=='debug'
+
+- name: start container
+  become: true
+  docker_container:
+    name: "klopac-{{ gitops_type }}"
+    image: "kloiadocker/klopac-{{ gitops_runner_name }}-runner:{{ gitops_runner_version }}"
+    command: "'sleep infinity'"
+    state: started
+    tty: yes
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+- name: add container to inventory
+  add_host:
+    name: "klopac-{{ gitops_type }}"
+    ansible_host: "klopac-{{ gitops_type }}"
+    ansible_user: root
+    ansible_connection: docker
+    groups: containers
+  changed_when: false
+
+- name: copy kubeconfig to runner
+  delegate_to: "klopac-{{ gitops_type }}"
+  copy:
+    src: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}.kubeconfig"
+    dest: /tmp/kubeconfig
+    mode: 400
