@@ -5,6 +5,6 @@
     - gitops
   vars_files:
     - /data/vars/platform.yaml
+    - /data/vars/instance.yaml
     - /data/vars/engine.yaml
-    - /data/vars/integrations.yaml
     - /data/vars/gitops.yaml

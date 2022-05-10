@@ -1,23 +1,15 @@
----
 gitops:
   enabled: true
-  name: argocd
-  namespace: argocd
+  type: argocd
   operation:
     type: create
-    update:
-      policy: apply
   password: ''
-  project: default
   required:
     - enabled
-    - name
-    - project
-    - serviceType
+    - type
     - operation.type
     - runner.type
   runner:
     type: executor
-  serviceType: NodePort
   uri: ''
   user: ''

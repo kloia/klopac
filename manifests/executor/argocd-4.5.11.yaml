@@ -1,0 +1,49 @@
+---
+platform:
+  executor:
+    argocd:
+      version: 4.5.11
+      runner:
+        name: kubernetes
+        version: 0.1
+        command: helm
+      dialect:
+        command:
+          output:
+            user: admin
+            password: "kubectl get secret argocd-initial-admin-secret -n $namespace -o jsonpath='{.data.password}' | base64 -d" 
+            uri: $lbdnsname
+        traefik:
+          content: |
+            apiVersion: traefik.containo.us/v1alpha1
+            kind: IngressRoute
+            metadata:
+              name: argocd-server
+              namespace: argo-cd
+            spec:
+              entryPoints:
+                - websecure
+              routes:
+                - kind: Rule
+                  match: Host(`{{ vars['ins']['lb']['pub']['dnsName'] }}`)
+                  priority: 10
+                  services:
+                    - name: argo-cd-argocd-server
+                      port: 80
+                - kind: Rule
+                  match: Host(`{{ vars['ins']['lb']['pub']['dnsName'] }}`) && Headers(`Content-Type`, `application/grpc`)
+                  priority: 11
+                  services:
+                    - name: argo-cd-argocd-server
+                      port: 80
+                      scheme: h2c
+              tls:
+                certResolver: default
+      helm:
+        repo: 'https://argoproj.github.io/argo-helm'
+        namespace: argo-cd
+        name: argo-cd
+        params:
+          - server.ingress.enabled=true
+          - server.ingress.hosts[0]=$lbdnsname
+          - server.extraArgs[0]="--insecure"
