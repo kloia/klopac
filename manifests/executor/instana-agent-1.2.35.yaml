@@ -1,0 +1,20 @@
+---
+platform:
+  executor:
+    instana-agent:
+      version: 1.2.35
+      runner:
+        name: kubernetes
+        version: 0.1
+        command: helm
+      helm:
+        repo: 'https://agents.instana.io/helm'
+        namespace: instana-agent
+        name: instana-agent
+        params:
+          agent.key: "{{ vars['app']['instana']['inputs']['key'] }}"
+          agent.downloadKey: "{{ vars['app']['instana']['inputs']['downloadKey'] }}"
+          agent.endpointHost: "{{ vars['app']['instana']['inputs']['endpointHost'] }}"
+          agent.endpointPort: "{{ vars['app']['instana']['inputs']['endpointPort'] }}"
+          cluster.name: "{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}"
+          zone.name: "{{ vars['platform']['provider']['region1'] }}"

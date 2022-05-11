@@ -12,7 +12,6 @@
   with_items: "{{ int_obj }}"
   loop_control:
     loop_var: int_sub_obj
-  
 
 - vars:
     msg: |

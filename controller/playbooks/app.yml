@@ -8,4 +8,4 @@
     - /data/vars/engine.yaml
     - /data/vars/integrations.yaml
     - /data/vars/gitops.yaml
-    - /data/vars/app.yaml
+    - /data/vars/applications.yaml

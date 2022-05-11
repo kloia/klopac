@@ -1,0 +1,16 @@
+---
+- name: install "{{ item }}" helm chart
+  include_tasks: ../roles/app/tasks/create_obj.yml
+  with_items: "{{ app_obj }}"
+  register: helm_create_log
+  loop_control:
+    loop_var: app_exe_obj
+  when:
+    - vars['app'][app_exe_obj]['runner']['type'] == 'executor'
+    - vars['app'][app_exe_obj]['operation']['type'] == 'create'
+    - vars['platform']['executor'][app_exe_obj]['helm'] is defined
+    - vars['app'][app_exe_obj]['enabled'] == true
+
+- debug:
+    msg: "{{ helm_create_log }}"
+  when: vars['platform']['log']['level']=='debug'
