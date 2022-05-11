@@ -5,6 +5,7 @@ import (
 	"entrypoint/pkg/logger"
 	"entrypoint/pkg/websocket"
 	"errors"
+	"fmt"
 	"os"
 
 	"go.uber.org/zap"
@@ -37,9 +38,15 @@ func Run() {
 			log.Info("[BUNDLE FILE UNTAR - END]")
 		} else {
 			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
-			err := helper.UpdateValuesFile(valuesModel, helper.GetParam[string]("varsPath"))
+			varsPath := helper.GetParam[string]("varsPath")
+			err := helper.UpdateValuesFile(valuesModel, varsPath)
 			if err != nil {
-				log.Panic("Error while patching default values", zap.Error(err))
+				log.Panic(fmt.Sprintf("Error while patching default values for %v", varsPath), zap.Error(err))
+			}
+			manifestsPath := helper.GetParam[string]("manifestsPath")
+			err = helper.UpdateValuesFile(valuesModel, manifestsPath)
+			if err != nil {
+				log.Panic(fmt.Sprintf("Error while patching default values for %v", manifestsPath), zap.Error(err))
 			}
 		}
 

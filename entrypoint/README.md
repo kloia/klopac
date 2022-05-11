@@ -37,7 +37,8 @@ $ go version: go version go1.18
 | logFile     | /data/entrypoint.log | It sets the filename for logs                                                   |  
 | valuesFile  | /data/values.yaml    | Value File                                                                      |   
 | dataPath    | /data/               | Data File Path                                                                  |   
-| varsPath    | /data/vars           | Variable File                                                                   |   
+| varsPath    | /data/vars           | Variables Directory                                                                   | 
+| manifestsPath    | /data/manifests           | Manifests Directory                                                                   |  
 | bundleFile  | /data/bundle/bundle.tar.gz  | Bundle File                                                        |   
 
 
