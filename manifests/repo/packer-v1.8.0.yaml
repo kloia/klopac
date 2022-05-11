@@ -7,7 +7,6 @@ platform:
       type: git
       branch: aws
       aws:
-        sourceAmi: ami-00826bd51e68b1487
         dialect:
           command:
             create: "packer build -var-file ./vars/vars.hcl ."
@@ -23,7 +22,7 @@ platform:
               region                  = "{{ vars['platform']['provider']['region1'] }}"
               vpc_id                  = "{{ vars['platform']['provider'][provider_name]['vpc']['id'] }}"
               subnet_id               = "{{ vars['platform']['provider'][provider_name]['vpc']['subnet']['id1'] }}"
-              source_ami              = "{{ vars['platform']['repo'][img_type][provider_name]['sourceAmi'] }}"
+              source_ami              = "{{ vars['platform']['provider']['sourceimg'] }}"
               ssh_username            = "{{ img.auth.user }}"
               ami_name                = "Ubuntu-20_04-klopac"
               access_key              = "{{ vars['platform']['provider']['auth']['id'] }}"

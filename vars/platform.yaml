@@ -21,6 +21,7 @@ platform:
     name: aws
     region1: eu-west-2
     region2: eu-west-2
+    sourceimg: ami-00826bd51e68b1487
     type: ec2
   required:
     - environment
