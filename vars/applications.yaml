@@ -14,8 +14,8 @@ app:
       type: executor
     type: agent
     inputs:
-      agent.key: XLIyU32sTOuJDjsppgaF7Q
-      agent.downloadKey: XLIyU32sTOuJDjsppgaF7Q
+      agent.key: ''
+      agent.downloadKey: ''
       agent.endpointHost: ingress-blue-saas.instana.io
       agent.endpointPort: 443
       cluster.name: klopac-tst
