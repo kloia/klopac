@@ -38,7 +38,7 @@ $ go version: go version go1.18
 | valuesFile  | /data/values.yaml    | Value File                                                                      |   
 | dataPath    | /data/               | Data File Path                                                                  |   
 | varsPath    | /data/vars           | Variable File                                                                   |   
-| bundleFile  | /data/bundle.tar.gz        | Bundle File                                                                     |   
+| bundleFile  | /data/bundle/bundle.tar.gz  | Bundle File                                                        |   
 
 
 <!-- TABLE OF CONTENTS -->
