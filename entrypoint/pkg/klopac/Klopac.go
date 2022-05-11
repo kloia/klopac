@@ -45,11 +45,10 @@ func Run() {
 			manifestsPath := helper.GetParam[string]("manifestsPath")
 
 			//Merge Intersection Objects - Default and Domain Objects
-			mergeVariables(varsPath, valuesModel)
-			mergeVariables(manifestsPath, valuesModel)
+			mergeVariables([]string{varsPath, manifestsPath}, valuesModel)
 
-			createNewObjects("app", varsPath, manifestsPath, valuesModel)
-			createNewObjects("int", varsPath, manifestsPath, valuesModel)
+			//Create New Domain Objects for App and Int Layer
+			createNewObjects([]string{"app", "int"}, varsPath, manifestsPath, valuesModel)
 		}
 
 		provision := helper.GetParam[bool]("provision")
@@ -65,25 +64,28 @@ func Run() {
 	}
 }
 
-func mergeVariables(varsPath string, valuesModel map[string]interface{}) {
-	err := helper.UpdateValuesFile(valuesModel, varsPath)
-	if err != nil {
-		log.Panic(fmt.Sprintf("Error while patching default values for %v", varsPath), zap.Error(err))
+func mergeVariables(paths []string, valuesModel map[string]interface{}) {
+	for _, path := range paths {
+		err := helper.UpdateValuesFile(valuesModel, path)
+		if err != nil {
+			log.Panic(fmt.Sprintf("Error while patching default values for %v", path), zap.Error(err))
+		}
 	}
 }
 
-func createNewObjects(rootKey, varsPath, manifestsPath string, valuesModel map[string]interface{}) {
+func createNewObjects(keys []string, varsPath, manifestsPath string, valuesModel map[string]interface{}) {
 	//Create New Domain Defaults, Domain Objects and Executors
-	rootValue := valuesModel[rootKey]
-	if rootValue != nil {
-		for innerKey, innerValue := range rootValue.(map[string]interface{}) {
-			if _, ok := innerValue.(map[string]interface{}); ok {
-				createDefaultFile(varsPath, rootKey, innerKey, innerValue)
-				createRunnerFile(innerKey, manifestsPath, innerValue, valuesModel)
+	for _, rootKey := range keys {
+		rootValue := valuesModel[rootKey]
+		if rootValue != nil {
+			for innerKey, innerValue := range rootValue.(map[string]interface{}) {
+				if _, ok := innerValue.(map[string]interface{}); ok {
+					createDefaultFile(varsPath, rootKey, innerKey, innerValue)
+					createRunnerFile(innerKey, manifestsPath, innerValue, valuesModel)
+				}
 			}
 		}
 	}
-
 }
 
 func createDefaultFile(varsPath, rootKey, innerKey string, innerValue interface{}) {
