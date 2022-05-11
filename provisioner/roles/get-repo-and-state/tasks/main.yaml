@@ -32,12 +32,29 @@
   when: 
     - vars['platform']['repo'][item]['tag'] | default("") | length > 0
     - vars['platform']['repo'][item]['branch'] | default("") | length == 0
-# - name: Copy states with type "repo"
-#   copy:
-#     src: "/data/bundle/{{ vars['platform']['repo'][item]['state']['file']['path'] }}"
-#     dest: "/data/repo/{{ repo_names[index] }}/"
-#     mode: u+rw,g-wx,o-rwx
-#   loop: "{{ vars['platform']['repo'].keys() | list }}"
-#   loop_control: 
-#     index_var: index
-#   when: vars['platform']['repo'][item]['state']['enabled'] == true 
+- name: Check if repo manifest is in Instance layer
+  set_fact:
+    operations: "{{ operations | default({}) | combine({ item: ins['operation']['type'] }) }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  when: ins[item] | default("") | length > 0
+- name: Check if repo manifest is in Image layer
+  set_fact:
+    operations: "{{ operations | default({}) | combine({ item: img['operation']['type'] }) }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  when: img[item] | default("") | length > 0
+- name: Check if repo manifest is in Engine layer
+  set_fact:
+    operations: "{{ operations | default({}) | combine({ item: engine['operation']['type'] }) }}"
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  when: engine[item] | default("") | length > 0
+- name: Copy states with type "repo"
+  copy:
+    src: "/data/bundle/{{ vars['platform']['repo'][item]['state']['file']['path'] }}"
+    dest: "/data/repo/{{ repo_names[index] }}/"
+    mode: u+rw,g-wx,o-rwx
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
+  when: 
+  - vars['platform']['repo'][item]['state']['enabled'] == true 
+  - operations[item] != 'create'

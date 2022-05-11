@@ -65,7 +65,3 @@
   when: 
   - ins[ins.type]["version"] | default("") | length > 0
   - ins[ins.type]["branch"] | default("") | length == 0
-
-- name: dibag
-  debug:
-    var: vars['platform']
