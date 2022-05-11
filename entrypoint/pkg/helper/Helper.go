@@ -52,7 +52,6 @@ func WriteFile(filename string, data map[string]interface{}) error {
 	yamlEncoder.SetIndent(2)
 
 	yamlEncoder.Encode(&data)
-
 	err := ioutil.WriteFile(filename, b.Bytes(), 0644)
 	if err != nil {
 		log.Error("Error while writing file ", zap.Error(err), zap.String("filename", filename))
@@ -83,8 +82,6 @@ func Intersection(inputMap, defaultMap map[string]interface{}) (newMap map[strin
 // Basically takes a interface and varsPath(which is path of the variable files) then it starts to override or leaves unchanged depending to intersection logic
 func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) error {
 	log := logger.GetLogger()
-	log.Info(fmt.Sprintf("START: UPDATE DEFAULT VALUES for %v", varsPath))
-	defer log.Info(fmt.Sprintf("END: UPDATE DEFAULT VALUES for %v", varsPath))
 	return filepath.Walk(varsPath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
