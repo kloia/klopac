@@ -1,0 +1,26 @@
+---
+- name: get facts
+  set_fact:
+    app_obj: "{{ app_obj | default([]) + [item] }}"
+  with_items: "{{ vars['app'] }}"
+  when: 
+    - item != 'enabled' 
+
+- include_tasks: ../roles/app/tasks/vars.yaml
+  with_items: "{{ app_obj }}"
+  loop_control:
+    loop_var: app_sub_obj
+
+- vars:
+    msg: |
+       {{ vars['app'] | to_nice_yaml }}
+  debug:
+    msg: "{{ msg.split('\n') }}"
+  when: vars['platform']['log']['level']=='debug'
+
+- vars:
+    msg: |
+       {{ vars['platform'] | to_nice_yaml }}
+  debug:
+    msg: "{{ msg.split('\n') }}"
+  when: vars['platform']['log']['level']=='debug'

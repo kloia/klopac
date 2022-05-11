@@ -1,5 +1,25 @@
 ---
 app:
+  enabled: true
+  instana-agent:
+    enabled: true
+    operation:
+      type: delete
+    required:
+      - enabled
+      - name
+      - operation.type
+      - runner.type
+    runner:
+      type: executor
+    type: agent
+    inputs:
+      agent.key: ''
+      agent.downloadKey: ''
+      agent.endpointHost: ingress-blue-saas.instana.io
+      agent.endpointPort: 443
+      cluster.name: klopac-tst
+      zone.name: us-west-1
   example:
     basedOn: gitops
     enabled: false
@@ -16,26 +36,9 @@ app:
       - runner.type
     runner:
       type: executor
-  instana:
-    enabled: false
-    namespace: instana-agent
-    operation:
-      type: create
-      update:
-        policy: apply
-    required:
-      - enabled
-      - name
-      - namespace
-      - type
-      - operation.type
-      - runner.type
-    runner:
-      type: executor
-    type: agent
   sock-shop:
     basedOn: gitops
-    enabled: true
+    enabled: false
     namespace: sock-shop
     operation:
       type: create
@@ -51,7 +54,7 @@ app:
       type: executor
   test:
     dependsOn: sock-shop
-    enabled: true
+    enabled: false
     namespace: default
     operation:
       type: create

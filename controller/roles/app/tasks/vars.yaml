@@ -1,0 +1,44 @@
+- name: include default vars "{{ app_sub_obj }}"
+  include_vars: 
+    file: "/data/vars/defaults/app-{{ app_sub_obj }}.yaml"
+    hash_behaviour: merge
+  when: vars['app'][app_sub_obj]['enabled'] == true
+
+- name: include executor "{{ app_sub_obj }}" version vars
+  include_vars: 
+    file: "/data/manifests/executor/{{ app_sub_obj }}-{{ vars['app'][app_sub_obj]['version'] }}.yaml"
+    hash_behaviour: merge
+  when:
+    - vars['app'][app_sub_obj]['runner']['type'] == 'executor' 
+    - vars['app'][app_sub_obj]['version'] is defined
+    - vars['app'][app_sub_obj]['branch'] is not defined
+    - vars['app'][app_sub_obj]['enabled'] == true
+
+
+- name: include executor vars "{{ app_sub_obj }}" branch vars
+  include_vars: 
+    file: "/data/manifests/executor/{{ app_sub_obj }}@{{ vars['app'][app_sub_obj]['branch'] }}.yaml"
+    hash_behaviour: merge
+  when: 
+    - vars['app'][app_sub_obj]['runner']['type'] == 'executor' 
+    - vars['app'][app_sub_obj]['branch'] is defined
+    - vars['app'][app_sub_obj]['enabled'] == true
+
+- name: include repo "{{ app_sub_obj }}" version vars
+  include_vars: 
+    file: "/data/manifests/repo/{{ app_sub_obj }}-{{ vars['app'][app_sub_obj]['version'] }}.yaml"
+    hash_behaviour: merge
+  when:
+    - vars['app'][app_sub_obj]['runner']['type'] == 'repo' 
+    - vars['app'][app_sub_obj]['version'] is defined
+    - vars['app'][app_sub_obj]['branch'] is not defined
+    - vars['app'][app_sub_obj]['enabled'] == true
+
+- name: include repo vars "{{ app_sub_obj }}" branch vars
+  include_vars: 
+    file: "/data/manifests/repo/{{ app_sub_obj }}@{{ vars['app'][app_sub_obj]['branch'] }}.yaml"
+    hash_behaviour: merge
+  when: 
+    - vars['app'][app_sub_obj]['runner']['type'] == 'repo' 
+    - vars['app'][app_sub_obj]['branch'] is defined
+    - vars['app'][app_sub_obj]['enabled'] == true

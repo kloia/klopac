@@ -18,6 +18,7 @@
 - name: get runner manifest "{{ app_exe_obj }}"
   set_fact:
     app_helm_manifest_uri: "{{ vars['platform'][app_runner_type][app_exe_obj]['manifest']['uri'] }}"
+  when: vars['platform'][app_runner_type][app_exe_obj]['manifest'] is defined
 
 - name: get runner command for helm "{{ app_exe_obj }}"
   set_fact:
@@ -25,6 +26,18 @@
     app_runner_helm_namespace: "{{ vars['platform'][app_runner_type][app_exe_obj]['helm']['namespace'] }}"
     app_runner_helm_name: "{{ vars['platform'][app_runner_type][app_exe_obj]['helm']['name'] }}"
   when: vars['platform'][app_runner_type][app_exe_obj]['runner']['command'] == 'helm'
+
+- name: get params for helm "{{ app_exe_obj }}"
+  set_fact:
+    app_runner_helm_params: " {{ app_runner_helm_params }} --set {{ item }}={{ vars['app'][app_exe_obj]['inputs'][item] }} "
+  vars:
+    app_runner_helm_params: ''
+  with_items: "{{ vars['platform'][app_runner_type][app_exe_obj]['helm']['params'] }}"
+  when: vars['platform'][app_runner_type][app_exe_obj]['runner']['command'] == 'helm'
+
+- debug:
+    msg: "{{ vars['app_runner_helm_params'] }}"
+  when: vars['platform']['log']['level']=='debug'
 
 - name: start container
   become: true
@@ -37,10 +50,6 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-- name: change socket file mode
-  delegate_to: "klopac-{{ int_exe_obj }}"
-  shell: "sudo chmod 777 /var/run/docker.sock"
-
 - name: add container to inventory
   add_host:
     name: "klopac-{{ app_exe_obj }}"
@@ -50,6 +59,9 @@
     groups: containers
   changed_when: false
 
+- name: change socket mode
+  shell: "sudo chmod 777 /var/run/docker.sock"
+
 - name: copy kubeconfig to runner
   delegate_to: "klopac-{{ app_exe_obj }}"
   copy:
@@ -57,10 +69,16 @@
     dest: /tmp/kubeconfig
     mode: 400
 
-- name: create app "{{ app_exe_obj }}"
+- name: apply app manifests "{{ app_exe_obj }}"
   delegate_to: "klopac-{{ app_exe_obj }}"
-  shell: "export KUBECONFIG=/tmp/kubeconfig; kubectl apply -f {{ app_helm_manifest_uri }}; helm upgrade -i --create-namespace --repo {{ app_runner_helm_repo }} -n {{ app_runner_helm_namespace }} --version {{ app_obj_version }} {{ app_runner_helm_name }} {{ app_runner_helm_name }}"
-  register: app_create_log
+  shell: "export KUBECONFIG=/tmp/kubeconfig; kubectl apply -f {{ app_helm_manifest_uri }}"
+  register: app_update_manifest_log
+  when: vars['platform'][app_runner_type][app_exe_obj]['manifest'] is defined
+
+- name: update app "{{ app_exe_obj }}"
+  delegate_to: "klopac-{{ app_exe_obj }}"
+  shell: "export KUBECONFIG=/tmp/kubeconfig; helm upgrade -i --create-namespace --repo {{ app_runner_helm_repo }} -n {{ app_runner_helm_namespace }} --version {{ app_obj_version }} {{ app_runner_helm_name }} {{ app_runner_helm_name }} {{ app_runner_helm_params }}"
+  register: app_update_log
   when: app_runner_helm_name is defined
 
 - name: destroy container
@@ -70,5 +88,9 @@
     state: absent
 
 - debug:
-    msg: "{{ vars['app_create_log'] }}"
-  when: vars['platform']['log']['level']=='debug'
+    msg: "{{ vars['app_update_log'] }}"
+  #when: vars['platform']['log']['level']=='debug'
+
+- debug:
+    msg: "{{ vars['app_update_manifest_log'] }}"
+  #when: vars['platform']['log']['level']=='debug'

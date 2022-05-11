@@ -1,0 +1,16 @@
+---
+- name: pre
+  include: pre.yml
+  when: app.enabled == true
+
+- name: create
+  include: create.yml
+  when: app.enabled == true
+
+- name: update
+  include: update.yml
+  when: app.enabled == true
+
+- name: delete
+  include: delete.yml
+  when: app.enabled == true

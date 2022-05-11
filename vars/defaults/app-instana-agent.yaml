@@ -1,0 +1,4 @@
+---
+app:
+  instana-agent:
+    version: 1.2.35

@@ -1,0 +1,16 @@
+---
+- name: delete "{{ item }}" helm chart
+  include_tasks: ../roles/app/tasks/delete_obj.yml
+  with_items: "{{ app_obj }}"
+  register: helm_delete_log
+  loop_control:
+    loop_var: app_exe_obj
+  when:
+    - vars['app'][app_exe_obj]['enabled'] == true
+    - vars['app'][app_exe_obj]['runner']['type'] == 'executor'
+    - vars['app'][app_exe_obj]['operation']['type'] == 'delete'
+    - vars['platform']['executor'][app_exe_obj]['helm'] is defined
+
+- debug:
+    msg: "{{ helm_delete_log }}"
+  when: vars['platform']['log']['level']=='debug'
