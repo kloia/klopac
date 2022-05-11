@@ -44,14 +44,12 @@ func Run() {
 			varsPath := helper.GetParam[string]("varsPath")
 			manifestsPath := helper.GetParam[string]("manifestsPath")
 
-			for rootKey, rootValue := range valuesModel {
-				//Merge Intersection Objects - Default and Domain Objects
-				mergeVariables(varsPath, rootKey, rootValue)
-				mergeVariables(manifestsPath, rootKey, rootValue)
+			//Merge Intersection Objects - Default and Domain Objects
+			mergeVariables(varsPath, valuesModel)
+			mergeVariables(manifestsPath, valuesModel)
 
-				//Create New Objects
-				createNewObjects(rootKey, varsPath, manifestsPath, rootValue, valuesModel)
-			}
+			createNewObjects("app", varsPath, manifestsPath, valuesModel)
+			createNewObjects("int", varsPath, manifestsPath, valuesModel)
 		}
 
 		provision := helper.GetParam[bool]("provision")
@@ -67,27 +65,25 @@ func Run() {
 	}
 }
 
-func mergeVariables(varsPath, rootKey string, rootValue interface{}) {
-	temp := make(map[string]interface{})
-	temp[rootKey] = rootValue
-	err := helper.UpdateValuesFile(temp, varsPath)
+func mergeVariables(varsPath string, valuesModel map[string]interface{}) {
+	err := helper.UpdateValuesFile(valuesModel, varsPath)
 	if err != nil {
 		log.Panic(fmt.Sprintf("Error while patching default values for %v", varsPath), zap.Error(err))
 	}
 }
 
-func createNewObjects(rootKey, varsPath, manifestsPath string, rootValue interface{}, valuesModel map[string]interface{}) {
+func createNewObjects(rootKey, varsPath, manifestsPath string, valuesModel map[string]interface{}) {
 	//Create New Domain Defaults, Domain Objects and Executors
-	if rootKey == "app" || rootKey == "int" {
-
+	rootValue := valuesModel[rootKey]
+	if rootValue != nil {
 		for innerKey, innerValue := range rootValue.(map[string]interface{}) {
 			if _, ok := innerValue.(map[string]interface{}); ok {
 				createDefaultFile(varsPath, rootKey, innerKey, innerValue)
 				createRunnerFile(innerKey, manifestsPath, innerValue, valuesModel)
 			}
 		}
-
 	}
+
 }
 
 func createDefaultFile(varsPath, rootKey, innerKey string, innerValue interface{}) {
@@ -123,20 +119,11 @@ func createDomainObject(innerValue interface{}, jsonString, rootKey, innerKey st
 }
 
 func mergeFiles(varsPath, rootKey string, jsonMap map[string]interface{}) {
-	filePath := fmt.Sprintf("%v/%v", varsPath, getFileNameByRootKey(rootKey))
+	fileName := If(rootKey == "app", "applications.yaml", "integrations.yaml")
+	filePath := fmt.Sprintf("%v/%v", varsPath, fileName)
 	defaultModel := helper.ReadFile(filePath)
 	mergo.Merge(&defaultModel, jsonMap)
 	helper.WriteFile(filePath, defaultModel)
-}
-
-func getFileNameByRootKey(rootKey string) string {
-	var v string
-	if rootKey == "app" {
-		v = "applications.yaml"
-	} else {
-		v = "integrations.yaml"
-	}
-	return v
 }
 
 func createRunnerFile(innerKey, manifestsPath string, innerValue interface{}, valuesModel map[string]interface{}) {
@@ -146,7 +133,8 @@ func createRunnerFile(innerKey, manifestsPath string, innerValue interface{}, va
 			manifestType := manifestType.(string)
 			if platformRunner, ok := valuesModel["platform"].(map[string]interface{})[manifestType]; ok {
 				if newPlatformObject, ok := platformRunner.(map[string]interface{})[innerKey]; ok {
-					newManifestObjectPath := fmt.Sprintf("%v/%v/%v-%v.yaml", manifestsPath, manifestType, innerKey, newPlatformObject.(map[string]interface{})["version"])
+					extension := If(manifestType == "repo", "branch", "version")
+					newManifestObjectPath := fmt.Sprintf("%v/%v/%v-%v.yaml", manifestsPath, manifestType, innerKey, newPlatformObject.(map[string]interface{})[extension])
 					jsonMap, _ := convertStringToJsonMap(fmt.Sprintf(`{"platform":{"%v": {"%v": {}}}}`, manifestType, innerKey))
 					jsonMap["platform"].(map[string]interface{})[manifestType].(map[string]interface{})[innerKey] = newPlatformObject
 					helper.WriteFile(newManifestObjectPath, jsonMap)
@@ -154,6 +142,13 @@ func createRunnerFile(innerKey, manifestsPath string, innerValue interface{}, va
 			}
 		}
 	}
+}
+
+func If[T any](cond bool, vtrue, vfalse T) T {
+	if cond {
+		return vtrue
+	}
+	return vfalse
 }
 
 func convertStringToJsonMap(jsonString string) (map[string]interface{}, error) {
