@@ -24,7 +24,7 @@ func (o *OptionService) setFlags() {
 		"valuesFile":  o.flag.String("valuesFile", "/data/values.yaml", "Value File"),
 		"dataPath":    o.flag.String("dataPath", "/data/", "Data File Path"),
 		"varsPath":    o.flag.String("varsPath", "/data/vars", "Variable File"),
-		"bundleFile":  o.flag.String("bundleFile", "/data/bundle.tar.gz", "Bundle File"),
+		"bundleFile":  o.flag.String("bundleFile", "/data/bundle/bundle.tar.gz", "Bundle File"),
 	}
 	o.flag.Parse()
 }

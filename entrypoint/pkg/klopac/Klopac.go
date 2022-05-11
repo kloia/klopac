@@ -33,6 +33,7 @@ func Run() {
 			if err != nil {
 				log.Panic("Error while untarring bundle file, please check whether you have correct named bundlefile ")
 			}
+			log.Debug("SUCCESS")
 			log.Info("[BUNDLE FILE UNTAR - END]")
 		} else {
 			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
@@ -41,6 +42,7 @@ func Run() {
 				log.Panic("Error while patching default values", zap.Error(err))
 			}
 		}
+
 		provision := helper.GetParam[bool]("provision")
 		validate := helper.GetParam[bool]("validate")
 		logLevel := helper.GetParam[string]("logLevel")

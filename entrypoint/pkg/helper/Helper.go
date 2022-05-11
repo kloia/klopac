@@ -3,12 +3,15 @@ package helper
 import (
 	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"entrypoint/pkg/command"
 	"entrypoint/pkg/flag"
 	"entrypoint/pkg/flow"
 	"entrypoint/pkg/logger"
 	"entrypoint/pkg/option"
 	"entrypoint/pkg/shell"
+	"fmt"
+
 	"github.com/imdario/mergo"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
@@ -101,20 +104,32 @@ func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) error
 }
 
 func Untar(tarball, target string) error {
+
 	reader, err := os.Open(tarball)
 	log := logger.GetLogger()
 	if err != nil {
 		log.Debug("Bundle file could not be opened.")
 		return err
 	}
+	log.Debug("Bundle file exists.")
 	defer reader.Close()
-	tarReader := tar.NewReader(reader)
+
+	gzf, err := gzip.NewReader(reader)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	log.Debug("Gunzip done.")
+
+	tarReader := tar.NewReader(gzf)
 
 	for {
 		header, err := tarReader.Next()
+
 		if err == io.EOF {
 			break
 		} else if err != nil {
+
 			return err
 		}
 
@@ -122,6 +137,7 @@ func Untar(tarball, target string) error {
 		info := header.FileInfo()
 		if info.IsDir() {
 			if err = os.MkdirAll(path, info.Mode()); err != nil {
+
 				return err
 			}
 			continue
@@ -137,6 +153,7 @@ func Untar(tarball, target string) error {
 			return err
 		}
 	}
+	log.Debug("Untar done.")
 	return nil
 }
 
