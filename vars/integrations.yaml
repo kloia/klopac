@@ -1,3 +1,4 @@
+---
 int:
   certmanager:
     enabled: true

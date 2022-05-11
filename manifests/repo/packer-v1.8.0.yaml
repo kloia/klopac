@@ -1,3 +1,4 @@
+---
 platform:
   repo:
     packer:
@@ -37,4 +38,3 @@ platform:
       outputs:
         img:
           id: img.id
-        
