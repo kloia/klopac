@@ -47,6 +47,9 @@
 - name: get public IP
   ipify_facts:
   register: ipify_facts
+  until: "ipify_facts is not failed"
+  retries: 5
+  delay: 2
 
 - name: set public IP
   set_fact:
