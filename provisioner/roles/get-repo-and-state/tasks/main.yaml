@@ -56,5 +56,6 @@
   loop_control: 
     index_var: index
   when: 
-  - vars['platform']['repo'][item]['state']['enabled'] == true 
+  - vars['platform']['repo'][item]['state']['enabled'] == true
+  - vars['platform']['repo'][item]['state']['file']['path'] | default("") | length > 0
   - operations[item] != 'create'
