@@ -48,6 +48,10 @@
     - jump_ip is defined
     - vars['platform']['jump']['ip']==''
 
+- name: create .ssh folder
+  shell: "mkdir -p ~/.ssh"
+  when: vars['platform']['jump']['auth'] == false and jump_ip is defined
+
 - name: create ssh key for jump
   openssh_keypair:
     path: "~/.ssh/id_rsa"
