@@ -72,7 +72,7 @@ func (p flowService) Run(provision, validate, healthCheck bool, logLevel string,
 		ansible-playbook finalizer.yml -e COMPRESS_BUNDLE=%v;
 	`, logLevel, healthCheck, !file))
 		log.Info("[FINALIZER - OUTPUT]")
-		dat, err := os.ReadFile("data/bundle/output.md")
+		dat, err := os.ReadFile("/data/bundle/output.md")
 		if err != nil {
 			log.Panic("Could not read file")
 		}
