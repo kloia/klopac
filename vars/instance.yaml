@@ -13,12 +13,10 @@ ins:
     os: img.os
   lb:
     priv:
-      dnsName: lb-priv-klopac-tst-1cec20319b7aa891.elb.eu-west-2.amazonaws.com
-      ip:
-        - 172.31.12.191
-        - 172.31.44.227
+      dnsName: ''
+      ip: ''
     pub:
-      dnsName: lb-public-klopac-tst-17dc523d12297797.elb.eu-west-2.amazonaws.com
+      dnsName: ''
   master:
     cpu: 4
     diskSize: 200g
@@ -39,8 +37,7 @@ ins:
           subnet: 24
         public:
           gw: 10.0.0.1
-          pool:
-            - 13.40.146.13
+          pool: ''
           subnet: 24
   operation:
     type: create
@@ -83,7 +80,5 @@ ins:
           subnet: 24
         public:
           gw: 10.0.0.1
-          pool:
-            - 18.170.43.132
-            - 13.40.68.60
+          pool: ''
           subnet: 24

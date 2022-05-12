@@ -8,7 +8,7 @@ img:
     user: ubuntu
   diskSize: 300g
   enabled: false
-  id: ami-01b7452475f4a7274
+  id: ''
   name: Ubuntu-20.04-custom
   operation:
     type: create
