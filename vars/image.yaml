@@ -9,7 +9,7 @@ img:
   diskSize: 300g
   enabled: false
   id: ''
-  name: Ubuntu-20.04-custom
+  name: Ubuntu-20.04-klopac
   operation:
     type: create
   os: ubuntu:20.04
