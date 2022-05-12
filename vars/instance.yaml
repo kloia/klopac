@@ -33,7 +33,7 @@ ins:
         private:
           gw: 10.0.0.1
           pool:
-            - 10.10.10.10
+            - ''
           subnet: 24
         public:
           gw: 10.0.0.1

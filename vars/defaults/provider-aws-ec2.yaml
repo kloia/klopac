@@ -4,18 +4,18 @@ platform:
     aws:
       ec2:
         master:
-          az: eu-west-2a
+          az: eu-west-1a
           iamRole: ""
-          instanceType: t2.large
+          instanceType: ''
           keyPair: ""
           securityGroup: ""
           subnet: ""
           tag: klopac-master
           vpc: ""
         worker:
-          az: eu-west-3a
+          az: eu-west-2a
           iamRole: ""
-          instanceType: t2.2xlarge
+          instanceType: ''
           keyPair: ""
           securityGroup: ""
           subnet: ""
