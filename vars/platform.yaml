@@ -2,8 +2,8 @@
 platform:
   environment: tst
   jump:
-    auth: true
-    ip: 13.40.94.103
+    auth: false
+    ip: ''
   log:
     level: error
   name: klopac
