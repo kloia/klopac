@@ -16,10 +16,10 @@ app:
     inputs:
       agent.key: ''
       agent.downloadKey: ''
-      agent.endpointHost: ingress-blue-saas.instana.io
-      agent.endpointPort: 443
-      cluster.name: klopac-tst
-      zone.name: us-west-1
+      agent.endpointHost: ''
+      agent.endpointPort: ''
+      cluster.name: ''
+      zone.name: ''
   example:
     basedOn: gitops
     enabled: false

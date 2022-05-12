@@ -1,12 +1,12 @@
 ---
 platform:
-  environment: tst
+  environment: ''
   jump:
-    auth: true
-    ip: 13.40.94.103
+    auth: false
+    ip: ''
   log:
     level: error
-  name: klopac
+  name: ''
   operation:
     type: create
   provider:
@@ -18,11 +18,11 @@ platform:
       tenant: ""
       type: id
       user: ""
-    name: aws
-    region1: eu-west-2
-    region2: eu-west-2
-    sourceimg: ami-00826bd51e68b1487
-    type: ec2
+    name: ''
+    region1: ''
+    region2: ''
+    sourceimg: ''
+    type: ''
   required:
     - environment
     - provider.name
