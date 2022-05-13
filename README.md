@@ -25,13 +25,13 @@ Current and upcoming releases listed below.
 engine:
   enabled: true
 gitops:
-  enabled: false
+  enabled: true
 img:
   enabled: true
 ins:
   enabled: true
 int:
-  enabled: false
+  enabled: true
 platform:
   environment: dev
   name: klopac
