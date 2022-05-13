@@ -10,6 +10,10 @@
     ins_runner_version: "{{ vars['platform']['repo'][ins_type]['runner']['version'] }}"
   when: ins_runner_version is not defined
 
+- name: get pre command
+  set_fact:
+    ins_pre_command: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['pre'] }}"
+
 - name: get delete command
   set_fact:
     ins_delete_command: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['delete'] }}"
