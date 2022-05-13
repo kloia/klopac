@@ -33,31 +33,33 @@ ins:
 int:
   enabled: true
 platform:
-  environment: dev
-  name: klopac
+  environment: <environment name>
+  name: <platform name>
   provider:
     auth:
       id: ''
       key: ''
       type: id
-    aws:
+    aws: #aws specific variables
+      iam:
+        policy: <user policy>
       role:
-        arn: <eks-admin-role-arn>
+        arn: <role resource name>
       ec2:
         master:
-          instanceType: t2.large
+          instanceType: <instance type>
         worker:
-          instanceType: t2.large
+          instanceType: <instance type>
       vpc:
         id: <vpc-id>
         subnet:
           id1: <subnet1-id>
           id2: <subnet2-id>
-    name: aws
+    name: <provider> #like aws
     region1: <region1-id>
     region2: <region2-id>
-    type: ec2
-    sourceimg: <ami-id>
+    type: <type> #like ec2
+    sourceimg: <image-id>
 ```
 - Execute command below. Whole platform creation should take 20-23 minutes after that.
 
