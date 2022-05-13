@@ -41,8 +41,6 @@ platform:
       key: ''
       type: id
     aws:
-      iam:
-        policy: eks-all
       role:
         arn: <eks-admin-role-arn>
       ec2:
@@ -51,7 +49,6 @@ platform:
         worker:
           instanceType: t2.large
       vpc:
-        cidrBlock: 172.31.0.0/16
         id: <vpc-id>
         subnet:
           id1: <subnet1-id>
