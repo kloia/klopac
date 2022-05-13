@@ -31,7 +31,7 @@
   docker_container:
     name: "klopac-{{ app_exe_obj }}"
     image: "kloiadocker/klopac-{{ vars['platform']['executor'][app_exe_obj]['runner']['name'] }}-runner:{{ vars['platform']['executor'][app_exe_obj]['runner']['version'] }}"
-    command: "'sleep infinity'"
+    command: "\"sleep infinity\""
     state: started
     tty: yes
     volumes:
