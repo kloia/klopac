@@ -59,7 +59,7 @@ func (p flowService) Run(provision, validate, healthCheck bool, logLevel string,
 		export LOGLEVEL=%v;
 		export HEALTHCHECK=%v;
 		cd controller;
-		sh controller.sh
+		bash controller.sh
 		`, logLevel, healthCheck))
 		log.Info("[CONTROLLER - END]")
 	}
