@@ -1,8 +1,4 @@
-# Klopac
-
-![CI](https://github.com/crossplane/crossplane/workflows/CI/badge.svg) [![GitHub release](https://img.shields.io/github/release/Naereen/StrapDown.js.svg)](https://GitHub.com/kloia/klopac/releases/) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/) [![Slack](https://slack.crossplane.io/badge.svg)](https://slack.crossplane.io) [![Twitter Follow](https://img.shields.io/twitter/follow/crossplane_io.svg?style=social&label=Follow)](https://twitter.com/intent/follow?screen_name=crossplane_io&user_id=788180534543339520)
-
-![Klopac Media Banner](https://github.com/crossplane/crossplane/raw/master/docs/media/banner.png)
+![Klopac Media Banner](img/klopac-banner.jpg)
 
 Klopac is a tool that let's you easily provision your infrastructure and applications. Cloud or on-premise it can schedule its runners anywhere so its extendable and scalable. Making job easier with default configurations but also lets users fine tune with YAML formatted configuration files.
 
@@ -12,39 +8,74 @@ Current and upcoming releases listed below.
 
 | Release | Release Date |
 |:---:|:---:|
-| 0.1-alpha | 01.05.2022 |
-| 1.0 | 01.12.2022 (upcoming) |
-
-## How it works
-
-Klopac adopts a layered arhitecture for seperation of concerns. Each layer corresponds to a diffent Klopac component (provisioning, validation, execution and finalizing).
-
-![Klopac Architecture Layers](img/klopac-layers.png)
-
-It covers different layers of infrastructure needs such as image, instances, integrations, gitops and applications.
-
-![Klopac Layers](img/Layers.png)
-
-After provision and validation steps an execution plan is generated for your configuration code and klopac controller make necessary executions via klopac runners. Klopac supports a various techonologies for different execution types (Ansible, terraform, pulumi etc.).
-
-![Klopac Controller Flow](img/ControllerFlow.png)
-
-### Klopac Runner List
-
-- Ansible	(5.2.0)
-- Docker	(20.10.12)
-- Kubectl	(1.23.3)
-- Packer    (1.7.9)
-- Terraform	(1.1.4)
-- Terragrunt	(0.36.0)
-- Pulumi	(3.22.1)
+| 0.1-alpha | 16.05.2022 |
 
 ## Getting Started
 
-You can use docker image like this
+- Clone klopac repository
+- Set your working dir as repository folder
+- Create two folders named 'bundle' and 'inputs'
+- Create a file named 'input.yaml' under 'inputs' folder (You can use example input.yaml content below for AWS)
 
 ```
-docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/data  kloiadocker/klopac-runner:0.1-alpha ansible-playbook /data/example.yaml
+---
+
+# inputs.yaml example
+
+engine:
+  enabled: true
+gitops:
+  enabled: false
+img:
+  enabled: true
+ins:
+  enabled: true
+int:
+  enabled: false
+platform:
+  environment: dev
+  name: klopac
+  provider:
+    auth:
+      id: ''
+      key: ''
+      type: id
+    aws:
+      iam:
+        policy: eks-all
+      role:
+        arn: <eks-admin-role-arn>
+      ec2:
+        master:
+          instanceType: t2.large
+        worker:
+          instanceType: t2.large
+      vpc:
+        cidrBlock: 172.31.0.0/16
+        id: <vpc-id>
+        subnet:
+          id1: <subnet1-id>
+          id2: <subnet2-id>
+    name: aws
+    region1: <region1-id>
+    region2: <region2-id>
+    type: ec2
+    sourceimg: <ami-id>
+```
+- Execute command below. Whole platform creation should take 20-23 minutes after that.
+
+```
+docker run --rm -v $PWD/inputs:/data/inputs -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/data/repo -v $PWD/bundle:/data/bundle kloiadocker/klopac-runner:latest entrypoint --valuesFile=/data/inputs/input.yaml
+```
+
+- If command doesn't encounter any errors files below should get created under 'bundle' folder.
+
+```
+-rw-r--r--  1 user  staff    27K date bundle.tar.gz
+-rw-r--r--@ 1 user  staff   2.9K date klopac-dev.kubeconfig
+-rw-r-----@ 1 user  staff   584B date output.md
+-rwxr-x---@ 1 user  staff   674B date output.yaml
+-rw-r--r--@ 1 user  staff    70K date terraform.tfstate
 ```
 
 ## Get Involved
