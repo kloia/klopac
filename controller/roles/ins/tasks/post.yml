@@ -102,10 +102,13 @@
   loop: '{{ private_lb_private_ips.stdout | from_json | list }}'
   when: ins.operation.type != 'delete'
 
-# - name: get pem name
-#   set_fact:
-#     ins_pem_name: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['output']['pem']['path'] }}"
-#   when: ins.operation.type != 'delete'
+- name: set pem path
+  shell: "yq -i -y '.img.auth.pem.path = \"/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem\"' /data/vars/image.yaml"
+  when: ins.operation.type != 'delete'
+
+- name: clear pem path
+  shell: "yq -i -y '.img.auth.pem.path = \"\"' /data/vars/image.yaml"
+  when: ins.operation.type == 'delete'
 
 - name: get pem path
   set_fact:
