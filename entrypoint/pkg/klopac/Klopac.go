@@ -39,17 +39,16 @@ func Run() {
 			}
 			log.Debug("SUCCESS")
 			log.Info("[BUNDLE FILE UNTAR - END]")
-		} else {
-			valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
-			varsPath := helper.GetParam[string]("varsPath")
-			manifestsPath := helper.GetParam[string]("manifestsPath")
-
-			//Merge Intersection Objects - Default and Domain Objects
-			mergeVariables([]string{varsPath, manifestsPath}, valuesModel)
-
-			//Create New Domain Objects for App and Int Layer
-			createNewObjects([]string{"app", "int"}, varsPath, manifestsPath, valuesModel)
 		}
+		valuesModel := helper.ReadFile(helper.GetParam[string]("valuesFile"))
+		varsPath := helper.GetParam[string]("varsPath")
+		manifestsPath := helper.GetParam[string]("manifestsPath")
+
+		//Merge Intersection Objects - Default and Domain Objects
+		mergeVariables([]string{varsPath, manifestsPath}, valuesModel)
+
+		//Create New Domain Objects for App and Int Layer
+		createNewObjects([]string{"app", "int"}, varsPath, manifestsPath, valuesModel)
 
 		provision := helper.GetParam[bool]("provision")
 		validate := helper.GetParam[bool]("validate")
