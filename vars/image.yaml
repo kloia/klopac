@@ -1,9 +1,8 @@
----
 img:
   auth:
     pem:
-      path: ""
-      type: ""
+      path: ''
+      type: ''
     type: pem
     user: ubuntu
   diskSize: 300g
