@@ -15,7 +15,7 @@
     ins_delete_command: "{{ vars['platform']['repo'][ins_type][provider_name]['dialect']['command']['delete'] }}"
 
 - name: delete instances
-  command: "docker run --rm -v /tmp:/data/repo -e AWS_ACCESS_KEY_ID={{ ins_auth_id }} -e AWS_SECRET_ACCESS_KEY={{ ins_auth_key }} kloiadocker/klopac-{{ ins_runner_name }}-runner:{{ ins_runner_version }} /bin/bash -c \"cd {{ ins_repo_path }}; {{ ins_delete_command }}\""
+  command: "docker run --rm -v /tmp:/data/repo -e AWS_ACCESS_KEY_ID={{ ins_auth_id }} -e AWS_SECRET_ACCESS_KEY={{ ins_auth_key }} kloiadocker/klopac-{{ ins_runner_name }}-runner:{{ ins_runner_version }} /bin/bash -c \"cd {{ ins_repo_path }}; {{ ins_pre_command }}; {{ ins_delete_command }}\""
   become: true
   register: ins_delete_log
   when: vars['platform']['provider']['name'] == 'aws'
