@@ -12,6 +12,16 @@
   loop: "{{ vars['platform']['repo'].keys() | list }}"
   loop_control: 
     index_var: index
+- name: Set owner and group for repo directories
+  become: true
+  ansible.builtin.file:
+    path: "/data/repo/{{ repo_names[index] }}"
+    owner: 1000
+    group: 1000
+    recurse: yes
+  loop: "{{ vars['platform']['repo'].keys() | list }}"
+  loop_control: 
+    index_var: index
 - name: Clone repos with type "repo"
   ansible.builtin.git:
     repo: "{{ vars['platform']['repo'][item]['uri'] }}"
