@@ -67,7 +67,7 @@
   docker_container:
     name: "klopac-{{ gitops_type }}"
     image: "kloiadocker/klopac-{{ gitops_runner_name }}-runner:{{ gitops_runner_version }}"
-    command: "'sleep infinity'"
+    command: "\"sleep infinity\""
     state: started
     tty: yes
     volumes:
