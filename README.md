@@ -8,7 +8,7 @@ Current and upcoming releases listed below.
 
 | Release | Release Date |
 |:---:|:---:|
-| 0.1-alpha | 16.05.2022 |
+| 0.1-alpha | 17.05.2022 |
 
 ## Getting Started
 
