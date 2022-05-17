@@ -14,7 +14,7 @@
 
 - name: get id
   set_fact:
-    img_id: "{{ img.id }}"
+    img_id: "{{ vars['img']['id'] }}"
 
 - name: delete image
   command: "docker run --rm -e img_id=\"{{ img_id }}\" -e region=\"{{ img_region }}\" -e AWS_ACCESS_KEY_ID=\"{{ provider_auth_id }}\" -e AWS_SECRET_ACCESS_KEY=\"{{ provider_auth_key }}\" kloiadocker/klopac-cloud-runner:latest /bin/bash -c \"{{ img_delete_command }}\""
