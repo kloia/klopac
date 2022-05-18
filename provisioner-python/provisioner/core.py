@@ -1,4 +1,7 @@
 import yaml
+import pwd
+import grp
+import os
 from collections import Mapping
 
 # should we use the following package
@@ -40,3 +43,31 @@ def check_key(dict: dict, key: str) -> bool:
     if key in dict:
         return True
     return False
+
+def check_uid(uid: int) -> bool:
+    try:
+        pwd.getpwuid(uid)
+        return True
+    except KeyError:
+        print(f"{uid} uid doesn't exist")
+        return False
+
+def check_gid(gid: int) -> bool:
+    try:
+        grp.getgrgid(gid)
+        return True
+    except KeyError:
+        print(f"{gid} gid doesn't exist")
+        return False
+
+def check_uid_and_gid(uid: int, gid: int) -> bool:
+    if check_uid(uid) or check_gid(gid):
+        return True
+
+    return False
+
+def set_uid_and_gid(uid: int, gid: int, path: str):
+    try:
+        os.chown(path, uid, gid)
+    except Exception as err:
+        print(err)
