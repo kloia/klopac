@@ -8,16 +8,21 @@
     group: 1000
     mode: 0750
     path: "/data/bundle"
-    
-- name: "[FINALIZE] - Include Test Output Variables"
-  include_vars: /data/bundle/output.yaml
-  ignore_errors: true
+  
+- name: "[FINALIZE] - Check that the output.yaml exists"
+  stat:
+    path: "/data/bundle/output.yaml"
+  register: stat_result
 
-- name: "[FINALIZE] - Create Pac Output as Markdown"
-  template:
-    src: templates/output.md.j2
-    dest: "/data/bundle/output.md"
-    mode: u+rw,g-wx,o-rwx
+- block:
+  - name: "[FINALIZE] - Include Test Output Variables"
+    include_vars: /data/bundle/output.yaml
+  - name: "[FINALIZE] - Create Pac Output as Markdown"
+    template:
+      src: templates/output.md.j2
+      dest: "/data/bundle/output.md"
+      mode: u+rw,g-wx,o-rwx
+  when: stat_result.stat.exists
 
 - name: "[FINALIZE] - Compress Bundle"
   block:
