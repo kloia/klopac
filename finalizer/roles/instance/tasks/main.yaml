@@ -2,6 +2,7 @@
 
 - block:
   - name: "[INSTANCE-TESTS] - Create Bundle Directory"
+    become: true
     delegate_to: localhost
     file:
       state: directory
@@ -12,6 +13,7 @@
 
   - name: "[INSTANCE-TESTS] - Ensure Output File Exists"
     delegate_to: localhost
+    become: true
     copy:
       content: "instance_layer: []"
       dest: "/data/bundle/output.yaml"

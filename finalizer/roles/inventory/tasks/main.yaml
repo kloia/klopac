@@ -14,7 +14,7 @@
   ini_file:
     dest: "./inventory"
     section: "jump"
-    option: "{{ platform.jump.ip }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_user"
+    option: "{{ platform.jump.ip }} ansible_ssh_private_key_file={{ img.auth.pem.path }} ansible_user"
     values: "{{ ins.image.auth.user }}"
     no_extra_spaces: true
     mode: 0666
@@ -26,7 +26,7 @@
     ini_file:
       dest: "./inventory"
       section: "servers"
-      option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_user"
+      option: "{{ item }} ansible_ssh_private_key_file={{ img.auth.pem.path }} ansible_user"
       values: "{{ ins.image.auth.user }}"
       no_extra_spaces: true
       mode: 0666
@@ -38,7 +38,7 @@
     ini_file:
       dest: "./inventory"
       section: "servers"
-      option: "{{ item }} ansible_ssh_private_key_file={{ ins.image.auth['pem.path'] }} ansible_user"
+      option: "{{ item }} ansible_ssh_private_key_file={{ img.auth.pem.path }} ansible_user"
       values: "{{ ins.image.auth.user }}"
       no_extra_spaces: true
       mode: 0666

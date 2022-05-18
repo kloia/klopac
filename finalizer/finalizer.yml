@@ -19,7 +19,6 @@
 # INSTANCE TESTS
 - hosts: jump
   gather_facts: false
-  become: true
   pre_tasks:
     - name: Include Image Variables
       include_vars: /data/vars/image.yaml

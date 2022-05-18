@@ -2,6 +2,7 @@
 
 - block:
   - name: "[ENGINE-TESTS] - Create Bundle Directory"
+    become: true
     file:
       state: directory
       owner: 1000
@@ -10,6 +11,7 @@
       path: "/data/bundle"
 
   - name: "[ENGINE-TESTS] - Ensure Output File Exists"
+    become: true
     copy:
       content: "engine_layer: []"
       dest: "/data/bundle/output.yaml"

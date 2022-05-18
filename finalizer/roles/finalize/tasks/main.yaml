@@ -1,6 +1,7 @@
 ---
 
 - name: "[FINALIZE] - Create Bundle Directory"
+  become: true
   file:
     state: directory
     owner: 1000
