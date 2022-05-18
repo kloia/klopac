@@ -1,0 +1,21 @@
+---
+engine:
+  enabled: false
+  endpoint:
+    uri: ''
+  kubeconfig:
+    path: ''
+  operation:
+    type: create
+  provider:
+    enabled: false
+    name: aws
+  required:
+    - enabled
+    - type
+    - prodiver.enabled
+    - operation.type
+    - runner.type
+  runner:
+    type: executor
+  type: k3s
