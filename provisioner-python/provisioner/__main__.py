@@ -2,6 +2,8 @@ import sys
 from provisioner.core import *
 from provisioner.repo import *
 
+uid=1000
+gid=1000
 data_path = ".."
 vars_path = f"{data_path}/vars"
 repo_path = f"{data_path}/repo"
@@ -55,6 +57,10 @@ if __name__ == "__main__":
     if check_empty_repo_uri(platform):
         sys.exit("You cannot have an empty repo name")
 
+    #TODO: fix uid and gid checks not exiting
     for repo in repo_uris:
         repo_name = get_repo_name(repo)
-        create_repo_dir(f"{repo_path}/{repo_name}", mode=0o777, exist_ok=True)
+        r_path = f"{repo_path}/{repo_name}"
+        create_repo_dir(r_path, mode=0o777, exist_ok=True)
+        check_uid_and_gid(uid, gid)
+        set_uid_and_gid(uid, gid, path=r_path)
