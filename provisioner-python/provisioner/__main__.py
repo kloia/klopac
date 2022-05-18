@@ -52,15 +52,25 @@ if __name__ == "__main__":
         dict_merge(platform_yaml, read_yaml_file(instance_manifest_path))
 
     platform = platform_yaml['platform']
-    repo_uris = get_repo_uris(platform)
+    repo_names = platform['repo'].keys()
 
     if check_empty_repo_uri(platform):
         sys.exit("You cannot have an empty repo name")
 
     #TODO: fix uid and gid checks not exiting
-    for repo in repo_uris:
-        repo_name = get_repo_name(repo)
+    for repo_name in repo_names:
+        repo = platform['repo'][repo_name]
+        repo_uri = get_repo_uri(repo)
+        repo_name = get_repo_name(repo_uri)
+
         r_path = f"{repo_path}/{repo_name}"
         create_repo_dir(r_path, mode=0o777, exist_ok=True)
-        check_uid_and_gid(uid, gid)
-        set_uid_and_gid(uid, gid, path=r_path)
+        # check_uid_and_gid(uid, gid)
+        # set_uid_and_gid(uid, gid, path=r_path)
+
+        if check_key(repo, key="branch"):
+            clone_repo(repo_uri, r_path, branch=repo["branch"])
+
+        if not check_key(repo, key="branch") and check_key(repo, key="version"):
+            clone_repo(repo_uri, r_path, branch=repo["version"])
+

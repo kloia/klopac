@@ -6,6 +6,7 @@ setup(
     packages=find_packages(include=['provisioner']),
     install_requires=[
         'PyYAML',
+        'GitPython'
     ],
     extras_require={
     }
