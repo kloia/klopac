@@ -4,6 +4,7 @@ from provisioner.repo import *
 
 data_path = ".."
 vars_path = f"{data_path}/vars"
+repo_path = f"{data_path}/repo"
 manifests_path = f"{data_path}/manifests"
 
 if __name__ == "__main__":
@@ -49,8 +50,11 @@ if __name__ == "__main__":
         dict_merge(platform_yaml, read_yaml_file(instance_manifest_path))
 
     platform = platform_yaml['platform']
-    repo_names = create_repo_names(platform)
+    repo_uris = get_repo_uris(platform)
 
-    if check_empty_repo_name(platform):
+    if check_empty_repo_uri(platform):
         sys.exit("You cannot have an empty repo name")
 
+    for repo in repo_uris:
+        repo_name = get_repo_name(repo)
+        create_repo_dir(f"{repo_path}/{repo_name}", mode=0o777, exist_ok=True)
