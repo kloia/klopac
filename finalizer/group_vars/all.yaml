@@ -1,0 +1,8 @@
+---
+
+data_path: "/data"
+vars_path: "{{ data_path }}/vars"
+manifests_path: "{{ data_path }}/manifests"
+sensitive_path: "{{ data_path }}/sensitive"
+repo_path: "{{ data_path }}/repo"
+bundle_path: "{{ data_path }}/bundle"

@@ -2,28 +2,28 @@
 
 - name: "[INSTANCE-SUBTASK] - Include Default Instance Variables"
   include_vars: 
-    file: "/data/vars/defaults/ins-{{ filename }}.yaml"
+    file: "{{ vars_path }}/defaults/ins-{{ filename }}.yaml"
     hash_behaviour: merge
 
 - name: "[INSTANCE-SUBTASK] - Include Manifest File for Instance"
   include_vars: 
-    file: "/data/manifests/{{ vars['ins']['runner']['type'] }}/{{ filename }}-{{ vars['ins'][filename]['version'] }}.yaml"
+    file: "{{ manifests_path }}/{{ vars['ins']['runner']['type'] }}/{{ filename }}-{{ vars['ins'][filename]['version'] }}.yaml"
 
 - name: "[INSTANCE-SUBTASK] - Check that the terraform.tfstate exists"
   stat:
-    path: "/data/repo/{{ vars['platform']['repo'][filename]['name'] }}/{{ vars['platform']['repo'][filename]['outputs']['file']['path'] }}"
+    path: "{{ repo_path }}/{{ vars['platform']['repo'][filename]['name'] }}/{{ vars['platform']['repo'][filename]['outputs']['file']['path'] }}"
   register: stat_result
 
 # - name: Write terraform state file exists checks to outputs
 #   delegate_to: localhost
 #   changed_when: false
-#   shell: "echo 'terraformFileCheck: false' >> /data/bundle/output.yaml"
+#   shell: "echo 'terraformFileCheck: false' >> {{ bundle_path }}/output.yaml"
 #   when: not stat_result.stat.exists
 
 - name: "[INSTANCE-SUBTASK] - Copy State File with owner and permissions to the Bundle Directory"
   ansible.builtin.copy:
-    src: "/data/repo/{{ vars['platform']['repo'][filename]['name'] }}/{{ vars['platform']['repo'][filename]['outputs']['file']['path'] }}"
-    dest: /data/bundle/
+    src: "{{ repo_path }}/{{ vars['platform']['repo'][filename]['name'] }}/{{ vars['platform']['repo'][filename]['outputs']['file']['path'] }}"
+    dest: "{{ bundle_path }}/"
     owner: 1000
     group: 1000
     mode: '0644'

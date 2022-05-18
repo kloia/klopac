@@ -9,14 +9,14 @@
       owner: 1000
       group: 1000
       mode: 0750
-      path: "/data/bundle"
+      path: "{{ bundle_path }}"
 
   - name: "[INSTANCE-TESTS] - Ensure Output File Exists"
     delegate_to: localhost
     become: true
     copy:
       content: "instance_layer: []"
-      dest: "/data/bundle/output.yaml"
+      dest: "{{ bundle_path }}/output.yaml"
       force: no
       group: 1000
       owner: 1000
@@ -84,13 +84,13 @@
   - name: "[INSTANCE-TESTS] - Write host's IP address to outputs"
     delegate_to: localhost
     changed_when: false
-    shell: "yq -i '.instance_layer[{{ item | int }}].ip = \"{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }}\"' /data/bundle/output.yaml -y"
+    shell: "yq -i '.instance_layer[{{ item | int }}].ip = \"{{ hostvars[groups['servers'][item | int]]['inventory_hostname'] }}\"' {{ bundle_path }}/output.yaml -y"
     with_sequence: start=0 end={{ groups.servers | length -1 }}
 
   - name: "[INSTANCE-TESTS] - Write host's OS Name to outputs"
     delegate_to: localhost
     changed_when: false
-    shell: "yq -i '.instance_layer[{{ index }}].os.name.value = \"{{ item.stdout | lower }}\"' /data/bundle/output.yaml -y"
+    shell: "yq -i '.instance_layer[{{ index }}].os.name.value = \"{{ item.stdout | lower }}\"' {{ bundle_path }}/output.yaml -y"
     loop: "{{OS_NAME_RESULTS.results}}"
     loop_control:
       index_var: index
@@ -98,7 +98,7 @@
   - name: "[INSTANCE-TESTS] - Write Host's OS Version to outputs"
     delegate_to: localhost
     changed_when: false
-    shell: "yq -i '.instance_layer[{{ index }}].os.version.value = \"{{ item.stdout | lower }}\"' /data/bundle/output.yaml -y"
+    shell: "yq -i '.instance_layer[{{ index }}].os.version.value = \"{{ item.stdout | lower }}\"' {{ bundle_path }}/output.yaml -y"
     loop: "{{OS_VERSION_RESULTS.results}}"
     loop_control:
       index_var: index
@@ -106,7 +106,7 @@
   - name: "[INSTANCE-TESTS] - Write Host's OS Name Checks with Imported OS_NAME Variable to outputs"
     delegate_to: localhost
     changed_when: false
-    shell: "yq -i '.instance_layer[{{ index }}].os.name.match = \"{{ item.stdout | lower == OS_NAME }}\"' /data/bundle/output.yaml -y"
+    shell: "yq -i '.instance_layer[{{ index }}].os.name.match = \"{{ item.stdout | lower == OS_NAME }}\"' {{ bundle_path }}/output.yaml -y"
     loop: "{{OS_NAME_RESULTS.results}}"
     loop_control:
       index_var: index
@@ -114,7 +114,7 @@
   - name: "[INSTANCE-TESTS] - Write Host's OS Version Checks with Imported OS_VERSION Variable to outputs"
     delegate_to: localhost
     changed_when: false
-    shell: "yq -i '.instance_layer[{{ index }}].os.version.match = \"{{ item.stdout | lower in OS_VERSION }}\"' /data/bundle/output.yaml -y"
+    shell: "yq -i '.instance_layer[{{ index }}].os.version.match = \"{{ item.stdout | lower in OS_VERSION }}\"' {{ bundle_path }}/output.yaml -y"
     loop: "{{OS_VERSION_RESULTS.results}}"
     loop_control:
       index_var: index

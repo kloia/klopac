@@ -5,11 +5,11 @@
   connection: local
   pre_tasks:
     - name: Include Image Variables
-      include_vars: /data/vars/image.yaml
+      include_vars: "{{ vars_path }}/image.yaml"
     - name: Include Platform Variables
-      include_vars: /data/vars/platform.yaml
+      include_vars: "{{ vars_path }}/platform.yaml"
     - name: Include Instance Variables
-      include_vars: /data/vars/instance.yaml
+      include_vars: "{{ vars_path }}/instance.yaml"
   tasks:
     - name: "[INVENTORY-REFRESH] - START"
       include_role:
@@ -23,9 +23,9 @@
   gather_facts: false
   pre_tasks:
     - name: Include Image Variables
-      include_vars: /data/vars/image.yaml
+      include_vars: "{{ vars_path }}/image.yaml"
     - name: Include Instance Variables
-      include_vars: /data/vars/instance.yaml
+      include_vars: "{{ vars_path }}/instance.yaml"
   tasks:
     - name: "[INSTANCE-TESTS] - START"
       include_role:
@@ -40,11 +40,11 @@
   become: true
   pre_tasks:
     - name: Include Engine Variables
-      include_vars: /data/vars/engine.yaml
+      include_vars: "{{ vars_path }}/engine.yaml"
     - name: Include Instance Variables
-      include_vars: /data/vars/instance.yaml
+      include_vars: "{{ vars_path }}/instance.yaml"
     - name: Include Platform Variables
-      include_vars: /data/vars/platform.yaml
+      include_vars: "{{ vars_path }}/platform.yaml"
   tasks:
     - name: "[ENGINE-TESTS] - START"
       include_role:
