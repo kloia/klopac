@@ -1,6 +1,26 @@
 import yaml
+from collections import Mapping
 
-def read_yaml_file(file_path: str):
+# should we use the following package
+# https://github.com/zerwes/hiyapyco
+# https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
+def dict_merge(dct, merge_dct):
+    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+    updating only top-level keys, dict_merge recurses down into dicts nested
+    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
+    ``dct``.
+    :param dct: dict onto which the merge is executed
+    :param merge_dct: dct merged into dct
+    :return: None
+    """
+    for k, v in merge_dct.items():
+        if (k in dct and isinstance(dct[k], dict)
+                and isinstance(merge_dct[k], Mapping)):
+            dict_merge(dct[k], merge_dct[k])
+        else:
+            dct[k] = merge_dct[k]
+
+def read_yaml_file(file_path: str) -> dict:
     with open(file_path, "r") as f:
         try:
             yaml_obj = yaml.safe_load(f)
@@ -9,3 +29,14 @@ def read_yaml_file(file_path: str):
 
     return yaml_obj
 
+def write_yaml_file(yaml_obj: dict, file_path: str):
+    with open(file_path, "w") as f:
+        try:
+            yaml.safe_dump(yaml_obj, f)
+        except Exception as err:
+            print(err)
+
+def check_key(dict: dict, key: str) -> bool:
+    if key in dict:
+        return True
+    return False
