@@ -1,4 +1,6 @@
+import sys
 from provisioner.core import *
+from provisioner.repo import *
 
 data_path = ".."
 vars_path = f"{data_path}/vars"
@@ -24,24 +26,31 @@ if __name__ == "__main__":
 
     if check_key(engine[engine['type']], key='branch'):
         engine_manifest_path = f"{manifests_path}/{engine['runner']['type']}/{engine['type']}@{engine[engine['type']]['branch']}.yaml"
-        dict_merge(engine_yaml, read_yaml_file(engine_manifest_path))
+        dict_merge(platform_yaml, read_yaml_file(engine_manifest_path))
 
     if not check_key(engine[engine['type']], key='branch') and check_key(engine[engine['type']], key='version'):
         engine_manifest_path = f"{manifests_path}/{engine['runner']['type']}/{engine['type']}-{engine[engine['type']]['version']}.yaml"
-        dict_merge(engine_yaml, read_yaml_file(engine_manifest_path))
+        dict_merge(platform_yaml, read_yaml_file(engine_manifest_path))
 
     if check_key(image[image['type']], key='branch'):
         image_manifest_path = f"{manifests_path}/{image['runner']['type']}/{image['type']}@{image[image['type']]['branch']}.yaml"
-        dict_merge(image_yaml, read_yaml_file(image_manifest_path))
+        dict_merge(platform_yaml, read_yaml_file(image_manifest_path))
 
     if not check_key(image[image['type']], key='branch') and check_key(image[image['type']], key='version'):
         image_manifest_path = f"{manifests_path}/{image['runner']['type']}/{image['type']}-{image[image['type']]['version']}.yaml"
-        dict_merge(image_yaml, read_yaml_file(image_manifest_path))
+        dict_merge(platform_yaml, read_yaml_file(image_manifest_path))
 
     if check_key(instance[instance['type']], key='branch'):
         instance_manifest_path = f"{manifests_path}/{instance['runner']['type']}/{instance['type']}@{instance[instance['type']]['branch']}.yaml"
-        dict_merge(instance_yaml, read_yaml_file(instance_manifest_path))
+        dict_merge(platform_yaml, read_yaml_file(instance_manifest_path))
 
     if not check_key(instance[instance['type']], key='branch') and check_key(instance[instance['type']], key='version'):
         instance_manifest_path = f"{manifests_path}/{instance['runner']['type']}/{instance['type']}-{instance[instance['type']]['version']}.yaml"
-        dict_merge(instance_yaml, read_yaml_file(instance_manifest_path))
+        dict_merge(platform_yaml, read_yaml_file(instance_manifest_path))
+
+    platform = platform_yaml['platform']
+    repo_names = create_repo_names(platform)
+
+    if check_empty_repo_name(platform):
+        sys.exit("You cannot have an empty repo name")
+
