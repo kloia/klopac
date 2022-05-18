@@ -1,5 +1,6 @@
 import os
 import time
+from typing import List
 import git
 from git import RemoteProgress
 
@@ -13,7 +14,7 @@ def clone_repo(repo_uri: str, repo_path: str, branch: str):
     print(f"Cloning into {repo_name} from {repo_uri}")
     git.Repo.clone_from(repo_uri, repo_path, branch=branch, progress=CloneProgress())
 
-def get_repo_uris(platform: dict) -> list[str]:
+def get_repo_uris(platform: dict) -> List[str]:
     return [platform['repo'][repo_name]['uri'] for repo_name in platform['repo'].keys()]
 
 def get_repo_name(uri: str) -> str:

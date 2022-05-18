@@ -1,3 +1,4 @@
+from typing import List
 import yaml
 import pwd
 import grp
@@ -71,3 +72,13 @@ def set_uid_and_gid(uid: int, gid: int, path: str):
         os.chown(path, uid, gid)
     except Exception as err:
         print(err)
+
+def include_layer(layer_obj: dict, layer_name: str, yaml_to_merge, manifests_path):
+    manifest_path = f"{layer_name}_manifest_path"
+    if check_key(layer_obj[layer_obj['type']], key='branch'):
+        manifest_path = f"{manifests_path}/{layer_obj['runner']['type']}/{layer_obj['type']}@{layer_obj[layer_obj['type']]['branch']}.yaml"
+        dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
+
+    if not check_key(layer_obj[layer_obj['type']], key='branch') and check_key(layer_obj[layer_obj['type']], key='version'):
+        manifest_path = f"{manifests_path}/{layer_obj['runner']['type']}/{layer_obj['type']}-{layer_obj[layer_obj['type']]['version']}.yaml"
+        dict_merge(yaml_to_merge, read_yaml_file(manifest_path))

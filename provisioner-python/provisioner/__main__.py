@@ -27,29 +27,11 @@ if __name__ == "__main__":
     image = image_yaml['img']
     instance = instance_yaml['ins']
 
-    if check_key(engine[engine['type']], key='branch'):
-        engine_manifest_path = f"{manifests_path}/{engine['runner']['type']}/{engine['type']}@{engine[engine['type']]['branch']}.yaml"
-        dict_merge(platform_yaml, read_yaml_file(engine_manifest_path))
+    layers = ["engine", "image", "instance"]
 
-    if not check_key(engine[engine['type']], key='branch') and check_key(engine[engine['type']], key='version'):
-        engine_manifest_path = f"{manifests_path}/{engine['runner']['type']}/{engine['type']}-{engine[engine['type']]['version']}.yaml"
-        dict_merge(platform_yaml, read_yaml_file(engine_manifest_path))
-
-    if check_key(image[image['type']], key='branch'):
-        image_manifest_path = f"{manifests_path}/{image['runner']['type']}/{image['type']}@{image[image['type']]['branch']}.yaml"
-        dict_merge(platform_yaml, read_yaml_file(image_manifest_path))
-
-    if not check_key(image[image['type']], key='branch') and check_key(image[image['type']], key='version'):
-        image_manifest_path = f"{manifests_path}/{image['runner']['type']}/{image['type']}-{image[image['type']]['version']}.yaml"
-        dict_merge(platform_yaml, read_yaml_file(image_manifest_path))
-
-    if check_key(instance[instance['type']], key='branch'):
-        instance_manifest_path = f"{manifests_path}/{instance['runner']['type']}/{instance['type']}@{instance[instance['type']]['branch']}.yaml"
-        dict_merge(platform_yaml, read_yaml_file(instance_manifest_path))
-
-    if not check_key(instance[instance['type']], key='branch') and check_key(instance[instance['type']], key='version'):
-        instance_manifest_path = f"{manifests_path}/{instance['runner']['type']}/{instance['type']}-{instance[instance['type']]['version']}.yaml"
-        dict_merge(platform_yaml, read_yaml_file(instance_manifest_path))
+    for layer in layers:
+        layer_yaml = locals()[layer]
+        include_layer(layer_yaml, layer, platform_yaml, manifests_path)
 
     platform = platform_yaml['platform']
     repo_names = platform['repo'].keys()
