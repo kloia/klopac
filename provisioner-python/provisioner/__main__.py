@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 from provisioner.core import *
 from provisioner.repo import *
+from provisioner.layer import Layer
 
 uid=1000
 gid=1000
@@ -18,6 +19,10 @@ if __name__ == "__main__":
     image_yaml = read_yaml_file(Path(vars_path, "image.yaml"))
     platform_yaml = read_yaml_file(Path(vars_path, "platform.yaml"))
 
+    engine = Layer(engine_yaml["engine"])
+    image = Layer(image_yaml["img"])
+    instance = Layer(instance_yaml["ins"])
+
     instance_defaults_yaml = read_yaml_file(Path(defaults_path, f"ins-{instance_yaml['ins']['type']}.yaml"))
     image_defaults_yaml = read_yaml_file(Path(defaults_path, f"img-{image_yaml['img']['type']}.yaml"))
     engine_defaults_yaml = read_yaml_file(Path(defaults_path, f"engine-{engine_yaml['engine']['type']}.yaml"))
@@ -26,16 +31,12 @@ if __name__ == "__main__":
     dict_merge(image_yaml, image_defaults_yaml)
     dict_merge(engine_yaml, engine_defaults_yaml)
 
-    engine = engine_yaml["engine"]
-    image = image_yaml["img"]
-    instance = instance_yaml["ins"]
-
     layers = ["engine", "image", "instance"]
 
     for layer in layers:
         layer_yaml = locals()[layer]
-        include_layer(layer_yaml, layer, platform_yaml, manifests_path)
-
+        include_layer(layer_yaml.data, platform_yaml, manifests_path)
+    
     platform = platform_yaml["platform"]
     repo_names = platform["repo"].keys()
 
@@ -60,10 +61,10 @@ if __name__ == "__main__":
             clone_repo(repo_uri, r_path, branch=repo["version"])
 
     for layer in layers:
-        layer_yaml = locals()[layer]
-        op = get_layer_operation(layer_yaml)
-        enabled = check_layer_enabled(layer_yaml)
-        repo_name = layer_yaml["type"]
+        layer = locals()[layer]
+        op = layer.op
+        enabled = layer.enabled
+        repo_name = layer.type
 
         if not check_key(platform["repo"], repo_name):
           logger.info(f"[*] {repo_name} is not a repo")

@@ -87,10 +87,3 @@ def include_layer(layer_obj: dict, yaml_to_merge, manifests_path: Path):
         version_fname = f"{layer_obj['type']}-{layer_obj[layer_obj['type']]['version']}.yaml"
         manifest_path = Path(manifests_path, layer_obj['runner']['type'], version_fname)
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
-
-def get_layer_operation(layer: dict) -> str:
-    return layer['operation']['type']
-
-def check_layer_enabled(layer_obj: dict) -> bool:
-    return layer_obj['enabled']
-
