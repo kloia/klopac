@@ -82,3 +82,10 @@ def include_layer(layer_obj: dict, layer_name: str, yaml_to_merge, manifests_pat
     if not check_key(layer_obj[layer_obj['type']], key='branch') and check_key(layer_obj[layer_obj['type']], key='version'):
         manifest_path = f"{manifests_path}/{layer_obj['runner']['type']}/{layer_obj['type']}-{layer_obj[layer_obj['type']]['version']}.yaml"
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
+
+def get_layer_operation(layer: dict) -> str:
+    return layer['operation']['type']
+
+def check_layer_enabled(layer_obj: dict) -> bool:
+    return layer_obj['enabled']
+
