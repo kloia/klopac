@@ -11,7 +11,7 @@ class CloneProgress(RemoteProgress):
         if message:
             logger.info(message)
 
-def clone_repo(repo_uri: str, repo_path: str, branch: str):
+def clone_repo(repo_uri: str, repo_path: Path, branch: str):
     repo_name = get_repo_name(repo_uri)
     logger.info(f"Cloning into {repo_name} from {repo_uri}")
     try:
@@ -38,7 +38,7 @@ def check_empty_repo_uri(platform: dict) -> bool:
 
     return False
 
-def create_repo_dir(dir_path: str, mode, exist_ok: bool):
+def create_repo_dir(dir_path: Path, mode, exist_ok: bool):
     try:
         os.makedirs(dir_path, mode=mode, exist_ok=exist_ok)
     except OSError as err:

@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 import yaml
 import pwd
@@ -8,6 +9,9 @@ from collections import Mapping
 # should we use the following package
 # https://github.com/zerwes/hiyapyco
 # https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
+# a: {a:1,b:2}
+# b: {b:3, c:4}
+# merged_dict = {**a, **b}
 def dict_merge(dct, merge_dct):
     """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
     updating only top-level keys, dict_merge recurses down into dicts nested
@@ -24,7 +28,7 @@ def dict_merge(dct, merge_dct):
         else:
             dct[k] = merge_dct[k]
 
-def read_yaml_file(file_path: str) -> dict:
+def read_yaml_file(file_path: Path) -> dict:
     with open(file_path, "r") as f:
         try:
             yaml_obj = yaml.safe_load(f)
@@ -33,7 +37,7 @@ def read_yaml_file(file_path: str) -> dict:
 
     return yaml_obj
 
-def write_yaml_file(yaml_obj: dict, file_path: str):
+def write_yaml_file(yaml_obj: dict, file_path: Path):
     with open(file_path, "w") as f:
         try:
             yaml.safe_dump(yaml_obj, f)
@@ -73,14 +77,15 @@ def set_uid_and_gid(uid: int, gid: int, path: str):
     except Exception as err:
         print(err)
 
-def include_layer(layer_obj: dict, layer_name: str, yaml_to_merge, manifests_path):
-    manifest_path = f"{layer_name}_manifest_path"
+def include_layer(layer_obj: dict, yaml_to_merge, manifests_path: Path):
     if check_key(layer_obj[layer_obj['type']], key='branch'):
-        manifest_path = f"{manifests_path}/{layer_obj['runner']['type']}/{layer_obj['type']}@{layer_obj[layer_obj['type']]['branch']}.yaml"
+        branch_fname = f"{layer_obj['type']}@{layer_obj[layer_obj['type']]['branch']}.yaml"
+        manifest_path = Path(manifests_path, layer_obj['runner']['type'], branch_fname)
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
 
     if not check_key(layer_obj[layer_obj['type']], key='branch') and check_key(layer_obj[layer_obj['type']], key='version'):
-        manifest_path = f"{manifests_path}/{layer_obj['runner']['type']}/{layer_obj['type']}-{layer_obj[layer_obj['type']]['version']}.yaml"
+        version_fname = f"{layer_obj['type']}-{layer_obj[layer_obj['type']]['version']}.yaml"
+        manifest_path = Path(manifests_path, layer_obj['runner']['type'], version_fname)
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
 
 def get_layer_operation(layer: dict) -> str:

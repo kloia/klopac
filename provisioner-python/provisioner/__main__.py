@@ -5,21 +5,22 @@ from provisioner.repo import *
 
 uid=1000
 gid=1000
-data_path = ".."
-bundle_path = f"{data_path}/bundle"
-vars_path = f"{data_path}/vars"
-repo_path = f"{data_path}/repo"
-manifests_path = f"{data_path}/manifests"
+data_path = Path.cwd().parent
+bundle_path = Path(data_path, Path("bundle"))
+vars_path = Path(data_path, Path("vars"))
+defaults_path = Path(vars_path, Path("defaults"))
+repo_path = Path(data_path, Path("repo"))
+manifests_path = Path(data_path, Path("manifests"))
 
 if __name__ == "__main__":
-    instance_yaml = read_yaml_file(f"{vars_path}/instance.yaml")
-    engine_yaml = read_yaml_file(f"{vars_path}/engine.yaml")
-    image_yaml = read_yaml_file(f"{vars_path}/image.yaml")
-    platform_yaml = read_yaml_file(f"{vars_path}/platform.yaml")
+    instance_yaml = read_yaml_file(Path(vars_path, "instance.yaml"))
+    engine_yaml = read_yaml_file(Path(vars_path, "engine.yaml"))
+    image_yaml = read_yaml_file(Path(vars_path, "image.yaml"))
+    platform_yaml = read_yaml_file(Path(vars_path, "platform.yaml"))
 
-    instance_defaults_yaml = read_yaml_file(f'{vars_path}/defaults/ins-{instance_yaml["ins"]["type"]}.yaml')
-    image_defaults_yaml = read_yaml_file(f'{vars_path}/defaults/img-{image_yaml["img"]["type"]}.yaml')
-    engine_defaults_yaml = read_yaml_file(f'{vars_path}/defaults/engine-{engine_yaml["engine"]["type"]}.yaml')
+    instance_defaults_yaml = read_yaml_file(Path(defaults_path, f"ins-{instance_yaml['ins']['type']}.yaml"))
+    image_defaults_yaml = read_yaml_file(Path(defaults_path, f"img-{image_yaml['img']['type']}.yaml"))
+    engine_defaults_yaml = read_yaml_file(Path(defaults_path, f"engine-{engine_yaml['engine']['type']}.yaml"))
 
     dict_merge(instance_yaml, instance_defaults_yaml)
     dict_merge(image_yaml, image_defaults_yaml)
@@ -47,7 +48,7 @@ if __name__ == "__main__":
         repo_uri = get_repo_uri(repo)
         repo_name = get_repo_name(repo_uri)
 
-        r_path = f"{repo_path}/{repo_name}"
+        r_path = Path(repo_path, repo_name)
         create_repo_dir(r_path, mode=0o777, exist_ok=True)
         # check_uid_and_gid(uid, gid)
         # set_uid_and_gid(uid, gid, path=r_path)
@@ -70,10 +71,10 @@ if __name__ == "__main__":
 
         repo = klopac_repo(platform, repo_name)
         repo_enabled = repo["state"]["enabled"]
-        rr_path = ""
+        rr_path = Path("")
 
         if repo_enabled:
-            rr_path = repo["outputs"]["file"]["path"]
+            rr_path = Path(repo["outputs"]["file"]["path"])
 
         logger.debug(f"Operation: {op} / Repo_path: {rr_path} / Repo: {repo_name} / State: {repo_enabled}")
 
