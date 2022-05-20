@@ -46,11 +46,6 @@ def write_yaml_file(yaml_obj: dict, file_path: Path):
         except Exception as err:
             print(err)
 
-def check_key(dict: dict, key: str) -> bool:
-    if key in dict:
-        return True
-    return False
-
 def check_uid(uid: int) -> bool:
     try:
         pwd.getpwuid(uid)
@@ -108,12 +103,12 @@ def merge_layer_and_default(yamls: dict, defaults: dict, layers: List[str]) -> N
         dict_merge(yaml, default)
 
 def include_layer(layer_obj: dict, yaml_to_merge, manifests_path: Path):
-    if check_key(layer_obj[layer_obj['type']], key='branch'):
+    if "branch" in layer_obj[layer_obj['type']]:
         branch_fname = f"{layer_obj['type']}@{layer_obj[layer_obj['type']]['branch']}.yaml"
         manifest_path = Path(manifests_path, layer_obj['runner']['type'], branch_fname)
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
 
-    if not check_key(layer_obj[layer_obj['type']], key='branch') and check_key(layer_obj[layer_obj['type']], key='version'):
+    if "branch" not in layer_obj[layer_obj['type']] and "version" in layer_obj[layer_obj['type']]:
         version_fname = f"{layer_obj['type']}-{layer_obj[layer_obj['type']]['version']}.yaml"
         manifest_path = Path(manifests_path, layer_obj['runner']['type'], version_fname)
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))

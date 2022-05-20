@@ -47,19 +47,18 @@ class App:
             # check_uid_and_gid(uid, gid)
             # set_uid_and_gid(uid, gid, path=r_path)
 
-            if check_key(repo, key="branch"):
+            if "branch" in repo:
                 clone_repo(repo_uri, r_path, branch=repo["branch"])
 
-            if not check_key(repo, key="branch") and check_key(repo, key="version"):
+            if "branch" not in repo and "version" in repo:
                 clone_repo(repo_uri, r_path, branch=repo["version"])
 
-        for layer in layers:
-            layer = locals()[layer]
+        for layer in layer_objs:
             op = layer.op
             enabled = layer.enabled
             repo_name = layer.type
 
-            if not check_key(platform["repo"], repo_name):
+            if repo_name not in platform["repo"]:
               logger.info(f"[*] {repo_name} is not a repo")
               continue
 

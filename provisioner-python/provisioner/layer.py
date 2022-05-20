@@ -2,8 +2,8 @@ from pathlib import Path
 import provisioner.core as core
 
 class Layer:
-    def __init__(self, layer_obj: dict) -> None:
-        self.data = layer_obj
+    def __init__(self, layer: dict) -> None:
+        self.data = layer
         self.op = self.data['operation']['type']
         self.type = self.data['type']
         self.enabled = self.data['enabled']
