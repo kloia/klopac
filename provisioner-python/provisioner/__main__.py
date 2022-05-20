@@ -4,8 +4,7 @@ from provisioner.core import *
 from provisioner.repo import *
 from provisioner.layer import Layer
 
-uid=1000
-gid=1000
+uid = gid = 1000
 data_path = Path.cwd().parent
 bundle_path = Path(data_path, Path("bundle"))
 vars_path = Path(data_path, Path("vars"))
@@ -14,29 +13,26 @@ repo_path = Path(data_path, Path("repo"))
 manifests_path = Path(data_path, Path("manifests"))
 
 if __name__ == "__main__":
-    instance_yaml = read_yaml_file(Path(vars_path, "instance.yaml"))
-    engine_yaml = read_yaml_file(Path(vars_path, "engine.yaml"))
-    image_yaml = read_yaml_file(Path(vars_path, "image.yaml"))
-    platform_yaml = read_yaml_file(Path(vars_path, "platform.yaml"))
-
-    engine = Layer(engine_yaml["engine"])
-    image = Layer(image_yaml["img"])
-    instance = Layer(instance_yaml["ins"])
-
-    instance_defaults_yaml = read_yaml_file(Path(defaults_path, f"ins-{instance_yaml['ins']['type']}.yaml"))
-    image_defaults_yaml = read_yaml_file(Path(defaults_path, f"img-{image_yaml['img']['type']}.yaml"))
-    engine_defaults_yaml = read_yaml_file(Path(defaults_path, f"engine-{engine_yaml['engine']['type']}.yaml"))
-
-    dict_merge(instance_yaml, instance_defaults_yaml)
-    dict_merge(image_yaml, image_defaults_yaml)
-    dict_merge(engine_yaml, engine_defaults_yaml)
+    yamls = {}; defaults = {}
 
     layers = ["engine", "image", "instance"]
+    shorthands = ["engine", "img", "ins"]
 
-    for layer in layers:
-        layer_yaml = locals()[layer]
-        include_layer(layer_yaml.data, platform_yaml, manifests_path)
+    #the iterator gets exhausted after first use so we want a lambda/list if we want to use a variable
+    l = lambda: zip(layers, shorthands)
     
+    read_layer_yamls(yamls, layers, vars_path)
+    platform_yaml = read_yaml_file(Path(vars_path, "platform.yaml"))
+
+    engine, image, instance = layer_objs = [Layer(yamls[f"{layer}_yaml"][shorthand]) for layer, shorthand in l()]
+
+    read_layer_defaults(yamls, defaults, l(), defaults_path)
+
+    merge_layer_and_default(yamls, defaults, layers)
+
+    for layer in layer_objs:
+        include_layer(layer.data, platform_yaml, manifests_path)
+
     platform = platform_yaml["platform"]
     repo_names = platform["repo"].keys()
 

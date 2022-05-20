@@ -1,5 +1,5 @@
 from pathlib import Path
-from provisioner.core import write_yaml_file
+import provisioner.core as core
 
 class Layer:
     def __init__(self, layer_obj: dict) -> None:
@@ -9,5 +9,5 @@ class Layer:
         self.enabled = self.data['enabled']
 
     def write_to_yaml(self, path: Path) -> None:
-        write_yaml_file(self.data, path)
+        core.write_yaml_file(self.data, path)
 

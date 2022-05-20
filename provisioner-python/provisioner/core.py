@@ -5,6 +5,8 @@ import pwd
 import grp
 import os
 from collections import Mapping
+from provisioner import logger
+from provisioner.layer import Layer
 
 # should we use the following package
 # https://github.com/zerwes/hiyapyco
@@ -76,6 +78,34 @@ def set_uid_and_gid(uid: int, gid: int, path: str):
         os.chown(path, uid, gid)
     except Exception as err:
         print(err)
+
+def read_layer_yamls(yamls: dict, layers: List[str], vars_path: Path) -> None:
+    for layer in layers:
+        file_path = f"{layer}.yaml"
+        yamls[f"{layer}_yaml"] = read_yaml_file(Path(vars_path, file_path))
+   
+def read_layer_defaults(yamls: dict, defaults: dict, layers: zip, defaults_path: Path) -> None:
+    logger.info("[*] Reading default files for layers")
+    for layer, shorthand in layers:
+        yaml_name = f"{layer}_yaml"
+        type = yamls[yaml_name][shorthand]['type']
+        file_path = f"{shorthand}-{type}.yaml"
+        default_yaml_name = f"{layer}_defaults_yaml"
+        default_path = Path(defaults_path, file_path)
+        logger.info(f"[*] {layer} defaults as key: {default_yaml_name} at path: {default_path}")
+
+        defaults[default_yaml_name] = read_yaml_file(default_path)
+
+def merge_layer_and_default(yamls: dict, defaults: dict, layers: List[str]) -> None:
+    for layer in layers:
+        layer_yaml = f"{layer}_yaml"
+        default_yaml = f"{layer}_defaults_yaml"
+        yaml = yamls[layer_yaml]
+        default = defaults[default_yaml]
+
+        logger.info(f"[*] Merging {layer} defaults")
+
+        dict_merge(yaml, default)
 
 def include_layer(layer_obj: dict, yaml_to_merge, manifests_path: Path):
     if check_key(layer_obj[layer_obj['type']], key='branch'):
