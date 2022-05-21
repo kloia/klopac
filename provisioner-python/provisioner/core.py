@@ -99,6 +99,6 @@ def include_layer(layer: Layer, yaml_to_merge, manifests_path: Path):
         manifest_path = Path(manifests_path, layer.runner_type, layer.get_branch_filename())
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
 
-    if "branch" not in layer.get_branch_or_version() and "version" in layer.get_branch_or_version():
+    elif "branch" not in layer.get_branch_or_version() and "version" in layer.get_branch_or_version():
         manifest_path = Path(manifests_path, layer.runner_type, layer.get_version_filename())
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))

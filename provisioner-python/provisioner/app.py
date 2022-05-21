@@ -45,7 +45,7 @@ class App:
             if "branch" in repo:
                 clone_repo(repo_uri, r_path, branch=repo["branch"])
 
-            if "branch" not in repo and "version" in repo:
+            elif "branch" not in repo and "version" in repo:
                 clone_repo(repo_uri, r_path, branch=repo["version"])
 
         for layer in layer_objs:
