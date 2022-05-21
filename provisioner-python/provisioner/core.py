@@ -44,14 +44,14 @@ def write_yaml_file(yaml_obj: dict, file_path: Path):
         try:
             yaml.safe_dump(yaml_obj, f)
         except Exception as err:
-            print(err)
+            logger.error(err)
 
 def check_uid(uid: int) -> bool:
     try:
         pwd.getpwuid(uid)
         return True
     except KeyError:
-        print(f"{uid} uid doesn't exist")
+        logger.error(f"{uid} uid doesn't exist")
         return False
 
 def check_gid(gid: int) -> bool:
@@ -59,7 +59,7 @@ def check_gid(gid: int) -> bool:
         grp.getgrgid(gid)
         return True
     except KeyError:
-        print(f"{gid} gid doesn't exist")
+        logger.error(f"{gid} gid doesn't exist")
         return False
 
 def check_uid_and_gid(uid: int, gid: int) -> bool:
@@ -72,43 +72,33 @@ def set_uid_and_gid(uid: int, gid: int, path: str):
     try:
         os.chown(path, uid, gid)
     except Exception as err:
-        print(err)
+        logger.error(err)
 
-def read_layer_yamls(yamls: dict, layers: List[str], vars_path: Path) -> None:
-    for layer in layers:
-        file_path = f"{layer}.yaml"
-        yamls[f"{layer}_yaml"] = read_yaml_file(Path(vars_path, file_path))
+def read_layer_yamls(layers, vars_path: Path) -> List[Layer]:
+    return [Layer(read_yaml_file(Path(vars_path, f"{layer}.yaml")), layer, shorthand) for layer, shorthand in layers]
    
-def read_layer_defaults(yamls: dict, defaults: dict, layers: zip, defaults_path: Path) -> None:
+def read_layer_defaults(layers: List[Layer], defaults_path: Path) -> List[dict]:
     logger.info("[*] Reading default files for layers")
-    for layer, shorthand in layers:
-        yaml_name = f"{layer}_yaml"
-        type = yamls[yaml_name][shorthand]['type']
-        file_path = f"{shorthand}-{type}.yaml"
-        default_yaml_name = f"{layer}_defaults_yaml"
-        default_path = Path(defaults_path, file_path)
-        logger.info(f"[*] {layer} defaults as key: {default_yaml_name} at path: {default_path}")
+    defaults = []
 
-        defaults[default_yaml_name] = read_yaml_file(default_path)
-
-def merge_layer_and_default(yamls: dict, defaults: dict, layers: List[str]) -> None:
     for layer in layers:
-        layer_yaml = f"{layer}_yaml"
-        default_yaml = f"{layer}_defaults_yaml"
-        yaml = yamls[layer_yaml]
-        default = defaults[default_yaml]
+        default_path = layer.get_default_path(defaults_path)
+        logger.info(f"[*] {layer.name} defaults at path: {default_path}")
 
-        logger.info(f"[*] Merging {layer} defaults")
+        defaults.append(read_yaml_file(default_path))
 
-        dict_merge(yaml, default)
+    return defaults
 
-def include_layer(layer_obj: dict, yaml_to_merge, manifests_path: Path):
-    if "branch" in layer_obj[layer_obj['type']]:
-        branch_fname = f"{layer_obj['type']}@{layer_obj[layer_obj['type']]['branch']}.yaml"
-        manifest_path = Path(manifests_path, layer_obj['runner']['type'], branch_fname)
+def merge_layer_and_default(defaults: List[dict], layers: List[Layer]) -> None:
+    for layer, default in zip(layers, defaults):
+        logger.info(f"[*] Merging {layer.name} defaults")
+        dict_merge(layer.raw, default)
+
+def include_layer(layer: Layer, yaml_to_merge, manifests_path: Path):
+    if "branch" in layer.get_branch_or_version():
+        manifest_path = Path(manifests_path, layer.runner_type, layer.get_branch_filename())
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
 
-    if "branch" not in layer_obj[layer_obj['type']] and "version" in layer_obj[layer_obj['type']]:
-        version_fname = f"{layer_obj['type']}-{layer_obj[layer_obj['type']]['version']}.yaml"
-        manifest_path = Path(manifests_path, layer_obj['runner']['type'], version_fname)
+    if "branch" not in layer.get_branch_or_version() and "version" in layer.get_branch_or_version():
+        manifest_path = Path(manifests_path, layer.runner_type, layer.get_version_filename())
         dict_merge(yaml_to_merge, read_yaml_file(manifest_path))

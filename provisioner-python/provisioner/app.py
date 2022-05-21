@@ -10,25 +10,20 @@ class App:
         self.config = config
 
     def run(self):
-        yamls = {}; defaults = {}
-
         layers = ["engine", "image", "instance"]
         shorthands = ["engine", "img", "ins"]
 
         #the iterator gets exhausted after first use so we want a lambda/list if we want to use a variable
         l = lambda: zip(layers, shorthands)
         
-        read_layer_yamls(yamls, layers, vars_path)
+        engine, image, instance = layer_objs = read_layer_yamls(l(), vars_path)
         platform_yaml = read_yaml_file(Path(vars_path, "platform.yaml"))
 
-        engine, image, instance = layer_objs = [Layer(yamls[f"{layer}_yaml"][shorthand]) for layer, shorthand in l()]
-
-        read_layer_defaults(yamls, defaults, l(), defaults_path)
-
-        merge_layer_and_default(yamls, defaults, layers)
+        defaults = read_layer_defaults(layer_objs, defaults_path)
+        merge_layer_and_default(defaults, layer_objs)
 
         for layer in layer_objs:
-            include_layer(layer.data, platform_yaml, manifests_path)
+            include_layer(layer, platform_yaml, manifests_path)
 
         platform = platform_yaml["platform"]
         repo_names = platform["repo"].keys()
@@ -55,7 +50,6 @@ class App:
 
         for layer in layer_objs:
             op = layer.op
-            enabled = layer.enabled
             repo_name = layer.type
 
             if repo_name not in platform["repo"]:
@@ -66,10 +60,10 @@ class App:
             repo_enabled = repo["state"]["enabled"]
             rr_path = Path("")
 
+            logger.debug(f"Operation: {op} / Repo_path: {rr_path} / Repo: {repo_name} / State: {repo_enabled}")
+
             if repo_enabled:
                 rr_path = Path(repo["outputs"]["file"]["path"])
-
-            logger.debug(f"Operation: {op} / Repo_path: {rr_path} / Repo: {repo_name} / State: {repo_enabled}")
 
             if op != "create" and repo_enabled and rr_path:
                 logger.info("[*] Copying state files...")
