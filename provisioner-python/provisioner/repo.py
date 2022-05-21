@@ -11,25 +11,36 @@ class CloneProgress(RemoteProgress):
         if message:
             logger.info(message)
 
-def clone_repo(repo_uri: str, repo_path: Path, branch: str):
-    repo_name = get_repo_name(repo_uri)
-    logger.info(f"Cloning into {repo_name} from {repo_uri}")
-    try:
-        git.Repo.clone_from(repo_uri, repo_path, branch=branch, progress=CloneProgress())
-    except Exception as err:
-        logger.error(err)
+class Repo:
+    def __init__(self, repo: dict, name: str) -> None:
+        self.data = repo
+        self.name = name
+        self.uri = self.data["uri"]
+        self.enabled = self.data["state"]["enabled"]
+        self.layer = self.data["from_layer"]
+        # self.download_path = self.data["outputs"]["file"]["path"]
+
+    def get_remote_reponame(self) -> str:
+        return self.uri.split("/")[-1].split(".")[0]
+
+    def check_branch(self) -> bool:
+        return "branch" in self.data
+
+    def check_version(self) -> bool:
+        return "branch" not in self.data and "version" in self.data
+
+    def clone_repo(self, path: Path, branch: str):
+        logger.info(f"Cloning into {self.get_remote_reponame()} from {self.uri}")
+        try:
+            git.Repo.clone_from(self.uri, path, branch=branch, progress=CloneProgress())
+        except Exception as err:
+            logger.error(err)
 
 def get_repo_uris(platform: dict) -> List[str]:
     return [platform['repo'][repo_name]['uri'] for repo_name in platform['repo'].keys()]
 
-def get_repo_name(uri: str) -> str:
-    return uri.split("/")[-1].split(".")[0]
-
 def klopac_repo(platform: dict, repo_name: str) -> dict:
     return platform['repo'][repo_name]
-
-def get_repo_uri(repo: dict) -> str:
-    return repo['uri']
 
 def check_empty_repo_uri(platform: dict) -> bool:
     for repo_name in platform['repo'].keys():

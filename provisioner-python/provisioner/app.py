@@ -26,51 +26,41 @@ class App:
             include_layer(layer, platform_yaml, manifests_path)
 
         platform = platform_yaml["platform"]
-        repo_names = platform["repo"].keys()
 
-        if check_empty_repo_uri(platform):
-            sys.exit("You cannot have an empty repo name")
-
+        """DOOM IS HAPPENING"""
+        """BEWARE? POSSIBLE REGRESSION WHY IS k3s getting added to platform.yml"""
+        repos = []
+        for r in platform["repo"].keys():
+            if "uri" not in platform["repo"][r]:
+                logger.warning(f"[*] empty uri for {r}")
+            else:
+                repos.append(Repo(repo=platform["repo"][r], name=r))
+        
         #TODO: fix uid and gid checks not exiting
-        for repo_name in repo_names:
-            repo = platform["repo"][repo_name]
-            repo_uri = get_repo_uri(repo)
-            repo_name = get_repo_name(repo_uri)
-
-            r_path = Path(repo_path, repo_name)
+        for repo in repos:
+            r_path = Path(repo_path, repo.get_remote_reponame())
             create_repo_dir(r_path, mode=0o777, exist_ok=True)
             # check_uid_and_gid(uid, gid)
             # set_uid_and_gid(uid, gid, path=r_path)
+            if repo.check_branch():
+                repo.clone_repo(r_path, repo.data["branch"])
 
-            if "branch" in repo:
-                clone_repo(repo_uri, r_path, branch=repo["branch"])
+            elif repo.check_version():
+                repo.clone_repo(r_path, repo.data["version"])
 
-            elif "branch" not in repo and "version" in repo:
-                clone_repo(repo_uri, r_path, branch=repo["version"])
+        for repo in repos:
+            layer = locals()[repo.layer]
+            download_path = Path("")
+            logger.debug(f"Operation: {layer.op} / Repo_path: {download_path} / Repo: {repo.name} / State: {repo.enabled}")
 
-        for layer in layer_objs:
-            op = layer.op
-            repo_name = layer.type
+            if repo.enabled:
+                download_path = Path(repo.data["outputs"]["file"]["path"])
 
-            if repo_name not in platform["repo"]:
-              logger.info(f"[*] {repo_name} is not a repo")
-              continue
-
-            repo = klopac_repo(platform, repo_name)
-            repo_enabled = repo["state"]["enabled"]
-            rr_path = Path("")
-
-            logger.debug(f"Operation: {op} / Repo_path: {rr_path} / Repo: {repo_name} / State: {repo_enabled}")
-
-            if repo_enabled:
-                rr_path = Path(repo["outputs"]["file"]["path"])
-
-            if op != "create" and repo_enabled and rr_path:
+            if layer.op != "create" and repo.enabled and download_path:
                 logger.info("[*] Copying state files...")
-                state_path = Path(bundle_path, rr_path)
-                dest = Path(repo_path, repo_name)
+                state_path = Path(bundle_path, download_path)
+                dest = Path(repo_path, repo.name)
 
                 logger.info(f"[*] src: {state_path}, dest: {dest}")
 
                 copy_state_file(state_path, dest)
-

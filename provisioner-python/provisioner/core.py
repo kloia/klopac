@@ -1,4 +1,5 @@
 from pathlib import Path
+from sys import platform
 from typing import List
 import yaml
 import pwd
@@ -95,10 +96,16 @@ def merge_layer_and_default(defaults: List[dict], layers: List[Layer]) -> None:
         dict_merge(layer.raw, default)
 
 def include_layer(layer: Layer, yaml_to_merge, manifests_path: Path):
-    if "branch" in layer.get_branch_or_version():
-        manifest_path = Path(manifests_path, layer.runner_type, layer.get_branch_filename())
-        dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
+    from_layer_obj = {"platform":{"repo":{layer.type:{"from_layer":layer.name}}}}
+    if "platform" in yaml_to_merge:
+        if "branch" in layer.get_branch_or_version():
+            manifest_path = Path(manifests_path, layer.runner_type, layer.get_branch_filename())
+            manifest_yaml = read_yaml_file(manifest_path)
+            dict_merge(manifest_yaml, from_layer_obj)
+            dict_merge(yaml_to_merge, manifest_yaml)
 
-    elif "branch" not in layer.get_branch_or_version() and "version" in layer.get_branch_or_version():
-        manifest_path = Path(manifests_path, layer.runner_type, layer.get_version_filename())
-        dict_merge(yaml_to_merge, read_yaml_file(manifest_path))
+        elif "branch" not in layer.get_branch_or_version() and "version" in layer.get_branch_or_version():
+            manifest_path = Path(manifests_path, layer.runner_type, layer.get_version_filename())
+            manifest_yaml = read_yaml_file(manifest_path)
+            dict_merge(manifest_yaml, from_layer_obj)
+            dict_merge(yaml_to_merge, manifest_yaml)
