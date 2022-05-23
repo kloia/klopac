@@ -1,10 +1,11 @@
 import os
+import sys
 from pathlib import Path
 import shutil
 from provisioner import logger
-from typing import List
 import git
 from git import RemoteProgress
+from provisioner.config import repo_path
 
 class CloneProgress(RemoteProgress):
     def update(self, op_code, cur_count, max_count=None, message=''):
@@ -23,11 +24,14 @@ class Repo:
     def get_remote_reponame(self) -> str:
         return self.uri.split("/")[-1].split(".")[0]
 
-    def check_branch(self) -> bool:
-        return "branch" in self.data
-
-    def check_version(self) -> bool:
-        return "branch" not in self.data and "version" in self.data
+    def branch_or_version(self) -> str:
+        if "branch" in self.data:
+            return self.data["branch"]
+        elif "version" in self.data:
+            return self.data["version"]
+        else:
+            logger.error(f"[*] No branch or version found for repo: {self.name}")
+            sys.exit(1)
 
     def clone_repo(self, path: Path, branch: str):
         logger.info(f"Cloning into {self.get_remote_reponame()} from {self.uri}")
@@ -36,11 +40,14 @@ class Repo:
         except Exception as err:
             logger.error(err)
 
-def get_repo_uris(platform: dict) -> List[str]:
-    return [platform['repo'][repo_name]['uri'] for repo_name in platform['repo'].keys()]
+    def copy_state_file(self, src: Path):
+        dest = Path(repo_path, self.get_remote_reponame())
+        logger.info(f"[*] src: {src}, dest: {dest}")
 
-def klopac_repo(platform: dict, repo_name: str) -> dict:
-    return platform['repo'][repo_name]
+        try:
+            shutil.copy(src, dest)
+        except Exception as err:
+            logger.error(err)
 
 def check_empty_repo_uri(platform: dict) -> bool:
     for repo_name in platform['repo'].keys():
@@ -55,8 +62,3 @@ def create_repo_dir(dir_path: Path, mode, exist_ok: bool):
     except OSError as err:
         print(err)
     
-def copy_state_file(src_path: Path, dest_path: Path):
-    try:
-        shutil.copy(src_path, dest_path)
-    except Exception as err:
-        logger.error(err)

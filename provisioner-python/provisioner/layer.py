@@ -1,5 +1,6 @@
 from pathlib import Path
 import provisioner.core as core
+import sys
 from provisioner import logger
 
 class Layer:
@@ -16,21 +17,28 @@ class Layer:
     def write_to_yaml(self, path: Path) -> None:
         core.write_yaml_file(self.data, path)
 
-    def get_branch_or_version(self):
-        # logger.debug(self.data[self.type])
-        return self.data[self.type]
+    def branch_or_version(self):
+        if "branch" in self.data[self.type]:
+            return Path(f"{self.type}@{self.get_branch()}.yaml")
+        elif "version" in self.data[self.type]:
+            return Path(f"{self.type}-{self.get_version()}.yaml")
+        else:
+            logger.error(f"[*] No branch or version found for repo: {self.data[self.type]}")
+            sys.exit(1)
 
     def get_branch(self):
-        return self.data[self.type]["branch"]
+        try:
+            return self.data[self.type]["branch"]
+        except KeyError:
+            logger.error(f"[*] Type mismatch: cannot find a branch for repo {self.type}")
+            sys.exit(1)
 
     def get_version(self):
-        return self.data[self.type]["version"]
-
-    def get_branch_filename(self) -> Path:
-        return Path(f"{self.type}@{self.get_branch()}.yaml")
-
-    def get_version_filename(self) -> Path:
-        return Path(f"{self.type}-{self.get_version()}.yaml")
+        try:
+            return self.data[self.type]["version"]
+        except KeyError:
+            logger.error(f"[*] Type mismatch: cannot find a version for repo {self.type}")
+            sys.exit(1)
 
     def get_default_path(self, defaults_path: Path) -> Path:
         filepath = Path(f"{self.shorthand}-{self.type}.yaml")

@@ -27,8 +27,6 @@ class App:
 
         platform = platform_yaml["platform"]
 
-        """DOOM IS HAPPENING"""
-        """BEWARE? POSSIBLE REGRESSION WHY IS k3s getting added to platform.yml"""
         repos = []
         for r in platform["repo"].keys():
             if "uri" not in platform["repo"][r]:
@@ -42,11 +40,7 @@ class App:
             create_repo_dir(r_path, mode=0o777, exist_ok=True)
             # check_uid_and_gid(uid, gid)
             # set_uid_and_gid(uid, gid, path=r_path)
-            if repo.check_branch():
-                repo.clone_repo(r_path, repo.data["branch"])
-
-            elif repo.check_version():
-                repo.clone_repo(r_path, repo.data["version"])
+            repo.clone_repo(r_path, repo.branch_or_version())
 
         for repo in repos:
             layer = locals()[repo.layer]
@@ -59,8 +53,4 @@ class App:
             if layer.op != "create" and repo.enabled and download_path:
                 logger.info("[*] Copying state files...")
                 state_path = Path(bundle_path, download_path)
-                dest = Path(repo_path, repo.name)
-
-                logger.info(f"[*] src: {state_path}, dest: {dest}")
-
-                copy_state_file(state_path, dest)
+                repo.copy_state_file(state_path)
