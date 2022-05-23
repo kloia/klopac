@@ -62,13 +62,6 @@ def check_gid(gid: int) -> bool:
         logger.error(f"{gid} gid doesn't exist")
         return False
 
-# FIXME: should be an and
-def check_uid_and_gid(uid: int, gid: int) -> bool:
-    if check_uid(uid) or check_gid(gid):
-        return True
-
-    return False
-
 def set_uid_and_gid(uid: int, gid: int, path: str):
     try:
         os.chown(path, uid, gid)

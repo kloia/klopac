@@ -23,6 +23,7 @@ class Layer:
 
         self.__layers.append(self)
 
+    # Reads the defaults for each Layer and adds the dictionary to __defaults
     @classmethod
     def read_layer_defaults(cls):
         logger.info("[*] Reading default files for layers")
@@ -32,6 +33,7 @@ class Layer:
             logger.info(f"[*] {layer.name} defaults at path: {default_path}")
             cls.__defaults.append(core.read_yaml_file(default_path))
 
+    # Merges the Layer object with its default values
     @classmethod
     def merge_layer_and_default(cls):
         for layer, default in zip(Layer.get_layers(), Layer.get_defaults()):
@@ -57,6 +59,7 @@ class Layer:
     def write_to_yaml(self, path: Path) -> None:
         core.write_yaml_file(self.data, path)
 
+    # Returns the repo path for the corresponding repo type
     def branch_or_version(self):
         if "branch" in self.data[self.type]:
             return Path(f"{self.type}@{self.get_branch()}.yaml")
@@ -80,6 +83,7 @@ class Layer:
             logger.error(f"[*] Type mismatch: cannot find a version for repo {self.type}")
             sys.exit(1)
 
+    # Returns the path for default values for the Layer 
     def get_default_path(self, defaults_path: Path) -> Path:
         filepath = Path(f"{self.shorthand}-{self.type}.yaml")
         return Path(defaults_path, filepath)

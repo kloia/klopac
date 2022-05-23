@@ -30,10 +30,10 @@ class App:
         platform.include_layers()
 
         # We can now set the repo object on our platform instance
-        platform.set_repos()
+        Repo.set_repos(platform)
 
         # Clone repos that need to be cloned
-        platform.clone_repos()
+        Repo.clone_repos()
 
         # Copy state files to the necessary repos
-        platform.copy_states()
+        Repo.copy_states()
