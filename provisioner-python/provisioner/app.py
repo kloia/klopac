@@ -1,8 +1,8 @@
-import sys
 from pathlib import Path
 from provisioner.core import *
 from provisioner.repo import *
 from provisioner.layer import Layer
+from provisioner.platform import Platform
 from provisioner.config import *
 
 class App:
@@ -10,47 +10,30 @@ class App:
         self.config = config
 
     def run(self):
-        layers = ["engine", "image", "instance"]
-        shorthands = ["engine", "img", "ins"]
-
-        #the iterator gets exhausted after first use so we want a lambda/list if we want to use a variable
-        l = lambda: zip(layers, shorthands)
+        # The iterator gets exhausted after first use so we want a lambda/list if we want to use a variable
+        # We zip layers because some of the filenames and dictionary keys use the shorthand version
+        zip_layers = lambda: zip(LAYERS, SHORTHANDS)
         
-        engine, image, instance = layer_objs = read_layer_yamls(l(), vars_path)
-        platform_yaml = read_yaml_file(Path(vars_path, "platform.yaml"))
+        # Read YAML files for different layers
+        read_layer_yamls(zip_layers())
 
-        defaults = read_layer_defaults(layer_objs, defaults_path)
-        merge_layer_and_default(defaults, layer_objs)
+        # Platform is not a layer so it is parsed separately
+        platform = Platform(read_yaml_file(Path(VARS_PATH, "platform.yaml")))
 
-        for layer in layer_objs:
-            include_layer(layer, platform_yaml, manifests_path)
+        # Read default YAML files for layer types
+        Layer.read_layer_defaults()
 
-        platform = platform_yaml["platform"]
+        # Merge the Layers and defaults lists
+        Layer.merge_layer_and_default()
 
-        repos = []
-        for r in platform["repo"].keys():
-            if "uri" not in platform["repo"][r]:
-                logger.warning(f"[*] empty uri for {r}")
-            else:
-                repos.append(Repo(repo=platform["repo"][r], name=r))
-        
-        #TODO: fix uid and gid checks not exiting
-        for repo in repos:
-            r_path = Path(repo_path, repo.get_remote_reponame())
-            create_repo_dir(r_path, mode=0o777, exist_ok=True)
-            # check_uid_and_gid(uid, gid)
-            # set_uid_and_gid(uid, gid, path=r_path)
-            repo.clone_repo(r_path, repo.branch_or_version())
+        # Include the manifest YAMLs for different components to the platform object
+        platform.include_layers()
 
-        for repo in repos:
-            layer = locals()[repo.layer]
-            download_path = Path("")
-            logger.debug(f"Operation: {layer.op} / Repo_path: {download_path} / Repo: {repo.name} / State: {repo.enabled}")
+        # We can now set the repo object on our platform instance
+        platform.set_repos()
 
-            if repo.enabled:
-                download_path = Path(repo.data["outputs"]["file"]["path"])
+        # Clone repos that need to be cloned
+        platform.clone_repos()
 
-            if layer.op != "create" and repo.enabled and download_path:
-                logger.info("[*] Copying state files...")
-                state_path = Path(bundle_path, download_path)
-                repo.copy_state_file(state_path)
+        # Copy state files to the necessary repos
+        platform.copy_states()

@@ -1,9 +1,11 @@
 from pathlib import Path
 
 uid = gid = 1000
-data_path = Path.cwd().parent
-bundle_path = Path(data_path, Path("bundle"))
-vars_path = Path(data_path, Path("vars"))
-defaults_path = Path(vars_path, Path("defaults"))
-repo_path = Path(data_path, Path("repo"))
-manifests_path = Path(data_path, Path("manifests"))
+DATA_PATH = Path.cwd().parent
+BUNDLE_PATH = Path(DATA_PATH, Path("bundle"))
+VARS_PATH = Path(DATA_PATH, Path("vars"))
+DEFAULTS_PATH = Path(VARS_PATH, Path("defaults"))
+REPO_PATH = Path(DATA_PATH, Path("repo"))
+MANIFESTS_PATH = Path(DATA_PATH, Path("manifests"))
+LAYERS = ["engine", "image", "instance"]
+SHORTHANDS = ["engine", "img", "ins"]

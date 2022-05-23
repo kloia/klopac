@@ -1,12 +1,11 @@
-from pathlib import Path
-from sys import platform
-from typing import List
 import yaml
 import pwd
 import grp
 import os
+from pathlib import Path
 from collections import Mapping
 from provisioner import logger
+from provisioner.config import *
 from provisioner.layer import Layer
 
 # should we use the following package
@@ -63,6 +62,7 @@ def check_gid(gid: int) -> bool:
         logger.error(f"{gid} gid doesn't exist")
         return False
 
+# FIXME: should be an and
 def check_uid_and_gid(uid: int, gid: int) -> bool:
     if check_uid(uid) or check_gid(gid):
         return True
@@ -75,39 +75,10 @@ def set_uid_and_gid(uid: int, gid: int, path: str):
     except Exception as err:
         logger.error(err)
 
-def read_layer_yamls(layers_zip: zip, vars_path: Path) -> List[Layer]:
+def read_layer_yamls(layers_zip: zip) -> None:
     logger.info("[*] Reading layer YAMLs")
-    layers = []
 
     for layer, shorthand in layers_zip:
-        yaml_path = Path(vars_path, f"{layer}.yaml")
+        yaml_path = Path(VARS_PATH, f"{layer}.yaml")
         logger.info(f"[*] {layer} at path: {yaml_path}")
-        layers.append(Layer(read_yaml_file(yaml_path), layer, shorthand))
-
-    return layers
-
-   
-def read_layer_defaults(layers: List[Layer], defaults_path: Path) -> List[dict]:
-    logger.info("[*] Reading default files for layers")
-    defaults = []
-
-    for layer in layers:
-        default_path = layer.get_default_path(defaults_path)
-        logger.info(f"[*] {layer.name} defaults at path: {default_path}")
-        defaults.append(read_yaml_file(default_path))
-
-    return defaults
-
-def merge_layer_and_default(defaults: List[dict], layers: List[Layer]) -> None:
-    for layer, default in zip(layers, defaults):
-        logger.info(f"[*] Merging {layer.name} defaults")
-        dict_merge(layer.raw, default)
-
-def include_layer(layer: Layer, yaml_to_merge, manifests_path: Path):
-    from_layer_obj = {"platform":{"repo":{layer.type:{"from_layer":layer.name}}}}
-    if "platform" in yaml_to_merge and layer.runner_type == "repo":
-        filepath = layer.branch_or_version()
-        manifest_path = Path(manifests_path, layer.runner_type, filepath)
-        manifest_yaml = read_yaml_file(manifest_path)
-        dict_merge(manifest_yaml, from_layer_obj)
-        dict_merge(yaml_to_merge, manifest_yaml)
+        Layer(read_yaml_file(yaml_path), layer, shorthand)

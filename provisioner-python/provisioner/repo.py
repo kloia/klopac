@@ -3,9 +3,10 @@ import sys
 from pathlib import Path
 import shutil
 from provisioner import logger
+from typing import List
 import git
 from git import RemoteProgress
-from provisioner.config import repo_path
+from provisioner.config import REPO_PATH
 
 class CloneProgress(RemoteProgress):
     def update(self, op_code, cur_count, max_count=None, message=''):
@@ -19,7 +20,7 @@ class Repo:
         self.uri = self.data["uri"]
         self.enabled = self.data["state"]["enabled"]
         self.layer = self.data["from_layer"]
-        # self.download_path = self.data["outputs"]["file"]["path"]
+        # self.state_path = self.data["outputs"]["file"]["path"]
 
     def get_remote_reponame(self) -> str:
         return self.uri.split("/")[-1].split(".")[0]
@@ -38,10 +39,12 @@ class Repo:
         try:
             git.Repo.clone_from(self.uri, path, branch=branch, progress=CloneProgress())
         except Exception as err:
-            logger.error(err)
+            logger.error(f"Something went wrong when cloning the repo. Make sure the repos do not exist already")
+            logger.debug(err)
+            sys.exit(1)
 
     def copy_state_file(self, src: Path):
-        dest = Path(repo_path, self.get_remote_reponame())
+        dest = Path(REPO_PATH, self.get_remote_reponame())
         logger.info(f"[*] src: {src}, dest: {dest}")
 
         try:
