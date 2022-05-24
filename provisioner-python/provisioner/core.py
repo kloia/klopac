@@ -2,11 +2,10 @@ import yaml
 import pwd
 import grp
 import os
+import sys
 from pathlib import Path
 from collections import Mapping
 from provisioner import logger
-from provisioner.config import *
-from provisioner.layer import Layer
 
 # should we use the following package
 # https://github.com/zerwes/hiyapyco
@@ -30,28 +29,34 @@ def dict_merge(dct, merge_dct):
         else:
             dct[k] = merge_dct[k]
 
-def read_yaml_file(file_path: Path) -> dict:
-    with open(file_path, "r") as f:
+# Reads a YAML file as a dictionary
+def read_yaml_file(filepath: Path) -> dict:
+    with open(filepath, "r") as f:
         try:
             yaml_obj = yaml.safe_load(f)
         except yaml.YAMLError as err:
-            print(err)
+            logger.debug(err)
+            logger.error(f"There was an error reading {filepath}")
+            raise yaml.YAMLError
+        except FileNotFoundError as fnf_error:
+            raise FileNotFoundError(fnf_error)
 
     return yaml_obj
 
-def write_yaml_file(yaml_obj: dict, file_path: Path):
-    with open(file_path, "w") as f:
+# Writes a dictionary to a file in YAML format
+def write_yaml_file(yaml_obj: dict, filepath: Path):
+    with open(filepath, "w") as f:
         try:
             yaml.safe_dump(yaml_obj, f)
         except Exception as err:
-            logger.error(err)
+            raise Exception(err)
 
 def check_uid(uid: int) -> bool:
     try:
         pwd.getpwuid(uid)
         return True
     except KeyError:
-        logger.error(f"{uid} uid doesn't exist")
+        logger.error(f"uid: {uid} uid doesn't exist")
         return False
 
 def check_gid(gid: int) -> bool:
@@ -59,19 +64,19 @@ def check_gid(gid: int) -> bool:
         grp.getgrgid(gid)
         return True
     except KeyError:
-        logger.error(f"{gid} gid doesn't exist")
+        logger.error(f"gid: {gid} gid doesn't exist")
         return False
 
-def set_uid_and_gid(uid: int, gid: int, path: str):
+def set_uid_and_gid(uid: int, gid: int, path: Path) -> None:
     try:
         os.chown(path, uid, gid)
     except Exception as err:
-        logger.error(err)
+        logger.debug(err)
+        raise Exception(f"Cannot set uid: {uid} and gid: {gid}")
 
-def read_layer_yamls(layers_zip: zip) -> None:
-    logger.info("[*] Reading layer YAMLs")
-
-    for layer, shorthand in layers_zip:
-        yaml_path = Path(VARS_PATH, f"{layer}.yaml")
-        logger.info(f"[*] {layer} at path: {yaml_path}")
-        Layer(read_yaml_file(yaml_path), layer, shorthand)
+def create_dir(dir_path: Path, mode, exist_ok: bool):
+    try:
+        os.makedirs(dir_path, mode=mode, exist_ok=exist_ok)
+    except OSError as err:
+        logger.debug(err)
+        raise OSError(f"Could not create the directory {dir_path}")

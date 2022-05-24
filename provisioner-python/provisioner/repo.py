@@ -1,11 +1,11 @@
-import os
 import sys
 import shutil
-import git
+from git.repo import Repo as GitRepo
 from pathlib import Path
 from provisioner import logger
 from git import RemoteProgress
 from provisioner.config import *
+from provisioner.core import check_gid, check_uid, set_uid_and_gid
 from provisioner.layer import Layer
 from provisioner.platform import Platform
 
@@ -20,95 +20,101 @@ class Repo:
     def __init__(self, repo: dict, name: str) -> None:
         self.data = repo
         self.name = name
-        self.uri = self.data["uri"]
-        self.enabled = self.data["state"]["enabled"]
-        self.layer = self.data["from_layer"]
-        # self.state_path = self.data["outputs"]["file"]["path"]
+        self.uri = repo["uri"]
+        self.remote_name = self.uri.split("/")[-1].split(".")[0]
+        self.layer = repo["from_layer"]
+        self.state_enabled = repo["state"]["enabled"]
+        self.branch = repo
+        self.state_path = repo
 
     @classmethod
-    def get_repos(cls):
+    @property
+    def repos(cls):
         return cls.__repos
 
     @classmethod
     def set_repos(cls, platform: Platform):
         try:
             # check if the repo URI is empty and create a repo object if it is not
-            for r in platform.data["repo"].keys():
-                if "uri" not in platform.data["repo"][r]:
-                    logger.warning(f"[*] empty uri for {r}")
-                else:
-                    cls.__repos.append(Repo(repo=platform.data["repo"][r], name=r))
-        except KeyError:
-            logger.error(f"[*] Your platform YAML does not have a 'repo' key.")
-            sys.exit(1)
+            for repo in platform.data["repo"].keys():
+                logger.info(f"[*] Adding the following repo: {repo}")
+                cls.__repos.append(Repo(repo=platform.data["repo"][repo], name=repo))
+        except KeyError as err:
+            logger.error(err)
+            raise KeyError(f"[!] There was an error setting up the repo for {repo}.")
 
+    """Getter and setter for branch
+    The exact value depends on whether "branch" or "version" is set inside the manifest file
+    If "branch" is set this will be used, otherwise we look for "version"
+    If none are found there must be something wrong with our config.
+    """
+    @property
+    def branch(self):
+        return self._branch
+
+    @branch.setter
+    def branch(self, repo):
+        if "branch" in repo:
+            self._branch = repo["branch"]
+        elif "version" in repo:
+            self._branch = repo["version"]
+        else:
+            raise ValueError(f"[!] No branch or version found for repo: {self.name}")
+
+    """Getter and setter for state_path
+    If "state_enabled" is true we set state_path, otherwise it should be None
+    If the path to the state does not exist we set "state_path" to None
+    """
+    @property
+    def state_path(self):
+        return self._state_path
+
+    @state_path.setter
+    def state_path(self, repo):
+        try:
+            if self.state_enabled:
+                self._state_path = Path(BUNDLE_PATH, repo["outputs"]["file"]["path"])
+            else:
+                self._state_path = None
+        except KeyError:
+            raise KeyError(f"[!] {self.name} repo does not have a state file but its [state] is ENABLED")
+
+    """CLONE METHODS"""
     @classmethod
     def clone_repos(cls) -> None:
-        #TODO: fix uid and gid checks not exiting
-        for repo in Repo.get_repos():
-            r_path = Path(REPO_PATH, repo.get_remote_reponame())
-            Repo.create_dir(r_path, mode=0o777, exist_ok=True)
-            # check_uid_and_gid(uid, gid)
-            # set_uid_and_gid(uid, gid, path=r_path)
-            repo.clone_repo(r_path, repo.branch_or_version())
+        #TODO: uid and gid checks
+        for repo in cls.repos:
+            r_path = Path(REPO_PATH, repo.remote_name)
+            repo.clone_repo(r_path)
+            # if check_uid(uid) and check_gid(gid):
+            #     set_uid_and_gid(uid, gid, path=r_path)
 
-    def get_remote_reponame(self) -> str:
-        return self.uri.split("/")[-1].split(".")[0]
-
-    def branch_or_version(self) -> str:
-        if "branch" in self.data:
-            return self.data["branch"]
-        elif "version" in self.data:
-            return self.data["version"]
-        else:
-            logger.error(f"[*] No branch or version found for repo: {self.name}")
-            sys.exit(1)
-
-    def clone_repo(self, path: Path, branch: str):
-        logger.info(f"Cloning into {self.get_remote_reponame()} from {self.uri}")
+    def clone_repo(self, path: Path):
+        logger.info(f"[*] Cloning into {self.remote_name} from {self.uri}")
         try:
-            git.Repo.clone_from(self.uri, path, branch=branch, progress=CloneProgress())
+            GitRepo.clone_from(self.uri, path, branch=self.branch, progress=CloneProgress())
         except Exception as err:
-            logger.error(f"Something went wrong when cloning the repo. Make sure the repos do not exist already")
             logger.debug(err)
-            sys.exit(1)
+            raise Exception(f"[!] Something went wrong while cloning the repo. Make sure the repo folders do not exist already")
 
-    def copy_state_file(self, src: Path):
-        dest = Path(REPO_PATH, self.get_remote_reponame())
-        logger.info(f"[*] src: {src}, dest: {dest}")
-
-        try:
-            shutil.copy(src, dest)
-        except Exception as err:
-            logger.error(err)
-
-    @staticmethod
-    def check_empty_uri(platform: dict) -> bool:
-        for repo_name in platform['repo'].keys():
-            if not platform['repo'][repo_name]['uri']:
-                return True
-
-        return False
-
-    @staticmethod
-    def create_dir(dir_path: Path, mode, exist_ok: bool):
-        try:
-            os.makedirs(dir_path, mode=mode, exist_ok=exist_ok)
-        except OSError as err:
-            print(err)
-    
+    """STATE METHODS"""
     @staticmethod
     def copy_states() -> None:
-        for repo in Repo.get_repos():
+        for repo in Repo.repos:
             layer = Layer.get_layer(repo.layer)
-            download_path = Path("")
+            logger.debug(f"Operation: {layer.op} / Repo_path: {repo.state_path} / Repo: {repo.name} / State: {repo.state_enabled}")
 
-            if repo.enabled:
-                download_path = Path(repo.data["outputs"]["file"]["path"])
-
-            logger.debug(f"Operation: {layer.op} / Repo_path: {download_path} / Repo: {repo.name} / State: {repo.enabled}")
-
-            if layer.op != "create" and repo.enabled and download_path:
+            if layer.op != "create" and repo.state_enabled and repo.state_path:
                 logger.info("[*] Copying state files...")
-                state_path = Path(BUNDLE_PATH, download_path)
-                repo.copy_state_file(state_path)
+                repo.copy_state_file()
+
+    def copy_state_file(self):
+        dest = Path(REPO_PATH, self.remote_name)
+        logger.info(f"[*] src: {self.state_path}, dest: {dest}")
+
+        try:
+            if self.state_path:
+                shutil.copy(self.state_path, dest)
+        except Exception as err:
+            logger.debug(err)
+            raise Exception(f"Error while copying the state file")
