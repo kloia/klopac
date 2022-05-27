@@ -89,10 +89,6 @@ class Layer:
             # We can safely try to set the "manifest_version" now after the merge
             layer.manifest_version = layer.data[layer.type]
 
-    # Utility function for debugging purposes
-    def write_to_yaml(self, path: Path) -> None:
-        core.write_yaml_file(self.data, path)
-
     """MANIFEST METHODS"""
     @staticmethod
     def include_manifests(platform: Platform):
@@ -128,3 +124,7 @@ class Layer:
             if layer.name == name: return layer
 
         raise ValueError(f"[!] No layer with name {name} exists")
+
+    # Utility function for debugging purposes
+    def write_to_yaml(self, path: Path) -> None:
+        core.write_yaml_file(self.data, path)

@@ -1,4 +1,3 @@
-import sys
 import shutil
 from git.repo import Repo as GitRepo
 from pathlib import Path

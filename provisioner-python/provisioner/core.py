@@ -2,7 +2,6 @@ import yaml
 import pwd
 import grp
 import os
-import sys
 from pathlib import Path
 from collections import Mapping
 from provisioner import logger

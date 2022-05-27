@@ -1,5 +1,5 @@
-from pathlib import Path
 import provisioner.core as core
+from pathlib import Path
 from provisioner import logger
 from provisioner.repo import Repo
 from provisioner.layer import Layer
