@@ -1,3 +1,4 @@
+import sys
 import provisioner.core as core
 from pathlib import Path
 from provisioner import logger
@@ -42,3 +43,4 @@ class App:
 
         except Exception as err:
             logger.error(err)
+            sys.exit(1)
