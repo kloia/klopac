@@ -8,10 +8,12 @@ from provisioner.core import check_gid, check_uid, set_uid_and_gid
 from provisioner.layer import Layer
 from provisioner.platform import Platform
 
+
 class CloneProgress(RemoteProgress):
-    def update(self, op_code, cur_count, max_count=None, message=''):
+    def update(self, op_code, cur_count, max_count=None, message=""):
         if message:
             logger.info(message)
+
 
 class Repo:
     __repos = []
@@ -47,6 +49,7 @@ class Repo:
     If "branch" is set this will be used, otherwise we look for "version"
     If none are found there must be something wrong with our config.
     """
+
     @property
     def branch(self):
         return self._branch
@@ -64,6 +67,7 @@ class Repo:
     If "state_enabled" is true we set state_path, otherwise it should be None
     If the path to the state does not exist we set "state_path" to None
     """
+
     @property
     def state_path(self):
         return self._state_path
@@ -76,12 +80,15 @@ class Repo:
             else:
                 self._state_path = None
         except KeyError:
-            raise KeyError(f"[!] {self.name} repo does not have a state file but its [state] is ENABLED")
+            raise KeyError(
+                f"[!] {self.name} repo does not have a state file but its [state] is ENABLED"
+            )
 
     """CLONE METHODS"""
+
     @classmethod
     def clone_repos(cls) -> None:
-        #TODO: uid and gid checks
+        # TODO: uid and gid checks
         for repo in cls.repos:
             r_path = Path(REPO_PATH, repo.remote_name)
             repo.clone_repo(r_path)
@@ -91,17 +98,24 @@ class Repo:
     def clone_repo(self, path: Path):
         logger.info(f"[*] Cloning into {self.remote_name} from {self.uri}")
         try:
-            GitRepo.clone_from(self.uri, path, branch=self.branch, progress=CloneProgress())
+            GitRepo.clone_from(
+                self.uri, path, branch=self.branch, progress=CloneProgress()
+            )
         except Exception as err:
             logger.debug(err)
-            raise Exception(f"[!] Something went wrong while cloning the repo. Make sure the repo folders do not exist already")
+            raise Exception(
+                f"[!] Something went wrong while cloning the repo. Make sure the repo folders do not exist already"
+            )
 
     """STATE METHODS"""
+
     @staticmethod
     def copy_states() -> None:
         for repo in Repo.repos:
             layer = Layer.get_layer(repo.layer)
-            logger.debug(f"Operation: {layer.op} / Repo_path: {repo.state_path} / Repo: {repo.name} / State: {repo.state_enabled}")
+            logger.debug(
+                f"Operation: {layer.op} / Repo_path: {repo.state_path} / Repo: {repo.name} / State: {repo.state_enabled}"
+            )
 
             if layer.op != "create" and repo.state_enabled and repo.state_path:
                 logger.info("[*] Copying state files...")

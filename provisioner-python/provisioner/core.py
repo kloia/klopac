@@ -13,7 +13,7 @@ from provisioner import logger
 # b: {b:3, c:4}
 # merged_dict = {**a, **b}
 def dict_merge(dct, merge_dct):
-    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+    """Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
     updating only top-level keys, dict_merge recurses down into dicts nested
     to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
     ``dct``.
@@ -22,11 +22,11 @@ def dict_merge(dct, merge_dct):
     :return: None
     """
     for k, v in merge_dct.items():
-        if (k in dct and isinstance(dct[k], dict)
-                and isinstance(merge_dct[k], Mapping)):
+        if k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], Mapping):
             dict_merge(dct[k], merge_dct[k])
         else:
             dct[k] = merge_dct[k]
+
 
 # Reads a YAML file as a dictionary
 def read_yaml_file(filepath: Path) -> dict:
@@ -42,6 +42,7 @@ def read_yaml_file(filepath: Path) -> dict:
 
     return yaml_obj
 
+
 # Writes a dictionary to a file in YAML format
 def write_yaml_file(yaml_obj: dict, filepath: Path):
     with open(filepath, "w") as f:
@@ -49,6 +50,7 @@ def write_yaml_file(yaml_obj: dict, filepath: Path):
             yaml.safe_dump(yaml_obj, f)
         except Exception as err:
             raise Exception(err)
+
 
 def check_uid(uid: int) -> bool:
     try:
@@ -58,6 +60,7 @@ def check_uid(uid: int) -> bool:
         logger.error(f"uid: {uid} uid doesn't exist")
         return False
 
+
 def check_gid(gid: int) -> bool:
     try:
         grp.getgrgid(gid)
@@ -66,12 +69,14 @@ def check_gid(gid: int) -> bool:
         logger.error(f"gid: {gid} gid doesn't exist")
         return False
 
+
 def set_uid_and_gid(uid: int, gid: int, path: Path) -> None:
     try:
         os.chown(path, uid, gid)
     except Exception as err:
         logger.debug(err)
         raise Exception(f"Cannot set uid: {uid} and gid: {gid}")
+
 
 def create_dir(dir_path: Path, mode, exist_ok: bool):
     try:

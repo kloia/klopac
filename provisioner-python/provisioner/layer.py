@@ -7,6 +7,7 @@ from provisioner import logger
 from provisioner.config import *
 from provisioner.platform import Platform
 
+
 class Layer:
     __layers = []
     __defaults = []
@@ -16,10 +17,10 @@ class Layer:
         self.data = layer[shorthand]
         self.shorthand = shorthand
         self.name = name
-        self.op = self.data['operation']['type']
-        self.type = self.data['type']
-        self.runner_type = self.data['runner']['type']
-        self.enabled = self.data['enabled']
+        self.op = self.data["operation"]["type"]
+        self.type = self.data["type"]
+        self.runner_type = self.data["runner"]["type"]
+        self.enabled = self.data["enabled"]
         self.default_path = Path(DEFAULTS_PATH, f"{self.shorthand}-{self.type}.yaml")
 
         self.layers.append(self)
@@ -47,6 +48,7 @@ class Layer:
     layer_type: This refers to the "self.data[self.type]" object 
     ex. for the engine layer this can be -> self.data["k3s"] or self.data["rke2"]
     """
+
     @property
     def manifest_version(self):
         return self._manifest_version
@@ -60,10 +62,18 @@ class Layer:
 
         if "branch" in layer_type:
             self._manifest_version = layer_type["branch"]
-            self._manifest_path = Path(MANIFESTS_PATH, self.runner_type, f"{self.type}@{self.manifest_version}.yaml")
+            self._manifest_path = Path(
+                MANIFESTS_PATH,
+                self.runner_type,
+                f"{self.type}@{self.manifest_version}.yaml",
+            )
         elif "version" in layer_type:
             self._manifest_version = layer_type["version"]
-            self._manifest_path = Path(MANIFESTS_PATH, self.runner_type, f"{self.type}-{self.manifest_version}.yaml")
+            self._manifest_path = Path(
+                MANIFESTS_PATH,
+                self.runner_type,
+                f"{self.type}-{self.manifest_version}.yaml",
+            )
         else:
             raise ValueError(f"[!] No branch or version exists for repo {self.name}")
 
@@ -80,6 +90,7 @@ class Layer:
     """Merges the Layer object with its default values
     After this call the layer object will contain the default values it uses
     """
+
     @staticmethod
     def merge_layers_and_defaults():
         for layer, default in zip(Layer.layers, Layer.defaults):
@@ -90,6 +101,7 @@ class Layer:
             layer.manifest_version = layer.data[layer.type]
 
     """MANIFEST METHODS"""
+
     @staticmethod
     def include_manifests(platform: Platform):
         for layer in Layer.layers:
@@ -97,11 +109,13 @@ class Layer:
 
     # Merges the Layer manifest with the Platform object
     def include_manifest(self, platform: Platform):
-        from_layer_obj = {"platform":{"repo":{self.type:{"from_layer":self.name}}}}
+        from_layer_obj = {"platform": {"repo": {self.type: {"from_layer": self.name}}}}
 
         if self.runner_type == "repo":
             manifest_yaml = core.read_yaml_file(self.manifest_path)
-            logger.info(f"[*] Merging {self.name} repo manifest at: {self.manifest_path}")
+            logger.info(
+                f"[*] Merging {self.name} repo manifest at: {self.manifest_path}"
+            )
 
             # This merge with from_layer_obj is necessary to access which layer a repo belongs to
             core.dict_merge(manifest_yaml, from_layer_obj)
@@ -121,7 +135,8 @@ class Layer:
     @staticmethod
     def get_layer(name: str) -> Layer:
         for layer in Layer.layers:
-            if layer.name == name: return layer
+            if layer.name == name:
+                return layer
 
         raise ValueError(f"[!] No layer with name {name} exists")
 

@@ -7,6 +7,7 @@ from provisioner.layer import Layer
 from provisioner.platform import Platform
 from provisioner.config import *
 
+
 class App:
     def __init__(self, config={}):
         self.config = config
@@ -16,7 +17,7 @@ class App:
             # The iterator gets exhausted after first use so we want a lambda/list if we want to use a variable
             # We zip layers because some of the filenames and dictionary keys use the shorthand version
             zip_layers = lambda: zip(LAYERS, SHORTHANDS)
-            
+
             # Read and create Layers from YAML files for different layers
             Layer.read_yamls(zip_layers())
 
