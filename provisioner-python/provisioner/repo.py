@@ -1,7 +1,7 @@
+import logging
 import shutil
 from git.repo import Repo as GitRepo
 from pathlib import Path
-from provisioner import logger
 from git import RemoteProgress
 from provisioner.config import *
 from provisioner.core import check_gid, check_uid, set_uid_and_gid
@@ -12,7 +12,7 @@ from provisioner.platform import Platform
 class CloneProgress(RemoteProgress):
     def update(self, op_code, cur_count, max_count=None, message=""):
         if message:
-            logger.info(message)
+            logging.info(message)
 
 
 class Repo:
@@ -38,10 +38,10 @@ class Repo:
         try:
             # check if the repo URI is empty and create a repo object if it is not
             for repo in platform.data["repo"].keys():
-                logger.info(f"[*] Adding the following repo: {repo}")
+                logging.info(f"[*] Adding the following repo: {repo}")
                 cls.__repos.append(Repo(repo=platform.data["repo"][repo], name=repo))
         except KeyError as err:
-            logger.error(err)
+            logging.error(err)
             raise KeyError(f"[!] There was an error setting up the repo for {repo}.")
 
     """Getter and setter for branch
@@ -96,13 +96,13 @@ class Repo:
             #     set_uid_and_gid(uid, gid, path=r_path)
 
     def clone_repo(self, path: Path):
-        logger.info(f"[*] Cloning into {self.remote_name} from {self.uri}")
+        logging.info(f"[*] Cloning into {self.remote_name} from {self.uri}")
         try:
             GitRepo.clone_from(
                 self.uri, path, branch=self.branch, progress=CloneProgress()
             )
         except Exception as err:
-            logger.debug(err)
+            logging.debug(err)
             raise Exception(
                 f"[!] Something went wrong while cloning the repo. Make sure the repo folders do not exist already"
             )
@@ -113,21 +113,21 @@ class Repo:
     def copy_states() -> None:
         for repo in Repo.repos:
             layer = Layer.get_layer(repo.layer)
-            logger.debug(
+            logging.debug(
                 f"Operation: {layer.op} / Repo_path: {repo.state_path} / Repo: {repo.name} / State: {repo.state_enabled}"
             )
 
             if layer.op != "create" and repo.state_enabled and repo.state_path:
-                logger.info("[*] Copying state files...")
+                logging.info("[*] Copying state files...")
                 repo.copy_state_file()
 
     def copy_state_file(self):
         dest = Path(REPO_PATH, self.remote_name)
-        logger.info(f"[*] src: {self.state_path}, dest: {dest}")
+        logging.info(f"[*] src: {self.state_path}, dest: {dest}")
 
         try:
             if self.state_path:
                 shutil.copy(self.state_path, dest)
         except Exception as err:
-            logger.debug(err)
+            logging.debug(err)
             raise Exception(f"Error while copying the state file")

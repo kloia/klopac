@@ -1,7 +1,7 @@
+import logging
 import sys
 import provisioner.core as core
 from pathlib import Path
-from provisioner import logger
 from provisioner.repo import Repo
 from provisioner.layer import Layer
 from provisioner.platform import Platform
@@ -43,5 +43,5 @@ class App:
             Repo.copy_states()
 
         except Exception as err:
-            logger.error(err)
+            logging.error(err)
             sys.exit(1)

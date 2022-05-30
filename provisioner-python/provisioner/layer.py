@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import logging
 import provisioner.core as core
 from pathlib import Path
 from typing import List
-from provisioner import logger
 from provisioner.config import *
 from provisioner.platform import Platform
 
@@ -81,10 +81,10 @@ class Layer:
     # Reads the defaults for each Layer and adds the dictionary to __defaults
     @classmethod
     def read_defaults(cls):
-        logger.info("[*] Reading default files for layers")
+        logging.info("[*] Reading default files for layers")
 
         for layer in Layer.layers:
-            logger.info(f"[*] {layer.name} defaults at path: {layer.default_path}")
+            logging.info(f"[*] {layer.name} defaults at path: {layer.default_path}")
             cls.defaults.append(core.read_yaml_file(layer.default_path))
 
     """Merges the Layer object with its default values
@@ -94,7 +94,7 @@ class Layer:
     @staticmethod
     def merge_layers_and_defaults():
         for layer, default in zip(Layer.layers, Layer.defaults):
-            logger.info(f"[*] Merging {layer.name} defaults...")
+            logging.info(f"[*] Merging {layer.name} defaults...")
             core.dict_merge(layer.raw, default)
 
             # We can safely try to set the "manifest_version" now after the merge
@@ -113,7 +113,7 @@ class Layer:
 
         if self.runner_type == "repo":
             manifest_yaml = core.read_yaml_file(self.manifest_path)
-            logger.info(
+            logging.info(
                 f"[*] Merging {self.name} repo manifest at: {self.manifest_path}"
             )
 
@@ -125,11 +125,11 @@ class Layer:
     # Reads and creates Layer objects from YAMLs
     @staticmethod
     def read_yamls(layers_zip: zip) -> None:
-        logger.info("[*] Reading layer YAMLs")
+        logging.info("[*] Reading layer YAMLs")
 
         for layer, shorthand in layers_zip:
             yaml_path = Path(VARS_PATH, f"{layer}.yaml")
-            logger.info(f"[*] {layer} at path: {yaml_path}")
+            logging.info(f"[*] {layer} at path: {yaml_path}")
             Layer(core.read_yaml_file(yaml_path), layer, shorthand)
 
     @staticmethod

@@ -2,9 +2,9 @@ import yaml
 import pwd
 import grp
 import os
+import logging
 from pathlib import Path
 from collections import Mapping
-from provisioner import logger
 
 # should we use the following package
 # https://github.com/zerwes/hiyapyco
@@ -34,8 +34,8 @@ def read_yaml_file(filepath: Path) -> dict:
         try:
             yaml_obj = yaml.safe_load(f)
         except yaml.YAMLError as err:
-            logger.debug(err)
-            logger.error(f"There was an error reading {filepath}")
+            logging.debug(err)
+            logging.error(f"There was an error reading {filepath}")
             raise yaml.YAMLError
         except FileNotFoundError as fnf_error:
             raise FileNotFoundError(fnf_error)
@@ -57,7 +57,7 @@ def check_uid(uid: int) -> bool:
         pwd.getpwuid(uid)
         return True
     except KeyError:
-        logger.error(f"uid: {uid} uid doesn't exist")
+        logging.error(f"uid: {uid} uid doesn't exist")
         return False
 
 
@@ -66,7 +66,7 @@ def check_gid(gid: int) -> bool:
         grp.getgrgid(gid)
         return True
     except KeyError:
-        logger.error(f"gid: {gid} gid doesn't exist")
+        logging.error(f"gid: {gid} gid doesn't exist")
         return False
 
 
@@ -74,7 +74,7 @@ def set_uid_and_gid(uid: int, gid: int, path: Path) -> None:
     try:
         os.chown(path, uid, gid)
     except Exception as err:
-        logger.debug(err)
+        logging.debug(err)
         raise Exception(f"Cannot set uid: {uid} and gid: {gid}")
 
 
@@ -82,5 +82,5 @@ def create_dir(dir_path: Path, mode, exist_ok: bool):
     try:
         os.makedirs(dir_path, mode=mode, exist_ok=exist_ok)
     except OSError as err:
-        logger.debug(err)
+        logging.debug(err)
         raise OSError(f"Could not create the directory {dir_path}")
