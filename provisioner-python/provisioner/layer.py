@@ -4,7 +4,7 @@ import logging
 import provisioner.core as core
 from pathlib import Path
 from typing import List
-from provisioner.config import *
+from provisioner.config import config
 from provisioner.platform import Platform
 
 
@@ -21,7 +21,9 @@ class Layer:
         self.type = self.data["type"]
         self.runner_type = self.data["runner"]["type"]
         self.enabled = self.data["enabled"]
-        self.default_path = Path(DEFAULTS_PATH, f"{self.shorthand}-{self.type}.yaml")
+        self.default_path = Path(
+            config.defaults_path, f"{self.shorthand}-{self.type}.yaml"
+        )
 
         self.layers.append(self)
 
@@ -63,14 +65,14 @@ class Layer:
         if "branch" in layer_type:
             self._manifest_version = layer_type["branch"]
             self._manifest_path = Path(
-                MANIFESTS_PATH,
+                config.manifests_path,
                 self.runner_type,
                 f"{self.type}@{self.manifest_version}.yaml",
             )
         elif "version" in layer_type:
             self._manifest_version = layer_type["version"]
             self._manifest_path = Path(
-                MANIFESTS_PATH,
+                config.manifests_path,
                 self.runner_type,
                 f"{self.type}-{self.manifest_version}.yaml",
             )
@@ -128,7 +130,7 @@ class Layer:
         logging.info("[*] Reading layer YAMLs")
 
         for layer, shorthand in layers_zip:
-            yaml_path = Path(VARS_PATH, f"{layer}.yaml")
+            yaml_path = Path(config.vars_path, f"{layer}.yaml")
             logging.info(f"[*] {layer} at path: {yaml_path}")
             Layer(core.read_yaml_file(yaml_path), layer, shorthand)
 

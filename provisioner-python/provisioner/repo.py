@@ -3,7 +3,7 @@ import shutil
 from git.repo import Repo as GitRepo
 from pathlib import Path
 from git import RemoteProgress
-from provisioner.config import *
+from provisioner.config import config
 from provisioner.core import check_gid, check_uid, set_uid_and_gid
 from provisioner.layer import Layer
 from provisioner.platform import Platform
@@ -76,7 +76,9 @@ class Repo:
     def state_path(self, repo):
         try:
             if self.state_enabled:
-                self._state_path = Path(BUNDLE_PATH, repo["outputs"]["file"]["path"])
+                self._state_path = Path(
+                    config.bundle_path, repo["outputs"]["file"]["path"]
+                )
             else:
                 self._state_path = None
         except KeyError:
@@ -90,7 +92,7 @@ class Repo:
     def clone_repos(cls) -> None:
         # TODO: uid and gid checks
         for repo in cls.repos:
-            r_path = Path(REPO_PATH, repo.remote_name)
+            r_path = Path(config.repo_path, repo.remote_name)
             repo.clone_repo(r_path)
             # if check_uid(uid) and check_gid(gid):
             #     set_uid_and_gid(uid, gid, path=r_path)
@@ -122,7 +124,7 @@ class Repo:
                 repo.copy_state_file()
 
     def copy_state_file(self):
-        dest = Path(REPO_PATH, self.remote_name)
+        dest = Path(config.repo_path, self.remote_name)
         logging.info(f"[*] src: {self.state_path}, dest: {dest}")
 
         try:
