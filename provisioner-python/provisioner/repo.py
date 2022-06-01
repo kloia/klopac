@@ -38,8 +38,17 @@ class Repo:
         try:
             # check if the repo URI is empty and create a repo object if it is not
             for repo in platform.data["repo"].keys():
-                logging.info(f"[*] Adding the following repo: {repo}")
-                cls.__repos.append(Repo(repo=platform.data["repo"][repo], name=repo))
+                layer_name = platform.data["repo"][repo]["from_layer"]
+                layer = Layer.get_layer(layer_name)
+                if layer.enabled:
+                    logging.info(f"[*] Adding the following repo: {repo}")
+                    cls.__repos.append(
+                        Repo(repo=platform.data["repo"][repo], name=repo)
+                    )
+                else:
+                    logging.info(
+                        f"[*] Skipping {repo} repo because {layer_name} layer is NOT enabled."
+                    )
         except KeyError as err:
             logging.error(err)
             raise KeyError(f"[!] There was an error setting up the repo for {repo}.")
