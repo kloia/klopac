@@ -11,6 +11,7 @@ class Platform:
         self.azure_tenant = self.auth["tenant"]
         self.provider_name = self.data["provider"]["name"]
         self.provider_type = self.data["provider"]["type"]
+        self.errors = []
 
     @property
     def data(self):
@@ -25,6 +26,7 @@ class Platform:
         self.check_provider_name()
         self.check_provider_type()
         self.check_auth_azure()
+        self.check_auth_type_user()
 
     def check_auth(self):
         logging.info("[*] Checking auth type for the specified provider")
@@ -81,3 +83,25 @@ class Platform:
             return
 
         raise Exception("[!] Tenant field is required for Azure")
+
+    def check_auth_type_user(self):
+        if self.auth_type == "user":
+            logging.info('[*] Checking required fields for auth type "user"')
+            self.check_auth_user()
+            self.check_auth_password()
+
+    def check_auth_user(self):
+        logging.info('[*] Checking "user" field for auth type "user"')
+        if len(self.auth["user"]) > 0:
+            logging.info("[*] PASS")
+            return
+
+        raise Exception('[!] User field is required for auth type "user"')
+
+    def check_auth_password(self):
+        logging.info('[*] Checking "password" field for auth type "user"')
+        if len(self.auth["password"]) > 0:
+            logging.info("[*] PASS")
+            return
+
+        raise Exception('[!] Password field is required for auth type "user"')
