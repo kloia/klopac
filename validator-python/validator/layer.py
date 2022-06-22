@@ -3,9 +3,11 @@ from __future__ import annotations
 import logging
 import validator.core as core
 from pathlib import Path
-from typing import List
+from typing import List, TYPE_CHECKING
 from validator.config import config
-from validator.platform import Platform
+
+if TYPE_CHECKING:
+    from validator.platform import Platform
 
 
 class Layer:
@@ -57,10 +59,6 @@ class Layer:
     # TODO: check what happens when the runnner_type is not "repo" and we try to access branch/manifest_path
     @manifest_version.setter
     def manifest_version(self, layer_type: dict):
-        # We don't want to include the manifest if it is not the repo type
-        if self.runner_type != "repo":
-            return
-
         if "branch" in layer_type:
             self._manifest_version = layer_type["branch"]
             self._manifest_path = Path(
@@ -112,15 +110,12 @@ class Layer:
     def include_manifest(self, platform: Platform):
         from_layer_obj = {"platform": {"repo": {self.type: {"from_layer": self.name}}}}
 
-        if self.runner_type == "repo":
-            manifest_yaml = core.read_yaml_file(self.manifest_path)
-            logging.info(
-                f"[*] Merging {self.name} repo manifest at: {self.manifest_path}"
-            )
+        manifest_yaml = core.read_yaml_file(self.manifest_path)
+        logging.info(f"[*] Merging {self.name} repo manifest at: {self.manifest_path}")
 
-            # This merge with from_layer_obj is necessary to access which layer a repo belongs to
-            core.dict_merge(manifest_yaml, from_layer_obj)
-            core.dict_merge(platform.raw, manifest_yaml)
+        # This merge with from_layer_obj is necessary to access which layer a repo belongs to
+        core.dict_merge(manifest_yaml, from_layer_obj)
+        core.dict_merge(platform.raw, manifest_yaml)
 
     """UTILITY METHODS"""
     # Reads and creates Layer objects from YAMLs

@@ -1,4 +1,4 @@
-from validator.checks import *
+import validator.checks as checks
 
 
 class Platform:
@@ -22,18 +22,21 @@ class Platform:
         return self._raw
 
     def run_checks(self):
-        check_auth(auth_type=self.auth_type)
-        check_provider_name(provider_name=self.provider_name)
-        check_provider_type(
+        checks.auth_type(auth_type=self.auth_type)
+        checks.provider_name(provider_name=self.provider_name)
+        checks.provider_type(
             provider_type=self.provider_type, provider_name=self.provider_name
         )
-        check_auth_azure(
+        checks.auth_azure(
             provider_name=self.provider_name,
             subscription=self.azure_subscription,
             tenant=self.azure_tenant,
         )
-        check_auth_type_user(
+        checks.auth_type_user(
             auth_type=self.auth_type,
             user=self.auth["user"],
             password=self.auth["password"],
         )
+
+        if len(checks.exceptions) > 0:
+            raise Exception("There were one or more error(s) in your configuration")
