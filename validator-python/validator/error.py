@@ -1,12 +1,8 @@
-class ErrorCollection:
-    def __init__(self, errorcall):
-        self.errorcall = errorcall
+def ErrorCollection(func):
+    def collect_error_wrapper(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except Exception as err:
+            self.errorcall(err, self.exceptions, *args, **kwargs)
 
-    def __call__(self, func):
-        def collect_error_wrapper(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except Exception as err:
-                self.errorcall(err, *args, **kwargs)
-
-        return collect_error_wrapper
+    return collect_error_wrapper

@@ -5,6 +5,7 @@ from pathlib import Path
 from validator.layer import Layer
 from validator.platform import Platform
 from validator.config import config
+from validator.platform_checks import PlatformChecks
 
 
 def main():
@@ -30,7 +31,10 @@ def main():
         # Include the manifest YAMLs for different components to the platform object
         Layer.include_manifests(platform)
 
-        platform.run_checks()
+        platform_exceptions = PlatformChecks().run_checks(platform)
+
+        if len(platform_exceptions) > 0:
+            raise Exception("There were one or more error(s) in your configuration")
 
     except Exception as err:
         logging.error(err)
