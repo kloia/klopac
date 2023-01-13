@@ -1,0 +1,17 @@
+---
+platform:
+  executor:
+    rancher:
+      version: v2.6.9
+      runner:
+        name: kubernetes
+        version: 0.1
+        command: helm
+      helm:
+        repo: 'https://releases.rancher.com/server-charts/latest'
+        namespace: cattle-system
+        name: rancher
+        params:
+          hostname: "{{ vars['app']['rancher']['inputs']['hostname'] }}"
+          bootstrapPassword: "{{ vars['app']['rancher']['inputs']['bootstrapPassword'] }}"
+          ingress.tls.source: "{{ vars['app']['rancher']['inputs']['ingress.tls.source'] }}"

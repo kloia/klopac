@@ -1,8 +1,8 @@
----
 engine:
-  enabled: false
+  enabled: true
   endpoint:
     uri: ''
+    token: ''
   kubeconfig:
     path: ''
   operation:
@@ -18,4 +18,4 @@ engine:
     - runner.type
   runner:
     type: executor
-  type: k3s
+  type: rke2

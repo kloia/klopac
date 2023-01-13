@@ -1,0 +1,27 @@
+---
+platform:
+  executor:
+    rancher-client:
+      type: shell
+      name: rancher-client
+      tag: v2.6.9
+      runner:
+        name: klopac
+        version: 5.2.0
+      state:
+        enabled: false
+      kubeconfig:
+        path: "/etc/rancher/rke2/rke2.yaml"
+      kubectl:
+        path: "/var/lib/rancher/rke2/bin/kubectl"
+      healthcheck:
+        type: kubeconfig
+      dialect:
+        command:
+          work_on: instance
+          pre: "wget -O system-agent-install.sh $mgmt_ip/system-agent-install.sh "
+          create: "sudo sh -E system-agent-install.sh --server $mgmt_ip --label 'cattle.io/os=linux' --token $token --etcd --controlplane"
+          master_join: "sudo sh -E system-agent-install.sh --server $mgmt_ip --label 'cattle.io/os=linux' --token $token --etcd --controlplane"
+          worker_join: "sudo sh -E system-agent-install.sh --server $mgmt_ip --label 'cattle.io/os=linux' --token $token --worker"
+          worker_clean: "sudo rke2-killall.sh; sudo rke2-uninstall.sh"
+          master_clean: "sudo rke2-killall.sh; sudo rke2-uninstall.sh"

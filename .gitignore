@@ -6,8 +6,10 @@ sensitive
 bundle
 .DS_Store
 .bash_history
+.bash_profile
 .cache
 .local
 .ansible
 .ssh
 .kube
+.viminfo

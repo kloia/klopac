@@ -1,37 +1,38 @@
 ---
-- name: "get runner type {{ app_exe_obj }}"
+- name: "get runner type {{ int_exe_obj }}"
   set_fact:
-    app_runner_type: "{{ vars['app'][app_exe_obj]['runner']['type'] }}"
+    app_runner_type: "{{ vars['int'][int_exe_obj]['runner']['type'] }}"
 
-- name: get runner name "{{ app_exe_obj }}"
+- name: get runner name "{{ int_exe_obj }}"
   set_fact:
-    app_runner_name: "{{ vars['platform'][app_runner_type][app_exe_obj]['runner']['name'] }}"
+    app_runner_name: "{{ vars['platform'][app_runner_type][int_exe_obj]['runner']['name'] }}"
 
-- name: get runner version "{{ app_exe_obj }}"
+- name: get runner version "{{ int_exe_obj }}"
   set_fact:
-    app_runner_version: "{{ vars['platform'][app_runner_type][app_exe_obj]['runner']['version'] }}"
+    app_runner_version: "{{ vars['platform'][app_runner_type][int_exe_obj]['runner']['version'] }}"
 
-- name: get "{{ app_exe_obj }}" version
+- name: get "{{ int_exe_obj }}" version
   set_fact:
-    app_obj_version: "{{ vars['platform'][app_runner_type][app_exe_obj]['version'] }}"
+    app_obj_version: "{{ vars['platform'][app_runner_type][int_exe_obj]['version'] }}"
 
-- name: get runner manifest "{{ app_exe_obj }}"
+- name: get runner manifest "{{ int_exe_obj }}"
   set_fact:
-    app_helm_manifest_uri: "{{ vars['platform'][app_runner_type][app_exe_obj]['manifest']['uri'] }}"
+    app_helm_manifest_uri: "{{ vars['platform'][app_runner_type][int_exe_obj]['manifest']['uri'] }}"
 
-- name: get runner command for helm "{{ app_exe_obj }}"
+- name: get runner command for helm "{{ int_exe_obj }}"
   set_fact:
-    app_runner_helm_repo: "{{ vars['platform'][app_runner_type][app_exe_obj]['helm']['repo'] }}"
-    app_runner_helm_namespace: "{{ vars['platform'][app_runner_type][app_exe_obj]['helm']['namespace'] }}"
-    app_runner_helm_name: "{{ vars['platform'][app_runner_type][app_exe_obj]['helm']['name'] }}"
-  when: vars['platform'][app_runner_type][app_exe_obj]['runner']['command'] == 'helm'
+    app_runner_helm_repo: "{{ vars['platform'][app_runner_type][int_exe_obj]['helm']['repo'] }}"
+    app_runner_helm_namespace: "{{ vars['platform'][app_runner_type][int_exe_obj]['helm']['namespace'] }}"
+    app_runner_helm_name: "{{ vars['platform'][app_runner_type][int_exe_obj]['helm']['name'] }}"
+  when: vars['platform'][app_runner_type][int_exe_obj]['runner']['command'] == 'helm'
 
 - name: start container
   become: true
   docker_container:
-    name: "klopac-{{ app_exe_obj }}"
-    image: "kloiadocker/klopac-{{ vars['platform']['executor'][app_exe_obj]['runner']['name'] }}-runner:{{ vars['platform']['executor'][app_exe_obj]['runner']['version'] }}"
-    command: "\"sleep infinity\""
+    name: "klopac-{{ int_exe_obj }}"
+    image: "kloiadocker/klopac-{{ vars['platform']['executor'][int_exe_obj]['runner']['name'] }}-runner:{{ vars['platform']['executor'][int_exe_obj]['runner']['version'] }}"
+    command: "sleep infinity"
+    #command: "\"sleep infinity\""
     state: started
     tty: yes
     volumes:
@@ -43,22 +44,22 @@
 
 - name: add container to inventory
   add_host:
-    name: "klopac-{{ app_exe_obj }}"
-    ansible_host: "klopac-{{ app_exe_obj }}"
+    name: "klopac-{{ int_exe_obj }}"
+    ansible_host: "klopac-{{ int_exe_obj }}"
     ansible_user: root
     ansible_connection: docker
     groups: containers
   changed_when: false
 
 - name: copy kubeconfig to runner
-  delegate_to: "klopac-{{ app_exe_obj }}"
+  delegate_to: "klopac-{{ int_exe_obj }}"
   copy:
     src: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}.kubeconfig"
     dest: /tmp/kubeconfig
     mode: 400
 
-- name: create app "{{ app_exe_obj }}"
-  delegate_to: "klopac-{{ app_exe_obj }}"
+- name: create app "{{ int_exe_obj }}"
+  delegate_to: "klopac-{{ int_exe_obj }}"
   shell: "export KUBECONFIG=/tmp/kubeconfig; kubectl apply -f {{ app_helm_manifest_uri }}; helm upgrade -i --create-namespace --repo {{ app_runner_helm_repo }} -n {{ app_runner_helm_namespace }} --version {{ app_obj_version }} {{ app_runner_helm_name }} {{ app_runner_helm_name }}"
   register: app_create_log
   when: app_runner_helm_name is defined
@@ -66,7 +67,7 @@
 - name: destroy container
   become: true
   docker_container:
-    name: "klopac-{{ app_exe_obj }}"
+    name: "klopac-{{ int_exe_obj }}"
     state: absent
 
 - debug:

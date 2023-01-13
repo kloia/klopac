@@ -1,0 +1,4 @@
+---
+engine:
+  rancher-client:
+    version: v2.6.9

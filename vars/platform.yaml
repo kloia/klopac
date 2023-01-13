@@ -1,6 +1,5 @@
----
 platform:
-  environment: ''
+  environment: test
   jump:
     auth: false
     ip: ''
@@ -13,16 +12,16 @@ platform:
     auth:
       id: ''
       key: ''
-      password: ""
-      subscription: ""
-      tenant: ""
+      password: ''
+      subscription: ''
+      tenant: ''
       type: id
-      user: ""
-    name: ''
+      user: ''
+    name: vsphere
     region1: ''
     region2: ''
     sourceimg: ''
-    type: ''
+    type: vm
   required:
     - environment
     - provider.name

@@ -7,7 +7,7 @@ ins:
       pem.path: private_key_path
       pem.type: img.pem.type
       type: pem
-      user: ubuntu
+      user: epias
     id: img.id
     name: img.name
     os: img.os

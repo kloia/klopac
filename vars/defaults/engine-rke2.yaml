@@ -1,5 +1,4 @@
 ---
 engine:
   rke2:
-    branch: main
-    version: v1.21.6
+    version: v1.24.9+rke2r1

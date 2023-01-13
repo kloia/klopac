@@ -61,6 +61,11 @@
   set_fact:
     engine_runner_type: "{{ vars['engine']['runner']['type'] }}"
 
+- name: set pem path
+  set_fact:
+    engine_pem_path: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+  when: engine_pem_path is not defined
+
 - name: include engine executor defaults
   include_vars:
     file: /data/manifests/executor/{{ engine.type }}-{{ vars['engine'][engine_type]['version']}}.yaml
@@ -73,23 +78,33 @@
     hash_behaviour: merge
   when: vars['engine'][engine_type]['branch'] is defined and vars['engine']['runner']['type'] == 'executor'
 
+- name: check ssh key exists on jump
+  stat: 
+    path: "/tmp/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+  register: id_file
+
 - name: copy pem to jump
   become: true 
   copy:
     src: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
     dest: "/tmp/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem"
+  when: id_file.stat.exists == False
 
-- name: run commands for prerequsites
-  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['pre'] }}"
-  when: vars['platform']['executor'][engine_type]['type'] == 'shell'
+- name: check jump ssh key  exists
+  stat: 
+    path: ~/.ssh/id_rsa
+  register: jump_id_file
 
 - name: create jump ssh key 
   openssh_keypair:
     path: "~/.ssh/id_rsa"
+    regenerate: never
+  when: jump_id_file.stat.exists == False
 
 - name: authorize jump ssh key to worker instances
   shell: "scp -i /tmp/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub {{ vars['img']['auth']['user'] }}@{{ item }}:/tmp/id_rsa.pub; ssh -i /tmp/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem -o StrictHostKeyChecking=no {{ vars['img']['auth']['user'] }}@{{ item }} 'cat /tmp/id_rsa.pub >> ~/.ssh/authorized_keys'"
   with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+  when:  vars['ins']['worker']['net']['ip']['private']['pool'] != ''
 
 - name: authorize jump ssh key to master instances
   shell: "scp -i /tmp/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub {{ vars['img']['auth']['user'] }}@{{ item }}:/tmp/id_rsa.pub; ssh -i /tmp/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem -o StrictHostKeyChecking=no {{ vars['img']['auth']['user'] }}@{{ item }} 'cat /tmp/id_rsa.pub >> ~/.ssh/authorized_keys'"

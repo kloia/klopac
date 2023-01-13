@@ -1,0 +1,4 @@
+---
+app:
+  rancher:
+    version: v2.6.9

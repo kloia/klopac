@@ -4,6 +4,7 @@
     engine_kubeconfig_path: "/data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}.kubeconfig"
 
 - name: copy kubeconfig
+  become: true
   fetch:
     src: "{{ vars['platform'][engine_runner_type][engine_type]['kubeconfig']['path'] }}"
     dest: "{{ engine_kubeconfig_path }}"
@@ -19,6 +20,16 @@
   when: 
     - vars['engine']['operation']['type']!='delete'
     - vars['engine']['operation']['type']!='clean'
+    - vars['ins']['lb']['pub']['dnsName'] is defined
+
+- name: replace server name on kubeconfig
+  delegate_to: localhost
+  connection: local
+  shell: "sed -i 's/127.0.0.1/{{ groups['master'][0] }}/g' {{ engine_kubeconfig_path }}"
+  when: 
+    - vars['engine']['operation']['type']!='delete'
+    - vars['engine']['operation']['type']!='clean'
+    - vars['ins']['lb']['pub']['dnsName'] is not defined
 
 - name: delete kubeconfig
   delegate_to: localhost
@@ -46,6 +57,15 @@
   when: 
     - vars['engine']['operation']['type']!='delete'
     - vars['engine']['operation']['type']!='clean'
+    - vars['ins']['lb']['pub']['dnsName'] is defined
+
+- name: generate endpoint uri
+  set_fact:
+    engine_endpoint_uri: "https://{{ groups['master'][0] }}:6443"
+  when: 
+    - vars['engine']['operation']['type']!='delete'
+    - vars['engine']['operation']['type']!='clean'
+    - vars['ins']['lb']['pub']['dnsName'] is not defined
 
 - name: set endpoint uri variable
   delegate_to: localhost

@@ -5,7 +5,7 @@ img:
       path: ''
       type: ''
     type: pem
-    user: ubuntu
+    user: togg
   diskSize: 300g
   enabled: false
   id: ''

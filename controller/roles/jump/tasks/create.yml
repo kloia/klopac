@@ -58,6 +58,6 @@
   when: vars['platform']['jump']['auth'] == false and jump_ip is defined
 
 - name: authorize ssh key on jump
-  shell: "scp -i {{ engine_pem_path }} -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub ubuntu@{{ jump_ip }}:/tmp/id_rsa.pub; ssh -i /data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem -o StrictHostKeyChecking=no ubuntu@{{ jump_ip }} 'cat /tmp/id_rsa.pub >> ~/.ssh/authorized_keys'"
+  shell: "scp -i {{ engine_pem_path }} -o StrictHostKeyChecking=no ~/.ssh/id_rsa.pub {{ vars['ins']['image']['auth']['user'] }}@{{ jump_ip }}:/tmp/id_rsa.pub; ssh -i /data/sensitive/{{ vars['platform']['name'] }}-{{ vars['platform']['environment'] }}-key.pem -o StrictHostKeyChecking=no {{ vars['ins']['image']['auth']['user'] }}@{{ jump_ip }} 'cat /tmp/id_rsa.pub >> ~/.ssh/authorized_keys'"
   register: jump_auth
   when: vars['platform']['jump']['auth'] == false and jump_ip is defined

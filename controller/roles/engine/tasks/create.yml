@@ -1,14 +1,146 @@
 ---
 
-- name: run commands for prerequsites
-  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['pre'] }}"
-  when: vars['platform']['executor'][engine_type]['type']=='shell'
+- name: add master to host group
+  with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
+  add_host:
+    hostname: "{{ item }}"
+    groupname: master
+    ansible_ssh_private_key_file: "{{ engine_pem_path }}"
+    ansible_ssh_user: "{{ img.auth.user }}"
+    remote_user: "{{ img.auth.user }}"
+    connection: ssh
+  when: vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'instance'
+
+- name: add worker to host group
+  with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+  add_host:
+    hostname: "{{ item }}"
+    groupname: worker
+    ansible_ssh_private_key_file: "{{ engine_pem_path }}"
+    ansible_ssh_user: "{{ img.auth.user }}"
+    remote_user: "{{ img.auth.user }}"
+    connection: ssh
+  when: 
+    - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'instance'
+    - vars['ins']['worker']['net']['ip']['private']['pool'] != ''
 
 - name: set mgmt ip
   set_fact:
     mgmt_ip: "{{ vars['ins']['master']['net']['ip']['private']['pool'][0] }}"
   when: 
-    - vars['platform']['executor'][engine_type]['type'] == 'shell' 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['engine']['endpoint']['uri'] == ''
+
+- name: set mgmt ip
+  set_fact:
+    mgmt_ip: "{{ vars['engine']['endpoint']['uri'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['engine']['endpoint']['uri'] != ''
+
+- name: run commands for prerequsites on jump
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['pre'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['pre'] is defined
+    - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'jump'
+
+- name: run commands for master prerequsites
+  with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
+  delegate_to: "{{ item }}"
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['pre'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['pre'] is defined
+
+- name: run commands for worker prerequsites
+  with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+  delegate_to: "{{ item }}"
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['pre'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['ins']['worker']['net']['ip']['private']['pool'] != ''
+    - vars['platform']['executor'][engine_type]['dialect']['command']['pre'] is defined
+
+- copy:
+    content: "{{ vars['platform'][engine_runner_type][engine_type]['dialect']['file']['content'] }}"
+    dest: /tmp/master_config.j2
+  when:  vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+
+- fetch:
+    src: "/tmp/master_config.j2"
+    dest: "/tmp/master_config.j2"
+    flat: yes
+  when:  vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+
+- template:
+    src: /tmp/master_config.j2
+    dest: /tmp/master_config.yaml
+  when:  vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+
+- name: set token
+  set_fact:
+    token: "{{ vars['engine']['endpoint']['token'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['engine']['endpoint']['uri'] != ''
+    - vars['engine']['endpoint']['token'] is defined
+
+- copy:
+    content: "{{ vars['platform'][engine_runner_type][engine_type]['dialect']['file']['content'] }}"
+    dest: /tmp/worker_config.j2
+  when:  
+    - vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+    - vars['ins']['worker']['net']['ip']['private']['pool'] != ''
+
+- fetch:
+    src: "/tmp/worker_config.j2"
+    dest: "/tmp/worker_config.j2"
+    flat: yes
+  when:  
+    - vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+    - vars['ins']['worker']['net']['ip']['private']['pool'] != ''
+
+- template:
+    src: /tmp/worker_config.j2
+    dest: /tmp/worker_config.yaml
+  when:  
+    - vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+    - vars['ins']['worker']['net']['ip']['private']['pool'] != ''
+
+- name: scp config file to master
+  with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
+  shell: "scp /tmp/master_config.yaml {{ vars['img']['auth']['user'] }}@{{ item }}:/tmp/master_config.yaml"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+
+- name: mv config file on master
+  with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
+  shell: "ssh {{ vars['img']['auth']['user'] }}@{{ item }} sudo mv /tmp/master_config.yaml {{ vars['platform'][engine_runner_type][engine_type]['dialect']['file']['destination'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+
+- name: scp config file to worker
+  with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+  shell: "scp /tmp/worker_config.yaml {{ vars['img']['auth']['user'] }}@{{ item }}:/tmp/worker_config.yaml"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['ins']['worker']['net']['ip']['private']['pool'] != ''
+    - vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
+
+- name: mv config file on worker
+  with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+  shell: "ssh {{ vars['img']['auth']['user'] }}@{{ item }} sudo mv /tmp/worker_config.yaml {{ vars['platform'][engine_runner_type][engine_type]['dialect']['file']['destination'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type'] == 'shell'
+    - vars['ins']['worker']['net']['ip']['private']['pool'] != ''
+    - vars['platform'][engine_runner_type][engine_type]['dialect']['file'] is defined
  
 - name: create cluster
   shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['create'] }}"
@@ -17,7 +149,46 @@
     mgmt_ip: "{{ mgmt_ip }}"
     cluster_user: "{{ vars['img']['auth']['user'] }}"
     engine_version: "{{ vars['engine'][engine_type]['version'] }}"
-  when: vars['platform'][engine_runner_type][engine_type]['type'] == 'shell' and engine_runner_type == 'executor'
+  when: 
+    - vars['platform'][engine_runner_type][engine_type]['type'] == 'shell' 
+    - engine_runner_type == 'executor'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['create'] is defined
+    - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'jump'
+
+- name: create cluster
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['create'] }}"
+  register: engine_cluster_create_log
+  delegate_to: "{{ groups['master'][0] }}"
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+    cluster_user: "{{ vars['img']['auth']['user'] }}"
+    engine_version: "{{ vars['engine'][engine_type]['version'] }}"
+    token: "{{ vars['engine']['endpoint']['token'] }}"
+  when: 
+    - vars['platform'][engine_runner_type][engine_type]['type'] == 'shell' 
+    - engine_runner_type == 'executor'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['create'] is defined
+    - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'instance'
+
+- name: Wait for fist master server be ready
+  delegate_to: "{{ groups['master'][0] }}"
+  shell: |
+   set -o pipefail
+   sudo {{ vars['platform']['executor'][engine_type]['kubectl']['path'] }} --kubeconfig {{ vars['platform']['executor'][engine_type]['kubeconfig']['path'] }} get nodes | grep "Ready"
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: first_node
+  until:
+    - '" Ready "  in first_node.stdout'
+  retries: 6
+  delay: 15
+  when: 
+    - vars['platform']['executor'][engine_type]['type']=='shell'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['create'] is defined
+    - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'instance'
+
+- debug: msg="{{ first_node }}"
 
 - debug: msg="{{ engine_cluster_create_log }}"
   when: vars['platform']['log']['level']=='debug'
@@ -31,14 +202,59 @@
     engine_version: "{{ vars['engine'][engine_type]['version'] }}"
   when: 
     - vars['platform']['executor'][engine_type]['type']=='shell'
-    - vars['ins']['master']['net']['ip']['private']['pool']| length > 1
     - item != mgmt_ip
+    - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'jump'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['master_join'] is defined
 
-- name: join worker nodes to cluster
-  shell: "export item={{ item }}; {{ vars['platform']['executor'][engine_type]['dialect']['command']['worker_join'] }}"
-  with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+- debug: msg="{{ mgmt_ip }}"
+
+- name: join master nodes to cluster
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['master_join'] }}"
+  with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
+  register: master_join_log
+  delegate_to: "{{ item }}"
   environment:
     mgmt_ip: "{{ mgmt_ip }}"
     cluster_user: "{{ vars['img']['auth']['user'] }}"
     engine_version: "{{ vars['engine'][engine_type]['version'] }}"
-  when: vars['platform']['executor'][engine_type]['type']=='shell'
+    token: "{{ vars['engine']['endpoint']['token'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type']=='shell'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'instance'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['master_join'] is defined
+    - groups['master'] | length >= 1
+
+- debug: msg="{{ master_join_log }}"
+
+# - name: Wait for the master server be ready
+#   with_items:  "{{ vars['ins']['master']['net']['ip']['private']['pool'] }}"
+#   delegate_to: "{{ item }}"
+#   shell: |
+#    set -o pipefail
+#    sudo {{ vars['platform']['executor'][engine_type]['kubectl']['path'] }} --kubeconfig {{ vars['platform']['executor'][engine_type]['kubeconfig']['path'] }} get nodes | grep "Ready"
+#   args:
+#     executable: /bin/bash
+#   changed_when: false
+#   register: first_node
+#   until:
+#     - '" Ready "  in first_node.stdout'
+#   retries: 6
+#   delay: 15
+#   when: 
+#     - vars['platform']['executor'][engine_type]['type']=='shell'
+#     - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'instance'
+
+- name: join worker nodes to cluster
+  shell: "{{ vars['platform']['executor'][engine_type]['dialect']['command']['worker_join'] }}"
+  with_items:  "{{ vars['ins']['worker']['net']['ip']['private']['pool'] }}"
+  register: worker_join_log
+  delegate_to: "{{ item }}"
+  environment:
+    mgmt_ip: "{{ mgmt_ip }}"
+    cluster_user: "{{ vars['img']['auth']['user'] }}"
+    engine_version: "{{ vars['engine'][engine_type]['version'] }}"
+    token: "{{ vars['engine']['endpoint']['token'] }}"
+  when: 
+    - vars['platform']['executor'][engine_type]['type']=='shell'
+    - vars['platform']['executor'][engine_type]['dialect']['command']['work_on'] == 'instance'
+    - vars['ins']['worker']['net']['ip']['private']['pool'] != ''

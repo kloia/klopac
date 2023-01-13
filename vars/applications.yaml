@@ -2,7 +2,7 @@
 app:
   enabled: true
   instana-agent:
-    enabled: true
+    enabled: false
     operation:
       type: delete
     required:
@@ -66,5 +66,24 @@ app:
       - namespace
       - operation.type
       - runner.type
+    runner:
+      type: executor
+  rancher:
+    enabled: true
+    namespace: cattle-system
+    operation:
+      type: create
+      update:
+        policy: apply
+    required:
+      - enabled
+      - name
+      - namespace
+      - operation.type
+      - runner.type
+    inputs:
+      hostname: ''
+      bootstrapPassword: ''
+      ingress.tls.source: 'secret'
     runner:
       type: executor

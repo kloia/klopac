@@ -22,7 +22,7 @@
     jump_ip: "{{ platform.jump.ip }}"
   when: 
     - jump_ip is not defined
-    - vars['engine']['operation']['type']=='clean'
+    #- vars['engine']['operation']['type']=='clean'
 
 - name: add jump to host group
   add_host:
@@ -33,5 +33,6 @@
     remote_user: "{{ img.auth.user }}"
     connection: ssh
   when: 
-    - vars['engine']['operation']['type']=='clean'
     - jump_ip is defined
+    #- vars['engine']['operation']['type']=='clean'
+    
