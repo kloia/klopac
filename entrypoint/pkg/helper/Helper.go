@@ -81,11 +81,10 @@ func Intersection(inputMap, defaultMap map[string]interface{}) (newMap map[strin
 				newMap[inputKey] = Intersection(inputInnerMap, defaultInnerMap)
 			}
 		} else {
-			fmt.Println("defaultMapinputkey together:", defaultMap[inputKey], inputKey)
 			_, ok := defaultMap[inputKey]
 			if ok {
 				newMap[inputKey] = inputVal
-				fmt.Println("newMap[inputKey]:", newMap[inputKey])
+				fmt.Printf("adding to intersectionMap[%s] as this value ->: %s\n", inputKey, newMap[inputKey])
 			}
 		}
 	}
@@ -102,7 +101,6 @@ func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) error
 			}
 			if !info.IsDir() && filepath.Ext(path) == ".yaml" || filepath.Ext(path) == ".yml" {
 				defaultModel := ReadFile(path)
-				fmt.Println("defaultModel path:", path)
 				intersectionMap := Intersection(valuesModel, defaultModel)
 				if isMapNotEmpty(intersectionMap) { // this checks whether intersection map is truly empty or not
 					log.Debug("INTERSECTION", zap.Any("map", intersectionMap))
