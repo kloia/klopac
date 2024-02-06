@@ -17,7 +17,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -25,39 +24,48 @@ import (
 // Reads content of the yaml file and returns it
 func ReadFile(filename string) map[string]interface{} {
 	log := logger.GetLogger()
-	log.Debug("START: READ FILE", zap.String("filename", filename))
-	yamlFile, err := ioutil.ReadFile(filename)
+	log.Debug("START: READ FILE")
+	yamlFile, err := os.ReadFile(filename)
 	if err != nil {
-		log.Debug("Could not open",
-			zap.String("filename", filename))
+		log.Debug("Could not open", zap.String("filename", filename))
+		return nil
 	}
 
 	m := make(map[string]interface{})
-	err = yaml.Unmarshal(yamlFile, m)
+	err = yaml.Unmarshal(yamlFile, &m)
 	if err != nil {
-		log.Debug("Could not decode map",
-			zap.Any("map", m))
+		log.Debug("Could not decode map", zap.Any("map", m))
 	}
-	log.Debug("END: READ FILE", zap.String("filename", filename))
+	log.Debug("END: READ FILE")
 	return m
 }
 
 // Writes content to a yaml file
 
-func WriteFile(filename string, data map[string]interface{}) error {
+func WriteFile(filename string, data map[string]interface{}, keepHeader bool) error {
 	log := logger.GetLogger()
 	log.Debug("START: WRITE FILE", zap.String("filename", filename))
+
 	var b bytes.Buffer
+	if keepHeader {
+		b.WriteString("---\n")
+	}
+
 	yamlEncoder := yaml.NewEncoder(&b)
 	yamlEncoder.SetIndent(2)
-
-	yamlEncoder.Encode(&data)
-	err := ioutil.WriteFile(filename, b.Bytes(), 0644)
-	if err != nil {
-		log.Error("Error while writing file ", zap.Error(err), zap.String("filename", filename))
+	if err := yamlEncoder.Encode(data); err != nil {
+		log.Error("Failed to encode YAML", zap.Error(err))
+		return err
 	}
+	yamlEncoder.Close()
+
+	err := os.WriteFile(filename, b.Bytes(), 0644)
+	if err != nil {
+		log.Error("Failed to write file", zap.Error(err), zap.String("filename", filename))
+	}
+
 	log.Debug("END: WRITE FILE", zap.String("filename", filename))
-	return nil
+	return err
 }
 
 // Basically we have two map and we compare them if there are some sort of values that should be changed according to its logic
@@ -73,6 +81,7 @@ func Intersection(inputMap, defaultMap map[string]interface{}) (newMap map[strin
 			_, ok := defaultMap[inputKey]
 			if ok {
 				newMap[inputKey] = inputVal
+				fmt.Printf("adding to intersectionMap[%s] as this value ->: %s\n", inputKey, newMap[inputKey])
 			}
 		}
 	}
@@ -90,51 +99,60 @@ func UpdateValuesFile(valuesModel map[string]interface{}, varsPath string) error
 			if !info.IsDir() && filepath.Ext(path) == ".yaml" || filepath.Ext(path) == ".yml" {
 				defaultModel := ReadFile(path)
 				intersectionMap := Intersection(valuesModel, defaultModel)
-				if len(intersectionMap) > 0 {
+				if isMapNotEmpty(intersectionMap) { // this checks whether intersection map is truly empty or not
 					log.Debug("INTERSECTION", zap.Any("map", intersectionMap))
 					mergo.Merge(&defaultModel, intersectionMap, mergo.WithOverride)
-					WriteFile(path, defaultModel)
+					WriteFile(path, defaultModel, true)
 				}
 			}
 			return nil
 		})
 }
 
-func Untar(tarball, target string) error {
+// isMapNotEmpty, checks if the map is empty or not
+func isMapNotEmpty(m map[string]interface{}) bool {
+	for _, value := range m {
+		switch v := value.(type) {
+		case map[string]interface{}:
+			if isMapNotEmpty(v) {
+				return true // there is at least one non-empty map
+			}
+		default:
+			return true // there is at least one non-empty value
+		}
+	}
+	return false // map is empty
+}
 
+func Untar(tarball, target string) error {
 	reader, err := os.Open(tarball)
 	log := logger.GetLogger()
 	if err != nil {
 		log.Debug("Bundle file could not be opened.")
 		return err
 	}
-	log.Debug("Bundle file exists.")
 	defer reader.Close()
 
 	gzf, err := gzip.NewReader(reader)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
-	log.Debug("Gunzip done.")
+	defer gzf.Close()
 
 	tarReader := tar.NewReader(gzf)
 
 	for {
 		header, err := tarReader.Next()
-
 		if err == io.EOF {
 			break
 		} else if err != nil {
-
 			return err
 		}
 
 		path := filepath.Join(target, header.Name)
 		info := header.FileInfo()
 		if info.IsDir() {
-			if err = os.MkdirAll(path, info.Mode()); err != nil {
-
+			if err := os.MkdirAll(path, info.Mode()); err != nil {
 				return err
 			}
 			continue
@@ -144,13 +162,13 @@ func Untar(tarball, target string) error {
 		if err != nil {
 			return err
 		}
-		defer file.Close()
-		_, err = io.Copy(file, tarReader)
-		if err != nil {
+
+		if _, err := io.Copy(file, tarReader); err != nil {
+			file.Close() // Ensure file is closed in case of error
 			return err
 		}
+		file.Close() // Moved from defer to close immediately after use
 	}
-	log.Debug("Untar done.")
 	return nil
 }
 
