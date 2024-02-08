@@ -57,9 +57,10 @@ func Run() {
 		log.Info("[KLOPAC FLOW - START]",
 			zap.Bool("provision", provision),
 			zap.Bool("validate", validate),
-			zap.Bool("healthcheck", healthCheck))
+			zap.Bool("healthcheck", healthCheck),
+			zap.String("started	,", "true"))
 		helper.GetFlowService().Run(provision, validate, healthCheck, logLevel, bundleFileExists)
-		log.Info("[KLOPAC FLOW - END]")
+		log.Info("[KLOPAC FLOW - END]", zap.String("finished", "true"))
 	}
 }
 
@@ -97,7 +98,7 @@ func createDefaultFile(varsPath, rootKey, innerKey string, innerValue interface{
 			//Create Default File with Version Variable
 			jsonString := fmt.Sprintf(`{"%v":{"%v": {"version": "%v"}}}`, rootKey, innerKey, innerValue.(map[string]interface{})["version"])
 			jsonMap, _ := convertStringToJsonMap(jsonString)
-			helper.WriteFile(newDefaultObjectPath, jsonMap)
+			helper.WriteFile(newDefaultObjectPath, jsonMap, false)
 
 			//In App or Int Layer, Create New Domain Object
 			deleteKeyFromDomainObject(innerValue.(map[string]interface{}), []string{"version"})
@@ -124,7 +125,7 @@ func mergeFiles(varsPath, rootKey string, jsonMap map[string]interface{}) {
 	filePath := fmt.Sprintf("%v/%v", varsPath, fileName)
 	defaultModel := helper.ReadFile(filePath)
 	mergo.Merge(&defaultModel, jsonMap)
-	helper.WriteFile(filePath, defaultModel)
+	helper.WriteFile(filePath, defaultModel, true)
 }
 
 func createRunnerFile(innerKey, manifestsPath string, innerValue interface{}, valuesModel map[string]interface{}) {
@@ -138,7 +139,7 @@ func createRunnerFile(innerKey, manifestsPath string, innerValue interface{}, va
 					newManifestObjectPath := fmt.Sprintf("%v/%v/%v-%v.yaml", manifestsPath, manifestType, innerKey, newPlatformObject.(map[string]interface{})[extension])
 					jsonMap, _ := convertStringToJsonMap(fmt.Sprintf(`{"platform":{"%v": {"%v": {}}}}`, manifestType, innerKey))
 					jsonMap["platform"].(map[string]interface{})[manifestType].(map[string]interface{})[innerKey] = newPlatformObject
-					helper.WriteFile(newManifestObjectPath, jsonMap)
+					helper.WriteFile(newManifestObjectPath, jsonMap, false)
 				}
 			}
 		}
