@@ -3,7 +3,7 @@ module entrypoint
 go 1.18
 
 require (
-	github.com/gorilla/websocket v1.5.0
+	github.com/gorilla/websocket v1.5.3
 	github.com/imdario/mergo v0.3.12
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/zap v1.21.0
